@@ -1,0 +1,47 @@
+-- User table --
+CREATE TABLE users (
+  id SERIAL PRIMARY KEY,
+  first_name NOT NULL,
+  last_name NOT NULL,
+  email VARCHAR(100) UNIQUE NOT NULL,
+  password VARCHAR(255) UNIQUE NOT NULL,
+  role VARCHAR(20) NOT NULL CHECK (role IN ('user', 'admin')),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+);
+
+CREATE TABLE products (
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(100) UNIQUE NOT NULL,
+  description TEXT NOT NULL,
+  price NUMERIC(6,2) NOT NULL,
+  category VARCHAR(50) NOT NULL,
+  stock INTEGER CHECK (stock >= 0), -- CHECK constraint because stock cannot be negative --
+  image VARCHAR(255) NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE carts (
+  id SERIAL PRIMARY KEY,
+  user_id INTEGER REFERENCES users(id),
+  product_id INTEGER REFERENCES products(id),
+  quantity INTEGER CHECK (quantity > 0),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE orders (
+  id SERIAL PRIMARY KEY,
+  user_id INTEGER REFERENCES users(id),
+  total_price NUMERIC(6,2),
+  shipping_address TEXT NOT NULL,
+  status VARCHAR(20) NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE order_items (
+  id SERIAL PRIMARY KEY,
+  order_id INTEGER REFERENCES orders(id),
+  product_id INTEGER REFERENCES products(id),
+  quantity INTEGER NOT NULL,
+  price NUMERIC(6,2) NOT NULL
+);
+

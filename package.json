@@ -1,0 +1,22 @@
+{
+  "dependencies": {
+    "axios": "^1.8.1",
+    "bcryptjs": "^3.0.2",
+    "body-parser": "^1.20.3",
+    "dotenv": "^16.4.7",
+    "ejs": "^3.1.10",
+    "express": "^4.21.2",
+    "normalize.css": "^8.0.1",
+    "pg": "^8.13.3"
+  },
+  "name": "fp",
+  "version": "1.0.0",
+  "description": "A stylish website for a leather store that sells all kinds of unique crafts. Fully functional as, users can log in, add products to cart, order them, and see their order history.",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}

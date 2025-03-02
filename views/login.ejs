@@ -1,0 +1,12 @@
+<%- include("./partials/header"); %> <!-- Include the shared header and navbar -->
+
+<main> <!-- Makes POST request to /api/login route -->
+    <form action="/login" method="post">
+        <input type="text" name="username" placeholder="Email" required />
+        <input type="password" name="password" placeholder="Password" required />
+    <button type="submit">Submit</button>
+    </form>
+</main>
+
+
+<%- include("./partials/footer"); %> <!-- Include the shared footer -->
