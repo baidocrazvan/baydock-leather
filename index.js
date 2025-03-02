@@ -35,7 +35,7 @@ app.get("/", (req, res) => {
 
 
 // Authentication endpoints
-app.get("/login", (req,res) => {
+app.get("/login", (req, res) => {
   res.render("login.ejs");
 });
 
@@ -44,13 +44,81 @@ app.get("/register", (req, res) => {
 });
 
 
-app.post("/api/login", (req, res) => {
+app.post("/api/login", async (req, res) => {
+  const email = req.body.email;
+  const password = req.body.password;
 
+  try {
+    const result = await db.query("SELECT * FROM users WHERE email = $1", [email]);
+    
+    if (result.rows.length > 0) {
+      const user = result.rows[0]
+      console.log(user);
+      const hashedPassword = user.password; // Hashed password during registration process
+
+      bcrypt.compare(password, hashedPassword, (err, result) => { // Compare user password against bcrypt hash from db
+        if (err) {
+          console.log("Error comparing passwords:", err);
+        } else {
+          if (result) {
+            res.send("Succesfully logged in!");
+          } else {
+            res.send("Incorrect password!");
+          }
+        }
+      })  
+    } else {
+      res.send("User not found. Try registering first.");
+    }
+  } catch (err) {
+    console.log(err);
+  }
 
 });
 
 app.post("/api/register", async (req, res) => {
- 
+  const lastName = req.body.lastname
+  const firstName = req.body.firstname;
+  const email = req.body.email;
+  const password = req.body.password;
+  const confirmPassword = req.body.cpassword;
+  const role = "user";
+  console.log(lastName)
+  console.log(firstName)
+  console.log(email)
+  console.log(password)
+  console.log(confirmPassword)
+
+  try {
+
+    if (password !== confirmPassword) {
+      res.send("Password does not match confirmation password");
+    } else {
+        const checkResult = await db.query("SELECT * FROM users WHERE email = $1", [email]);
+
+        if (checkResult.rows.length > 0) {
+          res.send("ERROR: Email already exists. Did you mean to log in?")
+        } else {
+            // Hashing password using bcrypt
+            bcrypt.hash(password, saltRounds, async (err, hash) => {
+            if (err) {
+              console.log("Error hashing password:", err);
+            } else {
+              const result = await db.query("INSERT INTO users (first_name, last_name, email, password, role) VALUES ($1, $2, $3, $4, $5)", [
+              firstName, lastName, email, hash, role
+            ]);
+
+            console.log(result);
+            res.send("Succesfully registered!");
+        }
+      })
+    }
+    } 
+
+
+  } catch (err) {
+    console.log(err);
+  }
 });
 
 app.post("/api/logout", (req, res) => {
