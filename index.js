@@ -11,19 +11,17 @@ import path from "path";
 
 
 const app = express();
-const port = 3001;
+const port = 3000;
 const saltRounds = 10;
 env.config();
 
-const db = new pg.Client({
+const db = new pg.Pool({
   user: process.env.PG_USER,
   host: process.env.PG_HOST,
   database: process.env.PG_DATABASE,
   password: process.env.PG_PASSWORD,
   port: process.env.PG_PORT,
 })
-
-db.connect();
 
 // Set up storage for image files
 const storage = multer.diskStorage({
@@ -184,8 +182,8 @@ app.post("/api/logout", function(req, res, next) { // Clear session cookie when 
 
 
 // Product endpoints
-app.get("/api/products", (req, res) => {
-
+app.get("/api/products", async (req, res) => {
+    const result = await db.query("SELECT * FROM products ")
 }); // Get all products
 
 app.get("/api/products/:id", (req, res) => {
