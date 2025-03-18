@@ -110,18 +110,8 @@ app.post("/api/login", passport.authenticate("local", {
 }));
 
 app.post("/api/register", async (req, res) => {
-  // const lastName = req.body.lastname
-  // const firstName = req.body.firstname;
-  // const email = req.body.username;
-  // const password = req.body.password;
-  // const confirmPassword = req.body.cpassword;
   const { lastName, firstName, username: email, password, cpassword: confirmPassword } = req.body;
   const role = "user";
-  console.log(lastName)
-  console.log(firstName)
-  console.log(email)
-  console.log(password)
-  console.log(confirmPassword)
 
   try {
 
@@ -134,7 +124,7 @@ app.post("/api/register", async (req, res) => {
         if (checkResult.rows.length > 0) {
           res.send("Email already exists. Did you mean to log in?")
         } else {
-            // Hashing password using bcrypt
+            // Hash password using bcrypt
             bcrypt.hash(password, saltRounds, async (err, hash) => {
             if (err) {
               console.log("Error hashing password:", err);
@@ -146,7 +136,7 @@ app.post("/api/register", async (req, res) => {
             const user = result.rows[0];
             console.log(user);
             req.login(user, (err) => {
-              console.log(err)
+              console.error(err)
               res.redirect("/loggedin")
             })
         }
@@ -183,13 +173,30 @@ app.post("/api/logout", function(req, res, next) { // Clear session cookie when 
 
 
 // Product endpoints
+
+// Get all products
 app.get("/api/products", async (req, res) => {
-    const result = await db.query("SELECT * FROM products ")
-}); // Get all products
+  try {
+    const result = await db.query("SELECT * FROM products");
+    res.json(result.rows);
+  } catch(err) {
+    console.error(err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+    
+}); 
 
-app.get("/api/products/:id", (req, res) => {
+// Get a product by id
+app.get("/api/products/:id", async (req, res) => {
+  const id = req.params.id;
+  try {
+    const result = await db.query("SELECT * FROM products WHERE id = $1", [id]);
+    res.json(result.rows);
+  } catch(err) {
+    console.error(err);
+  }
 
-}); // Get a product by id
+}); 
 
 // Add a new product (admin)
 app.post("/api/products", upload.fields([
@@ -213,9 +220,42 @@ app.post("/api/products", upload.fields([
   }
 });
 
-app.put("/api/products/:id", (req, res) => {
+// RESTful patch for partial update a product
+app.patch("/api/products/:id", async (req, res) => {
+  const id = req.params.id;
+  const { name, description, price, category, stock, image, thumbnail } = req.body;
 
-}); // Update a product (admin)
+  try {
+    const fields = Object.keys(req.body)
+    console.log(`fields: ${fields}`);
+    if (fields.length === 0) {
+      return res.status(400).json({ error: "No fields to update "});
+    }
+    
+    const mappedQuery = fields.map((field, index) => ` ${field} = $${index + 1}`).join(", ");
+    console.log(`Map query: ${mappedQuery}`);
+
+    const query = {
+      text: `UPDATE products SET ${mappedQuery} WHERE id = $${fields.length + 1} RETURNING *`,
+      values: [...fields.map((field) => req.body[field]), id]
+    }
+    console.log(`Query: ${query.text} and ${query.values}`);
+
+    const result = await db.query(query);
+    console.log(result.rows);
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: "Product not found"});
+    }
+    res.json(result.rows[0]);
+  } catch(err) {
+    res.status(500).json({ error: "Failed to update product" });
+  } 
+}); 
+
+// RESTful ut for full update of a product
+app.put("/api/products/:id", async (req, res) => {
+
+});
 
 app.delete("/api/products/:id", (req, res) => {
 
