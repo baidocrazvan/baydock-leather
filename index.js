@@ -201,19 +201,19 @@ app.get("/api/products/:id", async (req, res) => {
 // Add a new product (admin)
 app.post("/api/products", upload.fields([
   { name: "thumbnail", maxCount: 1}, // Thumbnail (single file)
-  { name: "productImages", maxCount: 10} // Other images (up to 10 files)
+  { name: "images", maxCount: 10} // Other images (up to 10 files)
 ]), async (req, res) => {
   const { productName, productDescription, productPrice, productCategory, productStock } = req.body;
   const thumbnail = `/images/products/${req.files.thumbnail[0].filename}`; // Thumbnail path
-  const productImages = req.files.productImages.map(file => `/images/products/${file.filename}`); // Array of images paths
+  const images = req.files.images.map(file => `/images/products/${file.filename}`); // Array of images paths
   
   try {
     // Save the product to db
     await db.query("INSERT INTO products (name, description, price, category, stock, images, thumbnail) VALUES ($1, $2, $3, $4, $5, $6, $7)",[ 
-      productName, productDescription, productPrice, productCategory, productStock, productImages, thumbnail
+      productName, productDescription, productPrice, productCategory, productStock, images, thumbnail
     ]);
     
-    res.status(201).json({ message: "Product added successfully", thumbnail, productImages });
+    res.status(201).json({ message: "Product added successfully", thumbnail, images });
   } catch(err) {
     console.error("Error adding product", err);
     res.status(500).json({error: "Failed to add product" });
@@ -221,32 +221,55 @@ app.post("/api/products", upload.fields([
 });
 
 // RESTful patch for partial update a product
-app.patch("/api/products/:id", async (req, res) => {
+app.patch("/api/products/:id", upload.fields([
+  { name: "thumbnail", maxCount: 1},
+  { name: "images", maxCount: 10}
+]), async (req, res) => {
+
   const id = req.params.id;
-  const { name, description, price, category, stock, image, thumbnail } = req.body;
+  const { name, description, price, category, stock } = req.body;
+  const fields = Object.keys(req.body)
+  
+  // If photos were uploaded for a patch, add them to the query
+  if (req.files) {
 
+    if (req.files.thumbnail) {
+      const thumbnail = `/images/products/${req.files.thumbnail[0].filename}`; // Thumbnail path
+      fields.push("thumbnail");
+      req.body.thumbnail = thumbnail;
+    }
+
+    if (req.files.images) {
+      const images = req.files.images.map(file => `/images/products/${file.filename}`); // Array of images paths
+      fields.push("images");
+      req.body.images = images; 
+    }
+  }
+   console.log(`Fields to update: ${fields}`);
+
+  if (fields.length === 0) {
+    return res.status(400).json({ error: "No fields to update "});
+  }
+  
+  const mappedQuery = fields.map((field, index) => `${field} = $${index + 1}`).join(", ");
+  console.log(`Generated: ${mappedQuery}`);
+
+  const query = {
+    text: `UPDATE products SET ${mappedQuery} WHERE id = $${fields.length + 1} RETURNING *`,
+    values: [...fields.map((field) => req.body[field]), id]
+  }
+  console.log(`Query: ${query.text} and ${query.values}`);
+  
   try {
-    const fields = Object.keys(req.body)
-    console.log(`fields: ${fields}`);
-    if (fields.length === 0) {
-      return res.status(400).json({ error: "No fields to update "});
-    }
-    
-    const mappedQuery = fields.map((field, index) => ` ${field} = $${index + 1}`).join(", ");
-    console.log(`Map query: ${mappedQuery}`);
-
-    const query = {
-      text: `UPDATE products SET ${mappedQuery} WHERE id = $${fields.length + 1} RETURNING *`,
-      values: [...fields.map((field) => req.body[field]), id]
-    }
-    console.log(`Query: ${query.text} and ${query.values}`);
-
     const result = await db.query(query);
     console.log(result.rows);
+
     if (result.rows.length === 0) {
       return res.status(404).json({ message: "Product not found"});
     }
+    
     res.json(result.rows[0]);
+
   } catch(err) {
     res.status(500).json({ error: "Failed to update product" });
   } 
