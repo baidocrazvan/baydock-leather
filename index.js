@@ -6,6 +6,8 @@ import env from "dotenv";
 import session from "express-session";
 import passport from "passport";
 import { Strategy } from "passport-local";
+import multer from "multer";
+import path from "path";
 
 
 const app = express();
@@ -23,12 +25,42 @@ const db = new pg.Client({
 
 db.connect();
 
+// Set up storage for image files
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "public/images/products");
+  },
+  filename: (req, file, cb) => {
+    const prefix = Date.now() + "-" + Math.round(Math.random() * 100);
+    const extension = path.extname(file.originalname);
+    cb(null, prefix + extension); // Generate a unique file name.
+  },
+});
+const upload = multer({ storage });
+
+// Middlewares
 app.use(express.static('public'));
 app.use(bodyParser.urlencoded({extended: true}));
-app.use((req, res, next) => {
+app.use((req, res, next) => { // Middleware for creating local year variable to use inside the footer.
   res.locals.year = new Date().getFullYear();
   next();
-}) // Middleware for creating local year variable to use inside the footer.
+}) 
+const authenticate = (req, res, next) => { // If user is authenticated, proceed to the next handler/middleware
+  console.log("Session ID:", req.sessionID); // Log the session ID
+  console.log("User:", req.user); // Log the user object
+  console.log("Is Authenticated:", req.isAuthenticated());
+  if (req.isAuthenticated()) {
+    return next();
+  }
+  res.status(401).json({ error: "Unauthorized"}) 
+}
+
+const isAdmin = (req, res, next) => {
+  if (req.user.role === "admin") {
+    return next(); // If user is an admin, proceed to next handler/middlware
+  }
+  res.status(403).json({ error: "Forbidden acces: Admin Only"});
+}
 
 // Session initialization
 app.use(
@@ -40,6 +72,7 @@ app.use(
     maxAge: 1000 * 60 * 60 * 24, // time until cookie expires, in miliseconds, totals 24hours
     httpOnly: true,
     sameSite: 'strict',
+    // secure: true -> necessary for production environments
   }
 })
 );
@@ -52,8 +85,6 @@ app.get("/", (req, res) => {
   res.render("index.ejs");
 });
 
-
-
 // Authentication endpoints
 app.get("/login", (req, res) => {
   res.render("login.ejs");
@@ -65,11 +96,15 @@ app.get("/register", (req, res) => {
 
 app.get("/loggedin", (req, res) => {
   if (req.isAuthenticated()) {
-    res.render("loggedin.ejs")
+    res.render("loggedin.ejs", { user: req.user })
   } else {
     res.redirect("/login")
   }
 });
+
+app.get("/admin", authenticate, isAdmin, (req, res) => {
+    res.render("admin-dashboard.ejs");
+})
 
 app.post("/api/login", passport.authenticate("local", {
   successRedirect: "/loggedin",
@@ -92,8 +127,9 @@ app.post("/api/register", async (req, res) => {
   try {
 
     if (password !== confirmPassword) {
-      res.send("Password does not match confirmation password");
+      res.json({ message: "Password does not match confirmation password" });
     } else {
+
         const checkResult = await db.query("SELECT * FROM users WHERE email = $1", [email]);
 
         if (checkResult.rows.length > 0) {
@@ -130,14 +166,16 @@ app.post("/api/logout", function(req, res, next) { // Clear session cookie when 
     if (err) { return next(err); }
 
     req.session.destroy(function(err) { // Destroy the session
-      if (err) { return next(err); }
+      if (err) { 
+        return next(err); 
+      }
 
       res.clearCookie('connect.sid', {
         httpOnly: true,
         sameSite: "strict",
       }); // Clear the session cookie
 
-      res.status(200).send('Logged out');
+      res.status(200).json({ message:'Logged out successfully'});
     });
   });
 });
@@ -154,9 +192,27 @@ app.get("/api/products/:id", (req, res) => {
 
 }); // Get a product by id
 
-app.post("/api/products", (req, res) => {
-
-}); // Add a new product (admin)
+// Add a new product (admin)
+app.post("/api/products", upload.fields([
+  { name: "thumbnail", maxCount: 1}, // Thumbnail (single file)
+  { name: "productImages", maxCount: 10} // Other images (up to 10 files)
+]), async (req, res) => {
+  const { productName, productDescription, productPrice, productCategory, productStock } = req.body;
+  const thumbnail = `/images/products/${req.files.thumbnail[0].filename}`; // Thumbnail path
+  const productImages = req.files.productImages.map(file => `/images/products/${file.filename}`); // Array of images paths
+  
+  try {
+    // Save the product to db
+    await db.query("INSERT INTO products (name, description, price, category, stock, images, thumbnail) VALUES ($1, $2, $3, $4, $5, $6, $7)",[ 
+      productName, productDescription, productPrice, productCategory, productStock, productImages, thumbnail
+    ]);
+    
+    res.status(201).json({ message: "Product added successfully", thumbnail, productImages });
+  } catch(err) {
+    console.error("Error adding product", err);
+    res.status(500).json({error: "Failed to add product" });
+  }
+});
 
 app.put("/api/products/:id", (req, res) => {
 
@@ -168,7 +224,7 @@ app.delete("/api/products/:id", (req, res) => {
 
 
 // Cart endpoints
-app.get("/api//cart", (req, res) => {
+app.get("/api/cart", (req, res) => {
 
 });
 
