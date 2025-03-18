@@ -110,11 +110,12 @@ app.post("/api/login", passport.authenticate("local", {
 }));
 
 app.post("/api/register", async (req, res) => {
-  const lastName = req.body.lastname
-  const firstName = req.body.firstname;
-  const email = req.body.username;
-  const password = req.body.password;
-  const confirmPassword = req.body.cpassword;
+  // const lastName = req.body.lastname
+  // const firstName = req.body.firstname;
+  // const email = req.body.username;
+  // const password = req.body.password;
+  // const confirmPassword = req.body.cpassword;
+  const { lastName, firstName, username: email, password, cpassword: confirmPassword } = req.body;
   const role = "user";
   console.log(lastName)
   console.log(firstName)
