@@ -3,11 +3,11 @@
 <main>
     <h1>This is the admin dashboard. Use this form to add products in the database:</h1>
     <form action="/api/products" method="post" enctype="multipart/form-data">
-        <input type="text" name="productName" placeholder="Product Name" required >
-        <input type="text" name="productDescription" placeholder="Product Description" required >
-        <input type="number" name="productPrice" placeholder="Product Price" required >
-        <input type="text" name="productCategory" placeholder="Product Category" required>
-        <input type="number" name="productStock" placeholder="Product Stock" required >
+        <input type="text" name="name" placeholder="Product Name" required >
+        <input type="text" name="description" placeholder="Product Description" required >
+        <input type="number" name="price" placeholder="Product Price" required >
+        <input type="text" name="category" placeholder="Product Category" required>
+        <input type="number" name="stock" placeholder="Product Stock" required >
         <label for="thumbnail">Thumbnail (Single Image)</label>
         <input type="file" name="thumbnail" placeholder="thumbnail" accept="image/*" required>
         <label for="images">Product Images (Multiple Images)</label>

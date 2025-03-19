@@ -203,14 +203,14 @@ app.post("/api/products", upload.fields([
   { name: "thumbnail", maxCount: 1}, // Thumbnail (single file)
   { name: "images", maxCount: 10} // Other images (up to 10 files)
 ]), async (req, res) => {
-  const { productName, productDescription, productPrice, productCategory, productStock } = req.body;
+  const { name, description, price, category, stock } = req.body;
   const thumbnail = `/images/products/${req.files.thumbnail[0].filename}`; // Thumbnail path
   const images = req.files.images.map(file => `/images/products/${file.filename}`); // Array of images paths
   
   try {
     // Save the product to db
     await db.query("INSERT INTO products (name, description, price, category, stock, images, thumbnail) VALUES ($1, $2, $3, $4, $5, $6, $7)",[ 
-      productName, productDescription, productPrice, productCategory, productStock, images, thumbnail
+    name, description, price, category, stock, images, thumbnail
     ]);
     
     res.status(201).json({ message: "Product added successfully", thumbnail, images });
@@ -220,7 +220,7 @@ app.post("/api/products", upload.fields([
   }
 });
 
-// RESTful patch for partial update a product
+// RESTful PATCH for partial update a product
 app.patch("/api/products/:id", upload.fields([
   { name: "thumbnail", maxCount: 1},
   { name: "images", maxCount: 10}
@@ -232,13 +232,11 @@ app.patch("/api/products/:id", upload.fields([
   
   // If photos were uploaded for a patch, add them to the query
   if (req.files) {
-
     if (req.files.thumbnail) {
       const thumbnail = `/images/products/${req.files.thumbnail[0].filename}`; // Thumbnail path
       fields.push("thumbnail");
       req.body.thumbnail = thumbnail;
     }
-
     if (req.files.images) {
       const images = req.files.images.map(file => `/images/products/${file.filename}`); // Array of images paths
       fields.push("images");
@@ -275,9 +273,31 @@ app.patch("/api/products/:id", upload.fields([
   } 
 }); 
 
-// RESTful ut for full update of a product
-app.put("/api/products/:id", async (req, res) => {
+// RESTful PUT for full update of a product
+app.put("/api/products/:id", upload.fields([
+  { name: "thumbnail", maxCount: 1}, // Thumbnail (single file)
+  { name: "images", maxCount: 10} // Other images (up to 10 files)
+]), async (req, res) => {
+  const id = req.params.id;
+  const { name, description, price, category, stock } = req.body;
+  const thumbnail = `/images/products/${req.files.thumbnail[0].filename}`; // Thumbnail path
+  const images = req.files.images.map(file => `/images/products/${file.filename}`); // Array of images paths
+  
+  try {
+    // update product in db
+    const result = await db.query("UPDATE products SET name = $1, description = $2, price = $3, category = $4, stock = $5, thumbnail = $6, images = $7 WHERE id = $8 RETURNING *",
+    [name, description, price, category, stock, thumbnail, images, id]);
+    
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: "Product not found" });
+    }
 
+    res.json(result.rows[0]);
+
+  } catch(err) {
+    console.error("Error:", err);
+    res.status(500).json({error: "Failed to update product" });
+  }
 });
 
 app.delete("/api/products/:id", (req, res) => {
