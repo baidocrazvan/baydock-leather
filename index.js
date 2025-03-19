@@ -50,14 +50,14 @@ const authenticate = (req, res, next) => { // If user is authenticated, proceed 
   if (req.isAuthenticated()) {
     return next();
   }
-  res.status(401).json({ error: "Unauthorized"}) 
+  res.status(401).json({ error: "Not logged in."}) 
 }
 
 const isAdmin = (req, res, next) => {
   if (req.user.role === "admin") {
     return next(); // If user is an admin, proceed to next handler/middlware
   }
-  res.status(403).json({ error: "Forbidden acces: Admin Only"});
+  res.status(403).json({ error: "Unauthorized: Admin Only"});
 }
 
 // Session initialization
@@ -199,15 +199,15 @@ app.get("/api/products/:id", async (req, res) => {
 }); 
 
 // Add a new product (admin)
-app.post("/api/products", upload.fields([
+app.post("/api/products", authenticate, isAdmin, upload.fields([
   { name: "thumbnail", maxCount: 1}, // Thumbnail (single file)
   { name: "images", maxCount: 10} // Other images (up to 10 files)
 ]), async (req, res) => {
-  const { name, description, price, category, stock } = req.body;
-  const thumbnail = `/images/products/${req.files.thumbnail[0].filename}`; // Thumbnail path
-  const images = req.files.images.map(file => `/images/products/${file.filename}`); // Array of images paths
   
   try {
+    const { name, description, price, category, stock } = req.body;
+    const thumbnail = `/images/products/${req.files.thumbnail[0].filename}`; // Thumbnail path
+    const images = req.files.images.map(file => `/images/products/${file.filename}`); // Array of images paths
     // Save the product to db
     await db.query("INSERT INTO products (name, description, price, category, stock, images, thumbnail) VALUES ($1, $2, $3, $4, $5, $6, $7)",[ 
     name, description, price, category, stock, images, thumbnail
@@ -221,7 +221,7 @@ app.post("/api/products", upload.fields([
 });
 
 // RESTful PATCH for partial update a product
-app.patch("/api/products/:id", upload.fields([
+app.patch("/api/products/:id", authenticate, isAdmin, upload.fields([
   { name: "thumbnail", maxCount: 1},
   { name: "images", maxCount: 10}
 ]), async (req, res) => {
@@ -274,16 +274,16 @@ app.patch("/api/products/:id", upload.fields([
 }); 
 
 // RESTful PUT for full update of a product
-app.put("/api/products/:id", upload.fields([
+app.put("/api/products/:id", authenticate, isAdmin, upload.fields([
   { name: "thumbnail", maxCount: 1}, // Thumbnail (single file)
   { name: "images", maxCount: 10} // Other images (up to 10 files)
 ]), async (req, res) => {
-  const id = req.params.id;
-  const { name, description, price, category, stock } = req.body;
-  const thumbnail = `/images/products/${req.files.thumbnail[0].filename}`; // Thumbnail path
-  const images = req.files.images.map(file => `/images/products/${file.filename}`); // Array of images paths
   
+  const id = req.params.id;
   try {
+    const { name, description, price, category, stock } = req.body;
+    const thumbnail = `/images/products/${req.files.thumbnail[0].filename}`; // Thumbnail path
+    const images = req.files.images.map(file => `/images/products/${file.filename}`); // Array of images paths
     // update product in db
     const result = await db.query("UPDATE products SET name = $1, description = $2, price = $3, category = $4, stock = $5, thumbnail = $6, images = $7 WHERE id = $8 RETURNING *",
     [name, description, price, category, stock, thumbnail, images, id]);
@@ -300,9 +300,18 @@ app.put("/api/products/:id", upload.fields([
   }
 });
 
-app.delete("/api/products/:id", (req, res) => {
 
-}); //Delete a product (admin)
+//Delete a product (admin)
+app.delete("/api/products/:id", authenticate, isAdmin, (req, res) => {
+  const id = req.params.id;
+  try{
+    const result = db.query("DELETE FROM products WHERE id = $1", [id]);
+    res.status(200).json({ message: "Product deleted succesfully"});
+  } catch(err) {
+    console.error(err);
+  }
+  
+}); 
 
 
 // Cart endpoints
