@@ -9,3 +9,31 @@ POST http://localhost:3000/auth/login
 Content-Type: application/x-www-form-urlencoded
 
 username=baidocrazvan@yahoo.com&password=smiley79r
+
+### Add product to cart:
+POST http://localhost:3000/api/cart/6
+Content-Type: application/json
+
+{
+    "quantity": 1
+}
+
+### Get user's product from cart
+GET http://localhost:3000/api/cart
+
+### Update user's quantity for a specific product inside cart
+PUT http://localhost:3000/api/cart
+Content-Type: application/json
+
+{
+    "productId": 6,
+    "quantity": 8
+}
+
+### Delete a product from user's cart
+DELETE http://localhost:3000/api/cart
+Content-Type: application/json
+
+{
+    "productId": 6
+}

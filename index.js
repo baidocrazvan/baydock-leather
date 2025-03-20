@@ -9,6 +9,7 @@ import { Strategy } from "passport-local";
 import authRoutes from "./routes/authRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
+import cartRoutes from "./routes/cartRoutes.js";
 
 
 const app = express();
@@ -17,6 +18,7 @@ env.config();
 
 // Middlewares
 app.use(express.static('public'));
+app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 
 // Session initialization
@@ -59,23 +61,23 @@ app.use("/admin", adminRoutes)
 // Product endpoints
 app.use("/api", productRoutes);
 
-
+app.use("/api", cartRoutes);
 // Cart endpoints
-app.get("/api/cart", (req, res) => {
+// app.get("/api/cart", (req, res) => {
 
-});
+// });
 
-app.post("/api/cart", (req, res) => {
+// app.post("/api/cart", (req, res) => {
 
-}); // Add a product to the cart.
+// }); // Add a product to the cart.
 
-app.put("/api/cart/:id", (req, res) => {
+// app.put("/api/cart/:id", (req, res) => {
 
-}); // Update the quantity of a product in the cart.
+// }); // Update the quantity of a product in the cart.
 
-app.delete("/api/cart/:id", (req, res) => {
+// app.delete("/api/cart/:id", (req, res) => {
 
-}); // Remove a product from the cart
+// }); // Remove a product from the cart
 
 
 // Order endpoints
