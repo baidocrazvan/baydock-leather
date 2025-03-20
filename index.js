@@ -5,6 +5,7 @@ import bcrypt from "bcryptjs";
 import env from "dotenv";
 import session from "express-session";
 import passport from "passport";
+import pgSession from 'connect-pg-simple';
 import { Strategy } from "passport-local";
 import authRoutes from "./routes/authRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
@@ -21,19 +22,26 @@ app.use(express.static('public'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 
-// Session initialization
+// Initialize connect-pg-simple
+const PgSession = pgSession(session);
+
+// Session and store initialization
 app.use(
   session({
-  secret: process.env.SESSION_SECRET,
-  resave: false, // TODO: use express-session with postgress to store session
-  saveUninitialized: true, // save uninitialized session into the server memory
-  cookie: {
-    maxAge: 1000 * 60 * 60 * 24, // time until cookie expires, in miliseconds, totals 24hours
-    httpOnly: true,
-    sameSite: 'strict',
-    // secure: true -> necessary for production environments
-  }
-})
+    store: new PgSession({
+      pool: db, // Use the imported db pool
+      tableName: 'session',
+    }),
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      maxAge: 1000 * 60 * 60 * 24, // 24 hours
+      httpOnly: true,
+      sameSite: 'strict',
+      // secure: true, // Enable in production (requires HTTPS)
+    },
+  })
 );
 
 app.use(passport.initialize());
@@ -61,23 +69,8 @@ app.use("/admin", adminRoutes)
 // Product endpoints
 app.use("/api", productRoutes);
 
-app.use("/api", cartRoutes);
 // Cart endpoints
-// app.get("/api/cart", (req, res) => {
-
-// });
-
-// app.post("/api/cart", (req, res) => {
-
-// }); // Add a product to the cart.
-
-// app.put("/api/cart/:id", (req, res) => {
-
-// }); // Update the quantity of a product in the cart.
-
-// app.delete("/api/cart/:id", (req, res) => {
-
-// }); // Remove a product from the cart
+app.use("/api", cartRoutes);
 
 
 // Order endpoints
@@ -114,7 +107,7 @@ passport.use(new Strategy(async function verify(username, password, cb) {
             return cb(null, false)
           }
         }
-      })
+      });
 
     } else {
       return cb("User not found")
@@ -125,12 +118,22 @@ passport.use(new Strategy(async function verify(username, password, cb) {
 }));
 
 passport.serializeUser((user, cb) => {
-  cb(null, user);
+  cb(null, user.id);
 })
 
-passport.deserializeUser((user, cb) => {
-  cb(null, user);
-})
+passport.deserializeUser(async (id, cb) => {
+  try {
+    const result = await db.query("SELECT * FROM users WHERE id = $1", [id]);
+    if (result.rows.length > 0) {
+      const user = result.rows[0];
+      cb(null, user);
+    } else {
+      cb("User not found", null);
+    }
+  } catch (err) {
+    cb(err, null);
+  }
+});
 
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
