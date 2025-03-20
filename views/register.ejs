@@ -1,7 +1,7 @@
 <%- include("./partials/header"); %> <!-- Include the shared header and navbar -->
 
 <main> <!-- Makes POST request to /api/register route -->
-    <form action="/api/register" method="post">
+    <form action="/auth/register" method="post">
         <input type="text" name="firstName" placeholder="Prenume" required />
         <input type="text" name="lastName" placeholder="Nume" required />
         <input type="email" name="username" placeholder="Email" required />
