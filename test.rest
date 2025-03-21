@@ -15,7 +15,7 @@ POST http://localhost:3000/api/cart/19
 Content-Type: application/json
 
 {
-    "quantity": 7
+    "quantity": 2
 }
 
 ### GET USER'S PRODUCTS FROM CART
@@ -43,5 +43,32 @@ POST http://localhost:3000/api/orders
 Content-Type: application/json
 
 {
-    "shippingAddress": "Ioan Slavici, Bl. R3, apt. 5"
+    "shippingAddressId": 1
 }
+
+### ADD SHIPPING ADDRESS
+POST http://localhost:3000/api/shipping-addresses
+Content-Type: application/json
+
+{
+    "firstName": "Razvan",
+    "lastName": "Baidoc",
+    "address": "Ioan Slavici, Bl. R3, apt. 5",
+    "city": "Oradea",
+    "county": "Bihor",
+    "postalCode": "0745955",
+    "phoneNumber": "0771711988"
+
+}
+
+### GET SHIPPING ADDRESS OF USER
+GET http://localhost:3000/api/shipping-addresses
+
+
+### GET ORDER BY ID
+GET http://localhost:3000/api/orders/5
+
+### GET ALL ORDERS FROM A USER
+
+GET http://localhost:3000/api/orders/
+

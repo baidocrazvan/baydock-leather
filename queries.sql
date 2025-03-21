@@ -33,7 +33,7 @@ CREATE TABLE orders (
   id SERIAL PRIMARY KEY,
   user_id INTEGER REFERENCES users(id),
   total_price NUMERIC(6,2),
-  shipping_address TEXT NOT NULL,
+  shipping_address_id INTEGER REFERENCES shipping_addresses(id) ON DELETE SET NULL;
   status VARCHAR(20) NOT NULL DEFAULT 'Pending',
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -44,6 +44,18 @@ CREATE TABLE order_items (
   product_id INTEGER REFERENCES products(id),
   quantity INTEGER NOT NULL,
   price NUMERIC(6,2) NOT NULL
+);
+
+CREATE TABLE shipping_addresses (
+  id SERIAL PRIMARY KEY,
+  user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+  first_name VARCHAR(50) NOT NULL,
+  last_name VARCHAR(50) NOT NULL,
+  address TEXT NOT NULL,
+  city VARCHAR(100) NOT NULL,
+  county VARCHAR(100),
+  postal_code VARCHAR(20) NOT NULL,
+  phone_number VARCHAR(20) NOT NULL
 );
 
 -- Session table from connect-pg-simple docs --

@@ -12,6 +12,7 @@ import productRoutes from "./routes/productRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
 import cartRoutes from "./routes/cartRoutes.js";
 import orderRoutes from "./routes/orderRoutes.js";
+import shippingRoutes from "./routes/shippingRoutes.js";
 
 
 const app = express();
@@ -77,6 +78,9 @@ app.use("/api", cartRoutes);
 // Order endpoints
 app.use("/api", orderRoutes);
 
+// Shipping addresses endpoints
+
+app.use("/api", shippingRoutes);
 
 
 
