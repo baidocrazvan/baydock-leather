@@ -1,27 +1,27 @@
-### TEST GET / HOMEPAGE
+### GET / HOMEPAGE
 GET http://localhost:3000
 
-### TEST GET /api/products
+### GET /api/products
 GET http://localhost:3000/api/products
 
-### TEST ENDPOINT FOR LOGIN
+### ENDPOINT FOR LOGIN
 POST http://localhost:3000/auth/login
 Content-Type: application/x-www-form-urlencoded
 
 username=baidocrazvan@yahoo.com&password=smiley79r
 
-### Add product to cart:
-POST http://localhost:3000/api/cart/6
+### ADD PRODUCT TO CART:
+POST http://localhost:3000/api/cart/19
 Content-Type: application/json
 
 {
-    "quantity": 1
+    "quantity": 7
 }
 
-### Get user's product from cart
+### GET USER'S PRODUCTS FROM CART
 GET http://localhost:3000/api/cart
 
-### Update user's quantity for a specific product inside cart
+### UPDATE QUANTITY FOR ITEM IN CART
 PUT http://localhost:3000/api/cart
 Content-Type: application/json
 
@@ -30,10 +30,18 @@ Content-Type: application/json
     "quantity": 8
 }
 
-### Delete a product from user's cart
+### DELETE PRODUCT FROM CART
 DELETE http://localhost:3000/api/cart
 Content-Type: application/json
 
 {
     "productId": 6
+}
+
+### SEND ORDER WITH ITEMS IN CART
+POST http://localhost:3000/api/orders
+Content-Type: application/json
+
+{
+    "shippingAddress": "Ioan Slavici, Bl. R3, apt. 5"
 }

@@ -34,7 +34,7 @@ CREATE TABLE orders (
   user_id INTEGER REFERENCES users(id),
   total_price NUMERIC(6,2),
   shipping_address TEXT NOT NULL,
-  status VARCHAR(20) NOT NULL,
+  status VARCHAR(20) NOT NULL DEFAULT 'Pending',
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -46,7 +46,7 @@ CREATE TABLE order_items (
   price NUMERIC(6,2) NOT NULL
 );
 
--- Session table --
+-- Session table from connect-pg-simple docs --
 CREATE TABLE "session" (
   "sid" varchar NOT NULL COLLATE "default",
   "sess" json NOT NULL,

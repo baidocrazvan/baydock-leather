@@ -11,6 +11,7 @@ import authRoutes from "./routes/authRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
 import cartRoutes from "./routes/cartRoutes.js";
+import orderRoutes from "./routes/orderRoutes.js";
 
 
 const app = express();
@@ -74,17 +75,9 @@ app.use("/api", cartRoutes);
 
 
 // Order endpoints
-app.post("/api/orders", (req, res) => {
+app.use("/api", orderRoutes);
 
-}); // Place an order
 
-app.get("/api//orders", (req, res) => {
-
-}); // Get a user's order history
-
-app.get("/api/orders/:id", (req, res) => {
-
-}); // Get details of a specific order
 
 
 passport.use(new Strategy(async function verify(username, password, cb) {
