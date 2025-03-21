@@ -8,7 +8,11 @@ const router = express.Router();
 router.get("/cart", authenticate, async (req, res) => {
     try {
         const userId = req.user.id;
-        const query = "SELECT products.id AS product_id, products.name, products.description, products.price, products.category, products.stock, products.thumbnail, carts.quantity, carts.created_at FROM carts JOIN products ON carts.product_id = products.id WHERE carts.user_id = $1"
+        const query = 
+        `SELECT products.id AS product_id,
+        products.name, products.description, products.price, products.category, products.stock, products.thumbnail, carts.quantity, carts.created_at
+        FROM carts JOIN products ON carts.product_id = products.id
+        WHERE carts.user_id = $1`
         const result = await db.query(query, [userId]);
         res.json(result.rows);
     } catch(err) {
@@ -37,7 +41,7 @@ router.post("/cart/:id", authenticate, async (req, res) => {
         }
 
         //Check if product exists
-        const product = await db.query("SELECT * FROM products WHERE id = $1", [productId]);
+        const product = await db.query(`SELECT * FROM products WHERE id = $1`, [productId]);
         if (product.rows.length === 0) {
             return res.status(404).json({ error: "Product not found"});
         }
@@ -46,7 +50,7 @@ router.post("/cart/:id", authenticate, async (req, res) => {
         const stock = product.rows[0].stock;
 
         // Check if product is already in the cart
-        const cartItem = await db.query("SELECT * FROM carts WHERE user_id = $1 AND product_id = $2", [userId, productId]);
+        const cartItem = await db.query(`SELECT * FROM carts WHERE user_id = $1 AND product_id = $2`, [userId, productId]);
         let totalQuantity = quantity;
 
         // If the product is already in the cart, add the new quantity to existing quantity
@@ -62,10 +66,10 @@ router.post("/cart/:id", authenticate, async (req, res) => {
         // Add or update the product in the cart
         if (cartItem.rows.length > 0) {
             // Update existing cart item.
-            await db.query("UPDATE carts SET quantity = $1 WHERE user_id = $2 AND product_id = $3", [totalQuantity, userId, productId])
+            await db.query(`UPDATE carts SET quantity = $1 WHERE user_id = $2 AND product_id = $3`, [totalQuantity, userId, productId])
         } else {
             // Insert new cart item
-            await db.query("INSERT INTO carts (user_id, product_id, quantity) VALUES ($1, $2, $3)", [userId, productId, quantity]);
+            await db.query(`INSERT INTO carts (user_id, product_id, quantity) VALUES ($1, $2, $3)`, [userId, productId, quantity]);
         }
         //Return success response
         res.status(201).json({ message: "Products added to cart"});
@@ -88,7 +92,7 @@ router.put("/cart", async (req, res) => {
         }
 
         // Check that the item we plan on updating exists
-        const cartItem = await db.query("SELECT * FROM carts WHERE user_id = $1 AND product_id = $2",
+        const cartItem = await db.query(`SELECT * FROM carts WHERE user_id = $1 AND product_id = $2`,
             [userId, productId]);
         if (cartItem.rows.length === 0) {
             return res.status(404).json({ error: "Product not found in cart" });
@@ -101,7 +105,7 @@ router.put("/cart", async (req, res) => {
         }
 
         // Update the quantity in the cart
-        await db.query("UPDATE carts SET quantity = $1 WHERE user_id = $2 AND product_id = $3", [quantity, userId, productId]);
+        await db.query(`UPDATE carts SET quantity = $1 WHERE user_id = $2 AND product_id = $3`, [quantity, userId, productId]);
 
         //Return success response
         res.json({ message: "Cart updated successfully"});
@@ -120,13 +124,13 @@ router.delete("/cart", authenticate, async (req, res) => {
     const productId = req.body.productId;
 
     //Check that the item exists inside the cart
-    const cartItem = await db.query("SELECT * FROM carts WHERE user_id = $1 AND product_id = $2", [userId, productId]); 
+    const cartItem = await db.query(`SELECT * FROM carts WHERE user_id = $1 AND product_id = $2`, [userId, productId]); 
     if (cartItem.rows.length === 0) {
        return res.status(404).json({ error: "Product doesn't exist inside user's cart" });
     }
 
     // Delete the product from user's cart
-    await db.query("DELETE FROM carts WHERE user_id = $1 AND product_id = $2", [userId, productId])
+    await db.query(`DELETE FROM carts WHERE user_id = $1 AND product_id = $2`, [userId, productId])
     res.json({ message: "Product removed from cart successfully" });
    } catch(err) {
         console.error("Error: ", err);

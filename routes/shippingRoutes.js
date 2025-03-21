@@ -4,6 +4,7 @@ import { authenticate, isAdmin } from "../middleware/middleware.js";
 
 const router = express.Router();
 
+// Add a shipping address to user account
 router.post("/shipping-addresses", authenticate, async (req, res) => {
     try{
 
@@ -24,6 +25,7 @@ router.post("/shipping-addresses", authenticate, async (req, res) => {
     }
 });
 
+// Get all shipping addresses from user account
 router.get("/shipping-addresses", authenticate, async (req, res) => {
     try {
       const userId = req.user.id;
@@ -40,6 +42,32 @@ router.get("/shipping-addresses", authenticate, async (req, res) => {
     }
   });
 
+  // Get a specific shipping address from user account
+
+router.get("/shipping-addresses/:id", authenticate, async (req, res) => {
+  try {
+
+    const userId = req.user.id;
+    const result = await db.query(`SELECT * FROM shipping_addresses WHERE id = $1 AND user_id = $2`, [req.params.id, userId]);
+    res.json(result.rows[0]);
+    
+  } catch(err) {
+    console.error("Failed to get shipping address: ", err);
+  }
+})
+
   // TO DO: Add delete route to delete shipping addresses()
+
+router.delete("/shipping-addresses/:id", authenticate, async (req, res) => {
+  try {
+
+    const userId = req.user.id;
+    await db.query(`DELETE FROM shipping_addresses WHERE id = $1 AND user_id = $2`, [req.params.id, userId]);
+    res.status(201).json("Address deleted successfully.");
+
+  } catch(err) {
+    console.error("Failed to delete shipping address:" , err);
+  }
+})
 
   export default router;

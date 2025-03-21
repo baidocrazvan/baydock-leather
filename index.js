@@ -87,7 +87,7 @@ app.use("/api", shippingRoutes);
 passport.use(new Strategy(async function verify(username, password, cb) {
   
   try {
-    const result = await db.query("SELECT * FROM users WHERE email = $1", [username]);
+    const result = await db.query(`SELECT * FROM users WHERE email = $1`, [username]);
     
     if (result.rows.length > 0) {
       const user = result.rows[0]
@@ -120,7 +120,7 @@ passport.serializeUser((user, cb) => {
 
 passport.deserializeUser(async (id, cb) => {
   try {
-    const result = await db.query("SELECT * FROM users WHERE id = $1", [id]);
+    const result = await db.query(`SELECT * FROM users WHERE id = $1`, [id]);
     if (result.rows.length > 0) {
       const user = result.rows[0];
       cb(null, user);

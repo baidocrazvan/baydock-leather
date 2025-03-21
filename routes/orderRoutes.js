@@ -169,7 +169,7 @@ router.post("/orders", authenticate, async (req, res) => {
       }
 
         // Check if cart is empty
-        const cartItems = await db.query("SELECT * FROM carts WHERE user_id = $1", [userId]);
+        const cartItems = await db.query(`SELECT * FROM carts WHERE user_id = $1`, [userId]);
         if (cartItems.rows.length === 0) {
             // Rollback transaction if cart is empty
             await client.query('ROLLBACK'); 

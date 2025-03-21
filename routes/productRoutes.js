@@ -23,7 +23,7 @@ const storage = multer.diskStorage({
 // Get all products
 router.get("/products", async (req, res) => {
     try {
-      const result = await db.query("SELECT * FROM products");
+      const result = await db.query(`SELECT * FROM products`);
       res.json(result.rows);
     } catch(err) {
       console.error(err);
@@ -36,7 +36,7 @@ router.get("/products", async (req, res) => {
 router.get("/products/:id", async (req, res) => {
     const id = req.params.id;
     try {
-        const result = await db.query("SELECT * FROM products WHERE id = $1", [id]);
+        const result = await db.query(`SELECT * FROM products WHERE id = $1`, [id]);
         res.json(result.rows);
     } catch(err) {
         console.error(err);
@@ -55,9 +55,10 @@ router.post("/products", authenticate, isAdmin, upload.fields([
       const thumbnail = `/images/products/${req.files.thumbnail[0].filename}`; // Thumbnail path
       const images = req.files.images.map(file => `/images/products/${file.filename}`); // Array of images paths
       // Save the product to db
-      await db.query("INSERT INTO products (name, description, price, category, stock, images, thumbnail) VALUES ($1, $2, $3, $4, $5, $6, $7)",[ 
-      name, description, price, category, stock, images, thumbnail
-      ]);
+      await db.query(`
+        INSERT INTO products (name, description, price, category, stock, images, thumbnail)
+        VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+        [ name, description, price, category, stock, images, thumbnail]);
       
       res.status(201).json({ message: "Product added successfully", thumbnail, images });
     } catch(err) {
@@ -133,7 +134,12 @@ router.put("/products/:id", authenticate, isAdmin, upload.fields([
       const thumbnail = `/images/products/${req.files.thumbnail[0].filename}`; // Thumbnail path
       const images = req.files.images.map(file => `/images/products/${file.filename}`); // Array of images paths
       // update product in db
-      const result = await db.query("UPDATE products SET name = $1, description = $2, price = $3, category = $4, stock = $5, thumbnail = $6, images = $7 WHERE id = $8 RETURNING *",
+      const result = await db.query(
+        `UPDATE products SET name = $1,
+        description = $2, price = $3, category = $4,
+        stock = $5, thumbnail = $6, images = $7
+        WHERE id = $8 
+        RETURNING *`,
       [name, description, price, category, stock, thumbnail, images, id]);
       
       if (result.rows.length === 0) {
@@ -153,7 +159,7 @@ router.put("/products/:id", authenticate, isAdmin, upload.fields([
 router.delete("/products/:id", authenticate, isAdmin, (req, res) => {
     const id = req.params.id;
     try{
-        const result = db.query("DELETE FROM products WHERE id = $1", [id]);
+        const result = db.query(`DELETE FROM products WHERE id = $1`, [id]);
         res.status(200).json({ message: "Product deleted succesfully"});
     } catch(err) {
         console.error(err);

@@ -33,7 +33,7 @@ router.post("/register", async (req, res) => {
         res.json({ message: "Password does not match confirmation password" });
       } else {
   
-          const checkResult = await db.query("SELECT * FROM users WHERE email = $1", [email]);
+          const checkResult = await db.query(`SELECT * FROM users WHERE email = $1`, [email]);
   
           if (checkResult.rows.length > 0) {
             res.send("Email already exists. Did you mean to log in?")
@@ -44,7 +44,7 @@ router.post("/register", async (req, res) => {
                 console.log("Error hashing password:", err);
               } else {
                 const result = await db.query(
-                  "INSERT INTO users (first_name, last_name, email, password, role) VALUES ($1, $2, $3, $4, $5) RETURNING *",[
+                  `INSERT INTO users (first_name, last_name, email, password, role) VALUES ($1, $2, $3, $4, $5) RETURNING *`,[
                   firstName, lastName, email, hash, role
               ]);
               const user = result.rows[0];
