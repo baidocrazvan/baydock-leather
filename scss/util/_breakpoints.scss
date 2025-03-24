@@ -1,0 +1,19 @@
+// mobile up to 700px, tablets up to 900px, small monitors up to 1440px
+// SASS map for breakpoints
+// EMs instead of REMs used for breakpoints
+
+@use "functions" as f;
+
+// breakpoints for min-width
+$breakpoints-up: (
+    "medium": f.em(700),
+    "large": f.em(900),
+    "xlarge": f.em(1440),
+);
+
+// breakpoints for max-widths 699.98px, 899.98px, 1439.98px
+$breakpoints-down: (
+    "small": f.em(699.98),
+    "medium": f.em(899.98),
+    "large": f.em(1439.98),
+);

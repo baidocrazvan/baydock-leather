@@ -117,7 +117,8 @@ router.put("/cart", async (req, res) => {
     
 }); 
 
-router.delete("/cart", authenticate, async (req, res) => {
+// Delete a product from user cart
+router.delete("/cart/:id", authenticate, async (req, res) => {
     try {
 
     const userId = req.user.id;
@@ -137,6 +138,24 @@ router.delete("/cart", authenticate, async (req, res) => {
         res.status(500).json({ error: "Failed to delete cart item"});
     }
     
+})
+
+// Empty the cart
+
+router.delete("/cart", authenticate, async (req, res) => {
+    try {
+        const userId = req.user.id;
+
+        const cartItems = await db.query(`SELECT * FROM carts WHERE user_id = $1`, [userId]);
+        if (cartItems.rows.length === 0) {
+            return res.status(404).json({ error: "No products inside cart"});
+        }
+
+        await db.query(`DELETE FROM carts WHERE user_id = $1`, [userId]);
+        res.json({ message: "Products succesfully removed from cart"});
+    } catch(err) {
+        console.error("Failed to delete cart contents: ", err);
+    }
 })
 
 export default router;

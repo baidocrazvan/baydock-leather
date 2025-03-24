@@ -224,4 +224,6 @@ router.post("/orders", authenticate, async (req, res) => {
         
 })
 
+// TODO: Add route that can make admin change order status from PENDING
+
 export default router;

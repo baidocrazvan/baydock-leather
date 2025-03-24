@@ -68,7 +68,7 @@ router.post("/products", authenticate, isAdmin, upload.fields([
   });
 
 
-// RESTful PATCH for partial update a product
+// RESTful PATCH for partial update a product (admin)
 router.patch("/products/:id", authenticate, isAdmin, upload.fields([
     { name: "thumbnail", maxCount: 1},
     { name: "images", maxCount: 10}
@@ -122,7 +122,7 @@ router.patch("/products/:id", authenticate, isAdmin, upload.fields([
   }); 
 
 
-// RESTful PUT for full update of a product
+// RESTful PUT for full update of a product (admin)
 router.put("/products/:id", authenticate, isAdmin, upload.fields([
     { name: "thumbnail", maxCount: 1}, // Thumbnail (single file)
     { name: "images", maxCount: 10} // Other images (up to 10 files)
