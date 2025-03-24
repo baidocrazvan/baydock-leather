@@ -2,7 +2,7 @@
 
 const hamburger = document.querySelector(".header__hamburger");
 const navbar = document.querySelector(".header__navbar");
-const overlay = document.querySelector(".navbar__overlay");
+const overlay = document.querySelector(".header__navbar-overlay");
 
 // Toggle hamburger menu
 hamburger.addEventListener("click", function (e) {
@@ -16,9 +16,9 @@ hamburger.addEventListener("click", function (e) {
 })
 
 // Close menu
-document.querySelector(".navbar__close").addEventListener("click", function() {
+document.querySelector(".header__navbar-close").addEventListener("click", function() {
     navbar.classList.remove("active");
-    document.querySelector(".navbar__overlay").classList.remove("active");
+    document.querySelector(".header__navbar-overlay").classList.remove("active");
     document.body.style.overflow = "";
   });
 
