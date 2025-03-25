@@ -56,6 +56,8 @@ overlay.addEventListener("click", function() {
   });
 
 
+
+
 // Search icon modal
 // Get elements
 const searchIcon = document.querySelector('.header__icon--search');

@@ -31,7 +31,14 @@
     <div class="header__search-modal">
         <div class="header__search-container">
           <button class="header__search-close">X</button>
-          <input type="text" class="header__search-input" placeholder="Search...">
+          <form class="header__search-form" action="">
+            <input type="text" class="header__search-input" name="search" placeholder="Search...">
+            <button type="submit" class="header__search-submit">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
+              </svg>
+            </button>
+          </form>
         </div>
     </div>
 
@@ -42,12 +49,14 @@
         <button class="header__navbar-close">X</button>
         <ul class="header__nav-list">
             <li class="header__nav-item header__nav-item--search">
-                <input type="text" placeholder="Search in catalogue"/>
-                <button type="submit">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                        <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
-                    </svg>
-                </button>
+                <form action="">
+                    <input type="text" name="search" placeholder="Search in catalogue"/>
+                    <button type="submit">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
+                        </svg>
+                    </button>
+                </form>
             </li>
             <li class="header__nav-item"><a>Wallets</a></li>
             <li class="header__nav-item"><a>Belts</a></li>
