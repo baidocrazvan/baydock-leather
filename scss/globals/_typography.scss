@@ -16,8 +16,9 @@ a:visited {
 a {
     font-family: "Roboto Condensed", sans-serif;
     font-optical-sizing: auto;
-    font-weight: 400;
+    font-weight: 500;
     font-style: normal;
     text-decoration: none;
-    font-size: clamp(u.rem(12), u.rem(12) + 2vw, u.rem(18));
+    font-size: u.rem(13);
+    color: var(--icon-color);
 }
