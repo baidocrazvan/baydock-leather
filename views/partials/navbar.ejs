@@ -42,6 +42,26 @@
         </div>
     </div>
 
+    <!-- TO DO: Cart modal and overlay 
+     <div class="header__cart-modal">
+        <div class="header__cart-container">
+            <button class="header__cart-close">X</button>
+            <div class="header__cart-content">
+                <h3 class="header__cart-title">Cart</h3>
+                <div class="header__cart-items">
+                    
+                    <p class="header__cart-empty">Your cart is empty.</p>
+                </div>
+                
+                <div class="header__cart-footer">
+                    <button class="header__cart-checkout">Checkout</button>
+                </div>
+                
+                 <div class="header__cart-back">Go back to store.</div>
+            </div>
+        </div>
+     </div> -->
+
     <!-- Overlay for navbar modal -->
     <div class="header__navbar-overlay"></div>
 
@@ -63,7 +83,15 @@
             <li class="header__nav-item"><a>Accessories</a></li>
             <li class="header__nav-item"><a>Minimalist</a></li>
             <li class="header__nav-item"><a>About us</a></li>
-            <li class="header__nav-item"><a>Login/Register</a></li>
+            <li class="header__nav-item">
+                <% if (locals.currentUser) { %>
+                    <form action="/auth/logout" method="post" class="logout-form">
+                        <button type="submit" class="logout-button">Logout</a>
+                    </form>
+                <% } else { %>
+                <a href="/auth/login">Login/Register</a>
+                <% } %>
+            </li>
         </ul>
     </div>   
        

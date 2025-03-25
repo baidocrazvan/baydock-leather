@@ -8,7 +8,8 @@ const router = express.Router();
 
 // GET login page
 router.get("/login", (req, res) => {
-    res.render("login.ejs");
+  const errors = req.flash('error');
+  res.render("login.ejs", { errors });
   });
 
 // GET register page
@@ -18,8 +19,11 @@ router.get("/register", (req, res) => {
 
 // POST login a user
 router.post("/login", passport.authenticate("local", {
-  successRedirect: "/loggedin",
-  failureRedirect: "/auth/login"
+  // Use message from Passport strategy
+  failureFlash: true,
+  successRedirect: "/",
+  failureRedirect: "/auth/login",
+  
 }));
 
 // POST register a user

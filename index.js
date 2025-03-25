@@ -4,6 +4,7 @@ import db from "./db.js";
 import bcrypt from "bcryptjs";
 import env from "dotenv";
 import session from "express-session";
+import flash from "express-flash";
 import passport from "passport";
 import pgSession from 'connect-pg-simple';
 import { Strategy } from "passport-local";
@@ -23,6 +24,7 @@ env.config();
 app.use(express.static('public'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
+
 
 // Initialize connect-pg-simple
 const PgSession = pgSession(session);
@@ -48,6 +50,12 @@ app.use(
 
 app.use(passport.initialize());
 app.use(passport.session());
+// Use flash middleware for succes, error or information messages
+app.use(flash());
+app.use((req, res, next) => {
+  res.locals.currentUser = req.user;
+  next();
+})
 
 
 app.get("/", (req, res) => {
@@ -101,13 +109,13 @@ passport.use(new Strategy(async function verify(username, password, cb) {
           if (result) {
             return cb(null, user)
           } else {
-            return cb(null, false)
+            return cb(null, false, { message: "Incorrect password" });
           }
         }
       });
 
     } else {
-      return cb("User not found")
+      return cb(null, false, { message: "User not found" });
     }
   } catch (err) {
     return cb(err);
