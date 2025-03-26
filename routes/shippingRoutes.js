@@ -10,12 +10,22 @@ router.post("/shipping-addresses", authenticate, async (req, res) => {
 
         const userId = req.user.id;
         const { firstName, lastName, address, city, county, postalCode, phoneNumber } = req.body;
+
+        // Check if user has existing addresses
+        const existingAddresses = await db.query(
+        'SELECT id FROM shipping_addresses WHERE user_id = $1', 
+        [userId]
+    );
+        // If not, set both default and billing values to true
+        const isDefault = existingAddresses.rows.length === 0;
+        const isBilling = existingAddresses.rows.length === 0;
+
         const result = await db.query(
             `INSERT INTO shipping_addresses 
-            (user_id, first_name, last_name, address, city, county, postal_code, phone_number)
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+            (user_id, is_default, is_billing, first_name, last_name, address, city, county, postal_code, phone_number)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
             RETURNING id`,
-            [userId, firstName, lastName, address, city, county, postalCode, phoneNumber]
+            [userId, isDefault, isBilling, firstName, lastName, address, city, county, postalCode, phoneNumber]
         );
 
         res.status(200).json({ message: "Shipping address added successfully", addressId: result.rows[0].id});

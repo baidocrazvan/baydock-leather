@@ -18,27 +18,68 @@
         </div>
     </div>
     
-    <div class="block-title">Your Shipping Addresses</div>
+    <div class="block-title">
+        <strong>
+            Your Addresses
+        </strong>
+        <a href="/shipping-addresses" class="action edit">Manage addresses</a>
+    </div>
     <div class="box box-information">
         <div class="box-title">
             <strong><span>Shipping Address</span></strong>
-            <a href="">Manage addresses</a>
         </div>
-        <% if (addresses.length > 0) { %>
-        <div class="box-content">
-        <% addresses.forEach( address => { %>
-            <address>
-                <%= address.first_Name %> <% address.last_name %>.<br>
-                <%= address.address %><br>
-                <%= address.city %> <%= address.county %> <%= address.postal_code %><br>
-                Romania<br>
-                T: <%= address.phone_number %>
-            </address>
-        <% }) %>
+
+            <% if (!addresses.length) { %>
+                <div class="box-content">
+                    <p>You haven't added any addresses yet.</p>
+                </div>
+                <a href="/api/shipping-addresses" class="btn">Add new address</a>
+            <% } %>
+
+            <% if (addresses.length > 0) { %>
+            <div class="box-content">
+                <% addresses.forEach( address => { %>
+                    <% if (address.is_default) { %>
+                    <address>
+                        <%= address.first_Name %> <% address.last_name %>.<br>
+                        <%= address.address %><br>
+                        <%= address.city %> <%= address.county %> <%= address.postal_code %><br>
+                        <%= address.country %><br>
+                        T: <%= address.phone_number %><br>
+                    </address>
+                <% } %>
+                <% }) %>
+            </div>
+            <% } %>
+    </div>
+
+    <div class="box-information">
+        <div class="box-title">
+            <strong><span>Billing Address</span></strong>
         </div>
-        <% } else { %>
-        <p>You haven't added any addresses yet.</p>
+
+        <% if (!addresses.length) { %>
+            <div class="box-content">
+                <p>You haven't added any addresses yet.</p>
+            </div>
+            <a href="/api/shipping-addresses" class="btn">Add new address</a>
         <% } %>
+
+        <% if (addresses.length > 0) { %>
+            <div class="box-content">
+                <% addresses.forEach( address => { %>
+                    <% if (address.is_billing) { %>
+                    <address>
+                        <%= address.first_Name %> <% address.last_name %>.<br>
+                        <%= address.address %><br>
+                        <%= address.city %> <%= address.county %> <%= address.postal_code %><br>
+                        <%= address.country %><br>
+                        T: <%= address.phone_number %><br>
+                    </address>
+                <% } %>
+                <% }) %>
+            </div>
+        <% } %>   
     </div>    
 </main>
 
