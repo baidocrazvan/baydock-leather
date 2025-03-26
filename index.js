@@ -14,6 +14,7 @@ import adminRoutes from "./routes/adminRoutes.js";
 import cartRoutes from "./routes/cartRoutes.js";
 import orderRoutes from "./routes/orderRoutes.js";
 import shippingRoutes from "./routes/shippingRoutes.js";
+import customerRoutes from "./routes/customerRoutes.js";
 
 
 const app = express();
@@ -95,7 +96,7 @@ app.use("/api", orderRoutes);
 
 app.use("/api", shippingRoutes);
 
-
+app.use("/customer", customerRoutes);
 
 passport.use(new Strategy(async function verify(username, password, cb) {
   

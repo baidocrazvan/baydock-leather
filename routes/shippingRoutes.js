@@ -42,8 +42,8 @@ router.get("/shipping-addresses", authenticate, async (req, res) => {
     }
   });
 
-  // Get a specific shipping address from user account
 
+// Get a specific shipping address from user account
 router.get("/shipping-addresses/:id", authenticate, async (req, res) => {
   try {
 

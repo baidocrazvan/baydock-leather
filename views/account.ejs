@@ -1,0 +1,45 @@
+<%- include("./partials/header"); %> <!-- Include the shared header and navbar -->
+
+<main>
+    
+    <h1 class="page-title"><span>Welcome, <%= user.first_name %></span></h1>
+
+    <div class="block-title">Account Information</div>
+    <div class="box box-information">
+        <div class="box-title">
+            <strong>Contact information</strong>
+        </div>
+        <div class="box-content">
+            <p>
+                <%= user.first_name %>
+                <br>
+                <%= user.last_name %>
+            </p>
+        </div>
+    </div>
+    
+    <div class="block-title">Your Shipping Addresses</div>
+    <div class="box box-information">
+        <div class="box-title">
+            <strong><span>Shipping Address</span></strong>
+            <a href="">Manage addresses</a>
+        </div>
+        <% if (addresses.length > 0) { %>
+        <div class="box-content">
+        <% addresses.forEach( address => { %>
+            <address>
+                <%= address.first_Name %> <% address.last_name %>.<br>
+                <%= address.address %><br>
+                <%= address.city %> <%= address.county %> <%= address.postal_code %><br>
+                Romania<br>
+                T: <%= address.phone_number %>
+            </address>
+        <% }) %>
+        </div>
+        <% } else { %>
+        <p>You haven't added any addresses yet.</p>
+        <% } %>
+    </div>    
+</main>
+
+<%- include("./partials/footer"); %> <!-- Include the shared footer -->
