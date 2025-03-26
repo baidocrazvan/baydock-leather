@@ -20,9 +20,9 @@
     
     <div class="block-title">
         <strong>
-            Your Addresses
+            Your Addresses:
         </strong>
-        <a href="/shipping-addresses" class="action edit">Manage addresses</a>
+        <a href="/customer/address" class="action edit">Manage addresses</a>
     </div>
     <div class="box box-information">
         <div class="box-title">
@@ -33,7 +33,6 @@
                 <div class="box-content">
                     <p>You haven't added any addresses yet.</p>
                 </div>
-                <a href="/api/shipping-addresses" class="btn">Add new address</a>
             <% } %>
 
             <% if (addresses.length > 0) { %>
@@ -47,7 +46,7 @@
                         <%= address.country %><br>
                         T: <%= address.phone_number %><br>
                     </address>
-                <% } %>
+                    <% } %>
                 <% }) %>
             </div>
             <% } %>
@@ -80,7 +79,9 @@
                 <% }) %>
             </div>
         <% } %>   
-    </div>    
+    </div> 
+    
+    <!-- TO DO: Add last order information -->
 </main>
 
 <%- include("./partials/footer"); %> <!-- Include the shared footer -->

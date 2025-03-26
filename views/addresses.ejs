@@ -1,0 +1,72 @@
+<%- include("./partials/header"); %> <!-- Include the shared header and navbar -->
+
+<main>
+
+    <div class="block-title">
+        <strong>Your addresses:</strong>
+    </div>
+
+    <div class="block-information">
+        <div class="box-title">
+            <strong><span>Shipping Address</span></strong>
+        </div>
+        <% if (!addresses.length) { %>
+            <div class="box-content"></div>
+            <p>You haven't added any adresses yet.</p>
+            </div>
+        <% } %>
+        
+         <% if (addresses.length)  { %>
+            
+                <% addresses.forEach( address => { %>
+                    <div class="box-content"></div>
+                        <address>
+                            <%= address.first_Name %> <% address.last_name %>.<br>
+                            <%= address.address %><br>
+                            <%= address.city %> <%= address.county %> <%= address.postal_code %><br>
+                            <%= address.country %><br>
+                            T: <%= address.phone_number %><br>
+                        </address>
+                    </div>
+                    <div class="box-actions">
+                        <a href="/address/shipping-address/edit/<%= address.id %>">Modify shipping address</a>
+                        <a href="/delete/<%= address.id %>">Delete shipping address</a>
+                    </div>
+                <% }) %>
+         <% } %>      
+    </div>
+
+    <div class="block-information">
+        <div class="box-title">
+            <strong><span>Billing Address</span></strong>
+        </div>
+        <% if (!addresses.length) { %>
+            <div class="box-content"></div>
+            <p>You haven't added any adresses yet.</p>
+            </div>
+        <% } %>
+        
+         <% if (addresses.length)  { %>
+            <div class="box-content">
+                <% addresses.forEach( address => { %>
+                    <% if (address.is_billing) { %>
+                    <address>
+                        <%= address.first_Name %> <% address.last_name %>.<br>
+                        <%= address.address %><br>
+                        <%= address.city %> <%= address.county %> <%= address.postal_code %><br>
+                        <%= address.country %><br>
+                        T: <%= address.phone_number %><br>
+                    </address>
+                    <% } %>
+                <% }) %>
+            </div>
+            <div class="box-actions">
+                <a href="">Change billing address</a>
+            </div>
+         <% } %>      
+    </div>
+
+    <a href="/auth/register" class="submit-button">Add address</a>
+</main>
+
+<%- include("./partials/footer"); %> <!-- Include the shared footer -->

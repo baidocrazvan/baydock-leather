@@ -1,6 +1,7 @@
 import express from "express";
 import db from "../db.js";
 import { authenticate, isAdmin } from "../middleware/middleware.js";
+import { getUserAddress } from "../services/addressService.js";
 
 const router = express.Router();
 
@@ -53,18 +54,46 @@ router.post("/shipping-addresses", authenticate, async (req, res) => {
 //   });
 
 
-// Get a specific shipping address from user account
-router.get("/shipping-addresses/:id", authenticate, async (req, res) => {
+// Render page for editing a specific shipping address
+router.get("/shipping-address/edit/:id", authenticate, async (req, res) => {
   try {
-
-    const userId = req.user.id;
-    const result = await db.query(`SELECT * FROM shipping_addresses WHERE id = $1 AND user_id = $2`, [req.params.id, userId]);
-    res.json(result.rows[0]);
+    const address = await getUserAddress(req.user.id, req.params.id);
+    res.render("modify-address.ejs", {
+      addressId: req.params.id,
+      address: address
+    })
     
   } catch(err) {
     console.error("Failed to get shipping address: ", err);
   }
 })
+
+// Request for editing a specific shipping address
+router.post("/shipping-address/edit/:id", authenticate, async (req, res) => {
+    try {
+      const { first_name, last_name, address, city, county, country, phone_number, postal_code } = req.body;
+      const result = await db.query(
+        `UPDATE shipping_addresses
+        SET first_name = $1,
+        last_name = $2,
+        address = $3,
+        city = $4,
+        county = $5,
+        country = $6,
+        phone_number = $7,
+        postal_code = $8
+        WHERE id = $9
+        AND user_id = $10
+        RETURNING *`,
+        [ first_name, last_name, address, city, county, country, phone_number, postal_code, req.params.id, req.user.id ]
+      );
+      console.log("Updated address:", result.rows[0]);
+      res.redirect("/customer/account");
+    } catch(err) {
+      console.error(err);
+    }
+})
+
 
   // TO DO: Add delete route to delete shipping addresses()
 

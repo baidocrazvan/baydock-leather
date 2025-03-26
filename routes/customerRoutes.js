@@ -19,8 +19,16 @@ router.get("/account", authenticate, async (req, res) => {
     }
 })
 
-// router.get("/address", authenticate, async (req, res) => {
-    
-// })
+router.get("/address", authenticate, async (req, res) => {
+    try {
+        const addresses = await getUserAddresses(req.user.id);
+
+        res.render("addresses.ejs", {
+            addresses: addresses || []
+        })
+    } catch(err) {
+        console.error("Error fetching shipping data", err);
+    }
+})
 
 export default router;

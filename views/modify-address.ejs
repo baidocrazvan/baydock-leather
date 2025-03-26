@@ -1,0 +1,31 @@
+<%- include("./partials/header"); %> <!-- Include the shared header and navbar -->
+<main>
+    <form method="POST" action="/address/shipping-address/edit/<%= addressId %>">
+    <label for="first_name">First name:</label>
+    <input type="text" name="first_name" value="<%= address.first_name %>">
+
+    <label for="last_name">Last name:</label>
+    <input type="text" name="last_name" value="<%= address.last_name %>">
+
+    <label for="address">Address</label>
+    <input type="text" name="address" value="<%= address.address %>">
+
+    <label for="city">City</label>
+    <input type="text" name="city" value="<%= address.city %>">
+
+    <label for="county">County</label>
+    <input type="text" name="county" value="<%= address.county %>">
+
+    <label for="country">Country</label>
+    <input type="text"  name="country" value="<%= address.country %>">
+
+    <label for="phone_number">Phone:</label>
+    <input type="text"  name="phone_number" value="<%= address.phone_number %>">
+
+    <label for="postal_code">Postal code:</label>
+    <input type="text" name="postal_code" value="<%= address.postal_code %>">
+
+    <button type="submit">Update Address</button>
+</form>
+</main>
+<%- include("./partials/footer"); %> <!-- Include the shared footer -->

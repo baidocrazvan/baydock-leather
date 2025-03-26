@@ -13,7 +13,7 @@ import productRoutes from "./routes/productRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
 import cartRoutes from "./routes/cartRoutes.js";
 import orderRoutes from "./routes/orderRoutes.js";
-import shippingRoutes from "./routes/shippingRoutes.js";
+import addressRoutes from "./routes/addressRoutes.js";
 import customerRoutes from "./routes/customerRoutes.js";
 
 
@@ -51,6 +51,7 @@ app.use(
 
 app.use(passport.initialize());
 app.use(passport.session());
+
 // Use flash middleware for succes, error or information messages
 app.use(flash());
 app.use((req, res, next) => {
@@ -58,6 +59,8 @@ app.use((req, res, next) => {
   res.locals.error = req.flash('error');
   next();
 });
+
+// Pass user to every template
 app.use((req, res, next) => {
   res.locals.currentUser = req.user;
   next();
@@ -92,10 +95,10 @@ app.use("/api", cartRoutes);
 // Order endpoints
 app.use("/api", orderRoutes);
 
-// Shipping addresses endpoints
+// User addresses endpoints
+app.use("/address", addressRoutes);
 
-app.use("/api", shippingRoutes);
-
+// customer account endpoints
 app.use("/customer", customerRoutes);
 
 passport.use(new Strategy(async function verify(username, password, cb) {
