@@ -104,15 +104,25 @@ passport.use(new Strategy(async function verify(username, password, cb) {
     const result = await db.query(`SELECT * FROM users WHERE email = $1`, [username]);
     
     if (result.rows.length > 0) {
-      const user = result.rows[0]
-      console.log(user);
-      const hashedPassword = user.password; // Hashed password created during registration process
+      const initialUser = result.rows[0]
+      console.log(initialUser);
+      const hashedPassword = initialUser.password; // Hashed password created during registration process
 
       bcrypt.compare(password, hashedPassword, (err, result) => { // Compare user password against bcrypt hash from db
         if (err) {
           return cb(err)
         } else {
           if (result) {
+            // Create final user object without password field and pass it through
+            const user = {
+              id: initialUser.id,
+              first_name: initialUser.first_name,
+              last_name: initialUser.last_name,
+              email: initialUser.email,
+              role: initialUser.role,
+              created_at: initialUser.created_at
+            };
+            console.log("Final user: ", user);
             return cb(null, user)
           } else {
             return cb(null, false, { message: "Incorrect password" });
