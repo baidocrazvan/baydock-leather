@@ -36,21 +36,21 @@ router.post("/shipping-addresses", authenticate, async (req, res) => {
 });
 
 // Get all shipping addresses from user account
-router.get("/shipping-addresses", authenticate, async (req, res) => {
-    try {
-      const userId = req.user.id;
+// router.get("/shipping-addresses", authenticate, async (req, res) => {
+//     try {
+//       const userId = req.user.id;
   
-      const result = await db.query(
-        `SELECT * FROM shipping_addresses WHERE user_id = $1`,
-        [userId]
-      );
+//       const result = await db.query(
+//         `SELECT * FROM shipping_addresses WHERE user_id = $1`,
+//         [userId]
+//       );
   
-      res.json(result.rows);
-    } catch (err) {
-      console.error("Error fetching shipping addresses:", err);
-      res.status(500).json({ error: "Failed to fetch shipping addresses" });
-    }
-  });
+//       res.json(result.rows);
+//     } catch (err) {
+//       console.error("Error fetching shipping addresses:", err);
+//       res.status(500).json({ error: "Failed to fetch shipping addresses" });
+//     }
+//   });
 
 
 // Get a specific shipping address from user account
