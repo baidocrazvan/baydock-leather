@@ -83,3 +83,27 @@ searchModal.addEventListener('click', (e) => {
   }
 });
 
+// Axios call for address delete
+async function deleteAddress(event, id) {
+  event.preventDefault(); // Critical - prevents page jump
+  
+  if (!confirm('Are you sure you want to delete this address?')) {
+    return false;
+  }
+
+  try {
+    const response = await axios.post(`/address/shipping-addresses/delete/${id}`);
+    
+    if (response.status === 200) {
+      window.location.reload();
+    }
+  } catch (error) {
+    console.error('Delete failed:', error);
+    alert('Delete failed: ' + 
+      (error.response?.data?.message || 
+       error.message || 
+       'Server error'));
+  }
+  
+  return false;
+}

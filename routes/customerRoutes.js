@@ -19,7 +19,7 @@ router.get("/account", authenticate, async (req, res) => {
     }
 })
 
-router.get("/address", authenticate, async (req, res) => {
+router.get("/addresses", authenticate, async (req, res) => {
     try {
         const addresses = await getUserAddresses(req.user.id);
 

@@ -88,7 +88,7 @@ router.post("/shipping-address/edit/:id", authenticate, async (req, res) => {
         [ first_name, last_name, address, city, county, country, phone_number, postal_code, req.params.id, req.user.id ]
       );
       console.log("Updated address:", result.rows[0]);
-      res.redirect("/customer/account");
+      res.redirect("/customer/addresses");
     } catch(err) {
       console.error(err);
     }
@@ -97,12 +97,11 @@ router.post("/shipping-address/edit/:id", authenticate, async (req, res) => {
 
   // TO DO: Add delete route to delete shipping addresses()
 
-router.delete("/shipping-addresses/:id", authenticate, async (req, res) => {
+router.post("/shipping-addresses/delete/:id", authenticate, async (req, res) => {
   try {
-
     const userId = req.user.id;
-    await db.query(`DELETE FROM shipping_addresses WHERE id = $1 AND user_id = $2`, [req.params.id, userId]);
-    res.status(201).json("Address deleted successfully.");
+    await db.query(`DELETE FROM shipping_addresses WHERE id = $1 AND user_id = $2`, [req.params.id, req.user.id]);
+    res.redirect("/customer/addresses");
 
   } catch(err) {
     console.error("Failed to delete shipping address:" , err);
