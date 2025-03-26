@@ -2,16 +2,47 @@
 
 <main> <!-- Makes POST request to /api/login route -->
 
+    <h1 class="page-title"><span>Customer Login</span></h1>
+    <div class="block-title"><strong>Log into account</strong></div>
+    <div class="block-note">If you already have an account, sign in using your email address.</div>
     <form action="/auth/login" method="post">
-        <input type="email" name="username" placeholder="Email" required />
-        <input type="password" name="password" placeholder="Password" required />
-    <button type="submit">Submit</button>
+
+        <fieldset class="form-fieldset">
+            <div class="form-group">
+                <label for="email" class="form-label">Email</label>
+                <input
+                type="email"
+                name="username"
+                class="form-input"
+                placeholder="Email"
+                required 
+                 />
+            </div>
+            
+            <div class="form-group">
+                <label for="password" class="form-label">Password</label>
+                <input
+                type="password"
+                name="password"
+                class="form-input"
+                placeholder="Password"
+                required
+                min-length="8" 
+                />
+            </div>
+            
+        </fieldset>
+        <div class="form-actions">
+            <a href="/auth/forgot-password" class="forgot-password">Forgot password?</a>
+            <button type="submit" class="submit-button">Sign In</button>
+            <a href="/auth/register" class="submit-button">Register</a>
+        </div>
+            
     </form>
-    <% if (errors && errors.length) { %>
-        <div class="login-error">
-          <% errors.forEach(error => { %>
-            <p><%= error %></p>
-          <% }); %>
+
+    <% if (error.length) { %>
+        <div class="alert login-error">
+          <%= error %>
         </div>
       <% } %>
       

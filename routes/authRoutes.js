@@ -40,7 +40,8 @@ router.post("/register", async (req, res) => {
           const checkResult = await db.query(`SELECT * FROM users WHERE email = $1`, [email]);
   
           if (checkResult.rows.length > 0) {
-            res.send("Email already exists. Did you mean to log in?")
+            req.flash('error', 'Email already exists. Please log in.');
+            res.redirect("/auth/register");
           } else {
               // Hash password using bcrypt
               bcrypt.hash(password, saltRounds, async (err, hash) => {
@@ -63,6 +64,7 @@ router.post("/register", async (req, res) => {
       } 
   
     } catch (err) {
+      req.flash('error', 'Registration failed.');
       console.log(err);
     }
   });
@@ -71,7 +73,6 @@ router.post("/register", async (req, res) => {
 router.post("/logout", function(req, res, next) { // Clear session cookie when user logs out
     req.logout((err) => { // Removes the req.user property and ends user's session
         if (err) { return next(err); }
-
         req.session.destroy(function(err) { // Destroy the session
         if (err) { 
             return next(err); 
@@ -82,7 +83,7 @@ router.post("/logout", function(req, res, next) { // Clear session cookie when u
             sameSite: "strict",
         }); // Clear the session cookie
 
-        res.status(200).json({ message:'Logged out successfully'});
+        res.redirect('/')
         });
     });
     });
