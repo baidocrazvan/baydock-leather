@@ -38,7 +38,7 @@
             <% if (addresses.length > 0) { %>
             <div class="box-content">
                 <% addresses.forEach( address => { %>
-                    <% if (address.is_default) { %>
+                    <% if (address.is_shipping) { %>
                     <address>
                         <%= address.first_Name %> <% address.last_name %>.<br>
                         <%= address.address %><br>

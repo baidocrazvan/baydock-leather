@@ -25,6 +25,21 @@
     <label for="postal_code">Postal code:</label>
     <input type="text" name="postal_code" value="<%= address.postal_code %>">
 
+    <% if (address.is_billing === false) { %>
+    <label>
+        <input type="checkbox" name="is_billing" 
+               <%= address.is_billing ? 'checked' : '' %>>
+        Use as default billing address
+    </label>
+    <% } %>
+
+    <% if (address.is_shipping === false) { %> 
+    <label>
+        <input type="checkbox" name="is_shipping" 
+               <%= address.is_shipping ? 'checked' : '' %>>
+        Use as default shipping address
+      </label>
+    <% } %>
     <button type="submit">Update Address</button>
 </form>
 </main>

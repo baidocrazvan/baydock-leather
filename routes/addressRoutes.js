@@ -5,6 +5,11 @@ import { getUserAddress } from "../services/addressService.js";
 
 const router = express.Router();
 
+// Render page for adding address
+router.get("/shipping-addresses", authenticate, async (req, res) => {
+  res.render("add-address.ejs");
+})
+
 // Add a shipping address to user account
 router.post("/shipping-addresses", authenticate, async (req, res) => {
     try{
@@ -29,7 +34,7 @@ router.post("/shipping-addresses", authenticate, async (req, res) => {
             [userId, isDefault, isBilling, firstName, lastName, address, city, county, postalCode, phoneNumber]
         );
 
-        res.status(200).json({ message: "Shipping address added successfully", addressId: result.rows[0].id});
+        res.redirect("/customer/addresses")
     } catch(err) {
         console.error("Error adding shipping adress: ", err);
         res.status(500).json({ error: "Failed to add shipping address."})
@@ -71,7 +76,40 @@ router.get("/shipping-address/edit/:id", authenticate, async (req, res) => {
 // Request for editing a specific shipping address
 router.post("/shipping-address/edit/:id", authenticate, async (req, res) => {
     try {
-      const { first_name, last_name, address, city, county, country, phone_number, postal_code } = req.body;
+      const { 
+      first_name,
+      last_name,
+      address, city,
+      county, country,
+      phone_number,
+      postal_code,
+      is_shipping,
+      is_billing
+    } = req.body;
+
+    //Convert checkbox values to bool
+
+    const isShipping = is_shipping === "on";
+    const isBilling = is_billing === "on";
+
+    if (isShipping) {
+      await db.query(
+        `UPDATE shipping_addresses 
+         SET is_shipping = false 
+         WHERE user_id = $1 AND is_shipping = true AND id != $2`,
+        [req.user.id, req.params.id]
+      );
+    }
+
+    if (isBilling) {
+      await db.query(
+        `UPDATE shipping_addresses 
+         SET is_billing = false 
+         WHERE user_id = $1 AND is_billing = true AND id != $2`,
+        [req.user.id, req.params.id]
+      );
+    }
+
       const result = await db.query(
         `UPDATE shipping_addresses
         SET first_name = $1,
@@ -81,11 +119,25 @@ router.post("/shipping-address/edit/:id", authenticate, async (req, res) => {
         county = $5,
         country = $6,
         phone_number = $7,
-        postal_code = $8
-        WHERE id = $9
-        AND user_id = $10
+        postal_code = $8,
+        is_shipping = $9,
+        is_billing = $10
+        WHERE id = $11
+        AND user_id = $12
         RETURNING *`,
-        [ first_name, last_name, address, city, county, country, phone_number, postal_code, req.params.id, req.user.id ]
+        [ 
+          first_name,
+          last_name,
+          address,
+          city, county,
+          country,
+          phone_number,
+          postal_code,
+          isShipping,
+          isBilling,
+          req.params.id,
+          req.user.id 
+        ]
       );
       console.log("Updated address:", result.rows[0]);
       res.redirect("/customer/addresses");

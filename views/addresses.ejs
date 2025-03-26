@@ -26,6 +26,9 @@
                             <%= address.city %> <%= address.county %> <%= address.postal_code %><br>
                             <%= address.country %><br>
                             T: <%= address.phone_number %><br>
+                            <% if (address.is_shipping === true) { %>
+                                This is the default shipping address.
+                            <% } %>
                         </address>
                     </div>
                     <div class="box-actions">
@@ -58,6 +61,7 @@
                         <%= address.city %> <%= address.county %> <%= address.postal_code %><br>
                         <%= address.country %><br>
                         T: <%= address.phone_number %><br>
+                        This is the default billing address
                     </address>
                     <% } %>
                 <% }) %>

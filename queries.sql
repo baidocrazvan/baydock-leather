@@ -49,7 +49,7 @@ CREATE TABLE order_items (
 CREATE TABLE shipping_addresses (
   id SERIAL PRIMARY KEY,
   user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
-  is_default BOOLEAN DEFAULT false,
+  is_shipping BOOLEAN DEFAULT false,
   is_billing BOOLEAN DEFAULT false,
   first_name VARCHAR(50) NOT NULL,
   last_name VARCHAR(50) NOT NULL,

@@ -1,0 +1,31 @@
+<%- include("./partials/header"); %> <!-- Include the shared header and navbar -->
+
+<main>
+
+    <form method="POST" action="/address/shipping-addresses">
+        <label for="firstName">First name:</label>
+        <input type="text" name="firstName">
+    
+        <label for="lastName">Last name:</label>
+        <input type="text" name="lastName">
+    
+        <label for="address">Address</label>
+        <input type="text" name="address">
+    
+        <label for="city">City</label>
+        <input type="text" name="city">
+    
+        <label for="county">County</label>
+        <input type="text" name="county">
+    
+        <label for="phoneNumber">Phone:</label>
+        <input type="text"  name="phoneNumber">
+    
+        <label for="postalCode">Postal code:</label>
+        <input type="text" name="postalCode">
+    
+        <button type="submit">Add Address</button>
+
+</main>
+
+<%- include("./partials/footer"); %> <!-- Include the shared footer -->
