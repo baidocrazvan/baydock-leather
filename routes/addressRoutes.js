@@ -147,12 +147,12 @@ router.post("/shipping-address/edit/:id", authenticate, async (req, res) => {
 })
 
 
-  // TO DO: Add delete route to delete shipping addresses()
-
+  
+// Delete a shipping address
 router.post("/shipping-addresses/delete/:id", authenticate, async (req, res) => {
   try {
     const userId = req.user.id;
-    await db.query(`DELETE FROM shipping_addresses WHERE id = $1 AND user_id = $2`, [req.params.id, req.user.id]);
+    await db.query(`DELETE FROM shipping_addresses WHERE id = $1 AND user_id = $2`, [req.params.id, userId]);
     res.redirect("/customer/addresses");
 
   } catch(err) {

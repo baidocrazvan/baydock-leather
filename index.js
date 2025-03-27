@@ -86,7 +86,7 @@ app.use("/admin", adminRoutes)
 
 
 // Product endpoints
-app.use("/api", productRoutes);
+app.use("/shop", productRoutes);
 
 // Cart endpoints
 app.use("/api", cartRoutes);

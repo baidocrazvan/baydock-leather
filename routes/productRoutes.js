@@ -3,6 +3,7 @@ import db from "../db.js";
 import multer from "multer";
 import path from "path";
 import { authenticate, isAdmin } from "../middleware/middleware.js";
+import { getAllProducts } from "../services/productService.js";
 
 const router = express.Router();
 
@@ -20,17 +21,13 @@ const storage = multer.diskStorage({
   const upload = multer({ storage });
 
 
-// Get all products
-router.get("/products", async (req, res) => {
-    try {
-      const result = await db.query(`SELECT * FROM products`);
-      res.json(result.rows);
-    } catch(err) {
-      console.error(err);
-      res.status(500).json({ error: "Internal server error" });
-    }
-      
-  }); 
+// Render page with all products
+router.get("/", async (req, res) => {
+  const products = await getAllProducts();  
+  res.render("products.ejs", {
+    products: products
+  })
+}); 
 
 // Get a product by id
 router.get("/products/:id", async (req, res) => {
