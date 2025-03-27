@@ -16,8 +16,8 @@ CREATE TABLE products (
   price NUMERIC(6,2) NOT NULL,
   category VARCHAR(50) NOT NULL,
   stock INTEGER CHECK (stock >= 0) NOT NULL, -- CHECK constraint because stock cannot be negative --
-  images VARCHAR(255) TEXT NOT NULL,
-  thumbnail VARCHAR(255) TEXT NOT NULL,
+  images TEXT[] NOT NULL,
+  thumbnail TEXT NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 

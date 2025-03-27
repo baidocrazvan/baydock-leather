@@ -1,0 +1,48 @@
+<%- include("./partials/header") %>
+
+<main>
+    <div class="product-main">
+
+        <div class="product-main__image">
+            <img src="<%= product.thumbnail %>">
+        </div>
+        <% console.log(product.images) %>
+        <div class="product-main__slideshow">
+            <% product.images.forEach((image) => { %>
+                <img src="<%= image %>" >
+           <% }) %>
+        </div>
+
+        <div class="product-main__title">
+            <h1><%= product.name %></h1>
+        </div>
+
+        <div class="product-main__price">
+            <p><%= product.price %></p>    
+        </div>
+
+        <div class="product-main__description">
+            <p><%= product.description %></p>    
+        </div>
+
+        <a class="button add-to-cart-button" href="#">Add to cart</a>
+
+        <div class="product-main__category">
+            <p>Category: <%=product.category%></p>
+        </div>
+
+        
+    </div>
+</main>
+
+    
+
+        
+
+        
+
+        
+
+    
+
+<%- include("./partials/footer"); %>

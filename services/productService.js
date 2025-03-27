@@ -10,3 +10,12 @@ export async function getAllProducts() {
         console.error("Error getting products: ", err);
     }
 }
+
+export async function getProductById(productId) {
+    try{
+        const result = await db.query(`SELECT * FROM products WHERE id = $1`, [productId]);
+        return result.rows[0];
+    } catch(err) {
+        console.error("Error getting product:", err);
+    }
+}

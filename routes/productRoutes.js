@@ -3,7 +3,7 @@ import db from "../db.js";
 import multer from "multer";
 import path from "path";
 import { authenticate, isAdmin } from "../middleware/middleware.js";
-import { getAllProducts } from "../services/productService.js";
+import { getAllProducts, getProductById } from "../services/productService.js";
 
 const router = express.Router();
 
@@ -23,22 +23,52 @@ const storage = multer.diskStorage({
 
 // Render page with all products
 router.get("/", async (req, res) => {
-  const products = await getAllProducts();  
-  res.render("products.ejs", {
-    products: products
-  })
+  try {
+    const products = await getAllProducts();  
+
+    if (!products) {
+      return res.status(404).render("error.ejs", {
+        message: "Oops. Seems like there are no items to display yet. Please come back later."
+      });
+    }
+
+    res.render("products.ejs", {
+      products: products
+    });
+
+  } catch(err) {
+    console.error(err);
+    res.status(500).render("error.ejs", {
+      message: "Something went wrong on our part. Please try again later."
+    });
+  }
+  
 }); 
 
 // Get a product by id
-router.get("/products/:id", async (req, res) => {
+router.get("/:id", async (req, res) => {
+  try {
     const id = req.params.id;
-    try {
-        const result = await db.query(`SELECT * FROM products WHERE id = $1`, [id]);
-        res.json(result.rows);
-    } catch(err) {
-        console.error(err);
+    const product = await getProductById(id)
+
+    if (!product) {
+      return res.status(404).render("error.ejs", {
+        message: "Product not found. It may have been removed or moved."
+      });
     }
-    }); 
+
+    res.render("product.ejs", {
+      product: product
+    });
+
+  } catch(err) {
+    console.error(err);
+    res.status(500).render("error.ejs", {
+      message: "Something went wrong on our part. Please try again later."
+    });
+  }
+    
+   }); 
 
 
 // Add a new product (admin)

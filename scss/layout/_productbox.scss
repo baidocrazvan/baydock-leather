@@ -1,0 +1,63 @@
+@use "../util/" as u;
+
+.products-box {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto;
+    gap: u.rem(20);
+    width: 90vw;
+    margin: 0 auto;
+    @include u.breakpoint(medium) {
+        grid-template-columns: 1fr 1fr 1fr;
+        grid-auto-rows: 600px;
+      }
+}
+
+.product {
+    position: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+
+    &__image {
+        width: 100%;
+        height: 70%;
+        object-fit: cover;
+
+        img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+        }
+    }
+
+    &__text-box {
+        height: 30%;
+        padding: u.rem(10);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+
+    &__title {
+        font-size: u.rem(16);
+        margin-bottom: u.rem(5);
+
+
+
+        a:hover{
+            text-decoration: underline;
+        }
+    }
+
+    &__price {
+        font-size: u.rem(13);
+        font-weight: bold;
+    }
+
+}
+
