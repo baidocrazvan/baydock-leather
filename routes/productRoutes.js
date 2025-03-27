@@ -32,7 +32,7 @@ router.get("/", async (req, res) => {
         ? await getProductsByCategory(category, sort, order)
         : await getAllProducts(sort, order);  
 
-    // 404 if there are     
+    // 404 if there are  no products to be shown.   
     if (!products || products.length === 0) {
       return res.status(404).render("error.ejs", {
         message: category
@@ -56,22 +56,6 @@ router.get("/", async (req, res) => {
   }
   
 });
-
-// Render product page by category
-// router.get("/products", async (req, res) => {
-//   try {
-//     const { category } = req.query; // Extract ?category=value
-//     const products = category 
-//       ? await getProductsByCategory(category) // Filtered
-//       : await getAllProducts(); // All products
-    
-//     res.render("products.ejs", { products });
-//   } catch (err) {
-//     console.error(err);
-//     res.status(500).render("error.ejs");
-//   }
-// });
-
 
 // Render specific product page
 router.get("/:id", async (req, res) => {

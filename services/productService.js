@@ -10,6 +10,7 @@ export async function getAllProducts(sort, order = 'asc') {
         // check if sort query exists and is valid
         const validSortColumns = ['price', 'created_at'];
         if (sort && validSortColumns.includes(sort)) {
+            // add sort value and order to query if it is
             query += ` ORDER BY ${sort} ${order === 'desc' ? 'DESC' : 'ASC'}`;
         }
 
@@ -37,8 +38,10 @@ export async function getProductsByCategory(category, sort, order = 'asc') {
     try {
         let query = `SELECT * FROM PRODUCTS WHERE CATEGORY = $1`;
 
+        // check if sort query exists and is valid
         const validSortColumns = ['price', 'created_at'];
         if (sort && validSortColumns.includes(sort)) {
+            // add sort value and order to query if it is
             query += ` ORDER BY ${sort} ${order === 'desc' ? 'DESC' : 'ASC'}`;
         }
 
