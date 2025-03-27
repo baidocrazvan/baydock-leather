@@ -4,10 +4,15 @@
     display: grid;
     grid-template-columns: 1fr;
     grid-auto-rows: 350px;
-    gap: 20px;
+    gap: u.rem(20);
     width: 90%;
-    max-width: 1200px;
+    max-width: 1160px;
     margin: 0 auto;
+
+    @include u.breakpoint(medium) {
+      grid-template-columns: 1fr 1fr;
+      grid-auto-rows: 600px;
+    }
   
     &__display {
         position: relative;
@@ -61,6 +66,12 @@
         font-size: u.rem(18);
       }
       
+      @include u.breakpoint(medium) {
+        h1 {
+          font-size: u.rem(42);
+        }
+      }
+
       a {
         display: inline-block;
         padding: 0.5rem 1rem;
