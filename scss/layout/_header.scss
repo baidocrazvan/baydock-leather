@@ -12,9 +12,29 @@
     // z-index: 1000;
     z-index: 999;
 
+    a {
+        font-family: "Roboto", sans-serif;
+        font-optical-sizing: auto;
+        font-weight: 500;
+        font-style: normal;
+        text-decoration: none;
+        font-size: u.rem(13);
+        color: var(--icon-color);
+    }
+
     &__logo {
         justify-self: center;
         grid-column: 2;
+
+        h1 a {
+            font-size: clamp(u.rem(25), u.rem(25) + 2vw, u.rem(60));
+            font-family: "Julius Sans One", sans-serif;
+            font-weight: 400;
+            color: var(--text-color);
+            font-style: normal; 
+            user-select: none; 
+        }
+        
       }
 
     &__hamburger {

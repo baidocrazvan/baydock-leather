@@ -83,6 +83,11 @@
             <li class="header__nav-item"><a>Accessories</a></li>
             <li class="header__nav-item"><a>Minimalist</a></li>
             <li class="header__nav-item"><a>About us</a></li>
+            <% if (locals.currentUser) { %>
+                <li class="header__nav-item">
+                    <a href="/customer/account">My account</a>
+                </li> 
+            <% } %>
             <li class="header__nav-item">
                 <% if (locals.currentUser) { %>
                     <form action="/auth/logout" method="post" class="logout-form">

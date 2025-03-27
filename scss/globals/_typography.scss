@@ -1,31 +1,13 @@
 @use "../util/" as u;
 
-h1 a {
-    font-size: clamp(u.rem(25), u.rem(25) + 2vw, u.rem(60));
-    font-family: "Julius Sans One", sans-serif;
-    font-weight: 400;
-    font-style: normal; 
-    user-select: none
-}
-
 a:visited {
     text-decoration: none;
     color: var(--text-color);
 }
 
 body {
-    font-family: "Roboto", sans-serif;
+    font-family: "Open Sans", sans-serif;
     font-optical-sizing: auto;
     font-weight: 400;
     font-style: normal;
-}
-
-a {
-    font-family: "Roboto", sans-serif;
-    font-optical-sizing: auto;
-    font-weight: 500;
-    font-style: normal;
-    text-decoration: none;
-    font-size: u.rem(13);
-    color: var(--icon-color);
 }
