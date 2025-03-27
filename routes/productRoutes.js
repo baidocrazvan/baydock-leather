@@ -3,7 +3,7 @@ import db from "../db.js";
 import multer from "multer";
 import path from "path";
 import { authenticate, isAdmin } from "../middleware/middleware.js";
-import { getAllProducts, getProductById } from "../services/productService.js";
+import { getAllProducts, getProductById, getProductsByCategory } from "../services/productService.js";
 
 const router = express.Router();
 
@@ -21,14 +21,23 @@ const storage = multer.diskStorage({
   const upload = multer({ storage });
 
 
-// Render page with all products
+// Render all products page
 router.get("/", async (req, res) => {
   try {
-    const products = await getAllProducts();  
 
-    if (!products) {
+    // filter by category if specified in req.query, otherwise render all products
+    const { category } = req.query;
+    console.log(category);
+    const products = category
+        ? await getProductsByCategory(category)
+        : await getAllProducts();  
+
+    // 404 if there are     
+    if (!products || products.length === 0) {
       return res.status(404).render("error.ejs", {
-        message: "Oops. Seems like there are no items to display yet. Please come back later."
+        message: category
+            ? `No products found in ${category} category.`
+            : "Oops. Seems like there are no items to display yet. Please come back later."
       });
     }
 
@@ -43,9 +52,25 @@ router.get("/", async (req, res) => {
     });
   }
   
-}); 
+});
 
-// Get a product by id
+// Render product page by category
+// router.get("/products", async (req, res) => {
+//   try {
+//     const { category } = req.query; // Extract ?category=value
+//     const products = category 
+//       ? await getProductsByCategory(category) // Filtered
+//       : await getAllProducts(); // All products
+    
+//     res.render("products.ejs", { products });
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).render("error.ejs");
+//   }
+// });
+
+
+// Render specific product page
 router.get("/:id", async (req, res) => {
   try {
     const id = req.params.id;
