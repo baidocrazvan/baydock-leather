@@ -20,12 +20,30 @@
         <div class="product-main__price">
             <p><%= product.price %></p>    
         </div>
+        
+        <form action="" method="POST">
+            <input type="hidden" name="productId" value="<%= product.id %>">
+
+            <div class="quantity-selector">
+                <button type="button" class="quantity-btn minus">-</button>
+                <input 
+                type="number"
+                name="quantity"
+                class="quantity-input"
+                value="1"
+                min="1"
+                max="<%= product.stock || 10 %>" 
+                >
+                <button type="button" class="quantity-btn plus">+</button>
+            </div>
+
+            <button type="submit" class="quantity-btn plus">Add to cart</button>
+        </form>
 
         <div class="product-main__description">
             <p><%= product.description %></p>    
         </div>
 
-        <a class="button add-to-cart-button" href="#">Add to cart</a>
 
         <div class="product-main__category">
             <p>Category: <%=product.category%></p>

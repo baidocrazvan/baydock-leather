@@ -141,3 +141,44 @@ function productSort() {
   // Convert url back to string and pass it back to trigger re-render of page
   window.location.href = url.toString();
 }
+
+// Product quantity button
+const minusBtn = document.querySelector(".quantity-btn.minus");
+const plusBtn = document.querySelector(".quantity-btn.plus");
+const quantityInput = document.querySelector(".quantity-input");
+const max = parseInt(quantityInput.max) || 10;
+
+// Minus button
+minusBtn.addEventListener('click', () => {
+  let value = parseInt(quantityInput.value);
+  if (value > 1) {
+    quantityInput.value = value - 1;
+  }
+  toggleButtons();
+});
+
+// Plus button
+plusBtn.addEventListener('click', () => {
+  let value = parseInt(quantityInput.value);
+  if (value < max) {
+    quantityInput.value = value + 1;
+  }
+  toggleButtons();
+});
+
+// Validate input
+quantityInput.addEventListener('change', () => {
+  if (isNaN(value) || value < 1) {
+    quantityInput.value = 1;
+  }
+  if (value > max) {
+    quantityInput.value = max;
+  }
+  toggleButtons();
+})
+
+// Disable buttons for min and max values
+function toggleButtons() {
+  minusBtn.disabled = parseInt(quantityInput.value) <= 1;
+  plusBtn.disabled = parseInt(quantityInput.value) >= max;
+}
