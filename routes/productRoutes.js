@@ -25,12 +25,12 @@ const storage = multer.diskStorage({
 router.get("/", async (req, res) => {
   try {
 
-    // filter by category if specified in req.query, otherwise render all products
-    const { category } = req.query;
-    console.log(category);
-    const products = category
-        ? await getProductsByCategory(category)
-        : await getAllProducts();  
+    // filter by category, price or date added if specified in req.query, otherwise render all products
+    const { category, sort, order } = req.query;
+
+      const products = category
+        ? await getProductsByCategory(category, sort, order)
+        : await getAllProducts(sort, order);  
 
     // 404 if there are     
     if (!products || products.length === 0) {
@@ -42,7 +42,10 @@ router.get("/", async (req, res) => {
     }
 
     res.render("products.ejs", {
-      products: products
+      products: products,
+      currentCategory: category,
+      currentSort: sort,
+      currentOrder: order
     });
 
   } catch(err) {

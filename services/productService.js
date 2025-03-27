@@ -1,11 +1,21 @@
 import db from '../db.js'
 
-// Get all products
+// Get all products, with or without sort query
 
-export async function getAllProducts() {
+export async function getAllProducts(sort, order = 'asc') {
     try {
-        const result = await db.query(`SELECT * FROM PRODUCTS`);
+
+        let query = `SELECT * FROM products`;
+
+        // check if sort query exists and is valid
+        const validSortColumns = ['price', 'created_at'];
+        if (sort && validSortColumns.includes(sort)) {
+            query += ` ORDER BY ${sort} ${order === 'desc' ? 'DESC' : 'ASC'}`;
+        }
+
+        const result = await db.query(query);
         return result.rows;
+
     } catch(err) {
         console.error("Error getting products: ", err);
     }
@@ -23,16 +33,17 @@ export async function getProductById(productId) {
 
 
 // Get all products by category
-
-export async function getProductsByCategory(category) {
+export async function getProductsByCategory(category, sort, order = 'asc') {
     try {
+        let query = `SELECT * FROM PRODUCTS WHERE CATEGORY = $1`;
 
-        const result = await db.query(
-            `SELECT * FROM products WHERE category = $1`,
-            [category]
-        );
-        console.log(result.rows);
-        return result.rows;        
+        const validSortColumns = ['price', 'created_at'];
+        if (sort && validSortColumns.includes(sort)) {
+            query += ` ORDER BY ${sort} ${order === 'desc' ? 'DESC' : 'ASC'}`;
+        }
+
+        const result = await db.query(query, [category]);
+        return result.rows;
 
     } catch(err) {
         console.error(err);

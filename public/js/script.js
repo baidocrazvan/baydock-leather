@@ -108,7 +108,7 @@ async function deleteAddress(event, id) {
   return false;
 }
 
-// Image switching for product page
+// Image switching for product page, swap main image src with clicked image src
 document.addEventListener('DOMContentLoaded', () => {
   const mainImage = document.querySelector('.product-main__image img');
   const thumbnails = document.querySelectorAll('.product-main__slideshow img');
@@ -119,3 +119,25 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 });
+
+
+// Script for sorting products by price or age
+
+function productSort() {
+  const sortSelect = document.getElementById("sort-select");
+  const [sort, order] = sortSelect.value.split("-");
+  // Get current URL
+  const url = new URL(window.location.href);
+
+  // Add search params to current URL based on selected value
+  if (sort) {
+    url.searchParams.set("sort", sort);
+    url.searchParams.set("order", order);
+  } else { // If default is selected, remove search params
+    url.searchParams.delete("sort");
+    url.searchParams.delete("order");
+  }
+
+  // Convert url back to string and pass it back to trigger re-render of page
+  window.location.href = url.toString();
+}
