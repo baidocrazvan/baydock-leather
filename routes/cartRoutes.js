@@ -1,24 +1,33 @@
 import express from "express";
 import db from "../db.js";
 import { authenticate, isAdmin } from "../middleware/middleware.js";
-import { validateQuantity, updateCartItem } from "../services/cartService.js"
+import { validateQuantity, getCartItems, updateCartItem } from "../services/cartService.js"
 
 const router = express.Router();
 
 // Get a user's cart items
-router.get("/cart", authenticate, async (req, res) => {
+router.get("/", authenticate, async (req, res) => {
     try {
         const userId = req.user.id;
-        const query = 
-        `SELECT products.id AS product_id,
-        products.name, products.description, products.price, products.category, products.stock, products.thumbnail, carts.quantity, carts.created_at
-        FROM carts JOIN products ON carts.product_id = products.id
-        WHERE carts.user_id = $1`
-        const result = await db.query(query, [userId]);
-        res.json(result.rows);
+        const cartItems = await getCartItems(userId);
+        
+        // Get total order price  
+        const cartTotal = cartItems.reduce(
+            (sum, item) => sum + (item.price * item.quantity),
+            0
+        )  
+        // Get total order price with .reduce() to
+        const totalOrderPrice = cartItems
+        res.render("cart.ejs", {
+            cartItems,
+            cartTotal
+        })
+
+        
     } catch(err) {
-        console.error("Error fetching cart:", err);
-        res.status(500).json({ error: 'Failed to fetch cart' });
+        console.error("Cart error:", err.message);
+        req.flash('error', "Cart cannot be loaded at this moment. Please try again.");
+        res.redirect("/");
     }
     
 });

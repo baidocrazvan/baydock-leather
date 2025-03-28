@@ -6,6 +6,31 @@ export function validateQuantity(quantity) {
     if (quantity <= 0) throw new Error("Quantity must be greater than 0.");
 }
 
+// Fetch all products from user's cart in order of latest added
+export async function getCartItems(userId) {
+    const query = 
+        `SELECT 
+        p.id,
+        p.name,
+        p.price,
+        p.thumbnail,
+        c.quantity,
+        (p.price * c.quantity) AS total_price
+        FROM carts c 
+        JOIN products p ON c.product_id = p.id
+        WHERE c.user_id = $1
+        ORDER BY c.created_at DESC`
+
+    try {
+        const result = await db.query(query, [userId])
+        return result.rows;
+    } catch(err) {
+        console.error("Error getting cart products from database:", err);
+        throw new Error("Failed to fetch cart items");
+    }
+    
+}
+
 // Add or update cart item with transaction
 export async function updateCartItem(userId, productId, quantity) {
     // Get item from pool
