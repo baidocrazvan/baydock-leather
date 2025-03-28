@@ -142,6 +142,8 @@ function productSort() {
   window.location.href = url.toString();
 }
 
+// Manage value inside quantity field on product page
+document.addEventListener('DOMContentLoaded', () => {
 // Product quantity button
 const minusBtn = document.querySelector(".quantity-btn.minus");
 const plusBtn = document.querySelector(".quantity-btn.plus");
@@ -166,8 +168,9 @@ plusBtn.addEventListener('click', () => {
   toggleButtons();
 });
 
-// Validate input
+// Change quantity value if it exceeds upper and lower limits
 quantityInput.addEventListener('change', () => {
+  let value = parseInt(quantityInput.value);
   if (isNaN(value) || value < 1) {
     quantityInput.value = 1;
   }
@@ -182,3 +185,7 @@ function toggleButtons() {
   minusBtn.disabled = parseInt(quantityInput.value) <= 1;
   plusBtn.disabled = parseInt(quantityInput.value) >= max;
 }
+
+toggleButtons();
+
+});

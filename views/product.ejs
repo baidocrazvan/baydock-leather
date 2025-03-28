@@ -18,10 +18,10 @@
         </div>
 
         <div class="product-main__price">
-            <p><%= product.price %></p>    
+            <p><%= product.price %>$</p>    
         </div>
         
-        <form action="" method="POST">
+        <form action="/cart/<%=product.id%>" method="POST">
             <input type="hidden" name="productId" value="<%= product.id %>">
 
             <div class="quantity-selector">
@@ -37,8 +37,19 @@
                 <button type="button" class="quantity-btn plus">+</button>
             </div>
 
-            <button type="submit" class="quantity-btn plus">Add to cart</button>
+            <button type="submit" class="add-to-cart-btn">Add to cart</button>
         </form>
+        <% if (error && error.length > 0) { %>
+            <div class="alert alert-error">
+              <%= error[0] %> 
+            </div>
+          <% } %>
+
+        <% if (success && success.length > 0) { %>
+        <div class="alert alert-success">
+            <%= success[0] %> 
+        </div>
+        <% } %>
 
         <div class="product-main__description">
             <p><%= product.description %></p>    

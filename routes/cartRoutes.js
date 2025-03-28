@@ -1,6 +1,7 @@
 import express from "express";
 import db from "../db.js";
 import { authenticate, isAdmin } from "../middleware/middleware.js";
+import { validateQuantity, updateCartItem } from "../services/cartService.js"
 
 const router = express.Router();
 
@@ -23,60 +24,30 @@ router.get("/cart", authenticate, async (req, res) => {
 });
 
 // Add a product to user's cart
-router.post("/cart/:id", authenticate, async (req, res) => {
+router.post("/:id", authenticate, async (req, res) => {
     try {
         const userId = req.user.id;
         const productId = req.params.id;
         const quantity = parseInt(req.body.quantity);
+        if (isNaN(quantity)) throw new Error("Invalid quantity");
 
         console.log("Request Body:", req.body); // Log the request body
         console.log("Parsed Quantity:", quantity); // Log the parsed quantity
+        console.log("Product id:", productId); // Log product id
 
         // Validate quantity
-        if (isNaN(quantity)) {
-            return res.status(400).json({ error: "Quantity must be a number."});
-        }
-        if (quantity <= 0) {
-            res.status(400).json({ error: "Quantity must be greater than 0."})
-        }
+        validateQuantity(quantity);
 
-        //Check if product exists
-        const product = await db.query(`SELECT * FROM products WHERE id = $1`, [productId]);
-        if (product.rows.length === 0) {
-            return res.status(404).json({ error: "Product not found"});
-        }
-        
-        // Check if there are enough products in stock
-        const stock = product.rows[0].stock;
+        // If the product is already in the cart, add the new quantity to existing quantity, otherwise just add product to cart
+        await updateCartItem(userId, productId, quantity);
 
-        // Check if product is already in the cart
-        const cartItem = await db.query(`SELECT * FROM carts WHERE user_id = $1 AND product_id = $2`, [userId, productId]);
-        let totalQuantity = quantity;
-
-        // If the product is already in the cart, add the new quantity to existing quantity
-        if (cartItem.rows.length > 0) {
-            totalQuantity += cartItem.rows[0].quantity;
-        }
-
-        // Make sure total quantity does not exceed the stock
-        if (totalQuantity > stock) {
-            return res.status(400).json({ error: "Not enough products in stock"});
-        }
-
-        // Add or update the product in the cart
-        if (cartItem.rows.length > 0) {
-            // Update existing cart item.
-            await db.query(`UPDATE carts SET quantity = $1 WHERE user_id = $2 AND product_id = $3`, [totalQuantity, userId, productId])
-        } else {
-            // Insert new cart item
-            await db.query(`INSERT INTO carts (user_id, product_id, quantity) VALUES ($1, $2, $3)`, [userId, productId, quantity]);
-        }
-        //Return success response
-        res.status(201).json({ message: "Products added to cart"});
+        req.flash('success', 'Product added to cart!');
+        res.redirect(`/products/${productId}`);
 
     } catch(err) {
-        console.error("Error adding product to cart:", err);
-        res.status(500).json({ error: "Failed to add to cart "});
+        console.error("Cart error:", err.message);
+        req.flash('error', err.message);
+        res.redirect(`/products/${req.params.id}`);
     }
 });
 
