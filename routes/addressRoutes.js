@@ -74,7 +74,7 @@ router.get("/shipping-address/edit/:id", authenticate, async (req, res) => {
 })
 
 // Request for editing a specific shipping address
-router.post("/shipping-address/edit/:id", authenticate, async (req, res) => {
+router.put("/shipping-address/edit/:id", authenticate, async (req, res) => {
     try {
       const { 
       first_name,

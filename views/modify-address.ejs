@@ -1,6 +1,6 @@
 <%- include("./partials/header"); %> <!-- Include the shared header and navbar -->
 <main>
-    <form method="POST" action="/address/shipping-address/edit/<%= addressId %>">
+    <form method="POST" action="/address/shipping-address/edit/<%= addressId %>?_method=PUT">
     <label for="first_name">First name:</label>
     <input type="text" name="first_name" value="<%= address.first_name %>">
 
