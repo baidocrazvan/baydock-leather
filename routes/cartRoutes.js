@@ -1,7 +1,7 @@
 import express from "express";
 import db from "../db.js";
 import { authenticate, isAdmin } from "../middleware/middleware.js";
-import { validateQuantity, getCartItems, updateCartItem } from "../services/cartService.js"
+import { validateQuantity, getCartItems, updateCartItem, updateCartQuantity } from "../services/cartService.js"
 
 const router = express.Router();
 
@@ -61,41 +61,21 @@ router.post("/:id", authenticate, async (req, res) => {
 });
 
 // Update the quantity of a product already in cart
-router.put("/cart", async (req, res) => {
+router.put("/", authenticate, async (req, res) => {
     try {
-       const userId = req.user.id
-        const { productId, quantity } = req.body;
-
-        // Check that new quantity is greater than zero
-        if (quantity <= 0) {
-            return res.status(400).json({ error: "Quantity must be greater than zero."});
-        }
-
-        // Check that the item we plan on updating exists
-        const cartItem = await db.query(`SELECT * FROM carts WHERE user_id = $1 AND product_id = $2`,
-            [userId, productId]);
-        if (cartItem.rows.length === 0) {
-            return res.status(404).json({ error: "Product not found in cart" });
-        }
-
-        // Check that there are enough products in stock before changing the quantity
-        const stock = cartItem.rows[0].stock;
-        if (quantity > stock) {
-            res.status(400).json({error: "You cannot add more to cart because there is not enough stock"});
-        }
-
-        // Update the quantity in the cart
-        await db.query(`UPDATE carts SET quantity = $1 WHERE user_id = $2 AND product_id = $3`, [quantity, userId, productId]);
-
-        //Return success response
-        res.json({ message: "Cart updated successfully"});
-
-    } catch(err) {
-        console.error("Error updating cart:", err);
-        res.status(500).json({ error: "Failed to update product quantity"});
-    }
+      const { productId, quantity } = req.body;
+      const userId = req.user.id;
     
-}); 
+      await updateCartQuantity(userId, productId, quantity);
+  
+      req.flash('success', 'Cart updated!');
+      res.redirect("/cart");
+    } catch (err) {
+      console.error("Error updating cart:", err);
+      req.flash("error", err.message);
+      res.redirect("/cart");
+    }
+  });
 
 // Delete a product from user cart
 router.delete("/cart/:id", authenticate, async (req, res) => {

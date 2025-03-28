@@ -13,6 +13,7 @@ export async function getCartItems(userId) {
         p.id,
         p.name,
         p.price,
+        p.stock,
         p.thumbnail,
         c.quantity,
         (p.price * c.quantity) AS total_price
@@ -33,7 +34,7 @@ export async function getCartItems(userId) {
 
 // Add or update cart item with transaction
 export async function updateCartItem(userId, productId, quantity) {
-    // Get item from pool
+    // Get a client from pool
     const client = await db.connect();
     try {
         await client.query("BEGIN");
@@ -85,4 +86,49 @@ export async function updateCartItem(userId, productId, quantity) {
         // Return client to pool
         client.release();
     }
+}
+
+// Update product quantity from inside the cart using transaction
+export async function updateCartQuantity(userId, productId, newQuantity) {
+    const client = await db.connect(); // For transaction
+    try {
+        await client.query('BEGIN');
+
+        if (newQuantity <= 0) {
+            throw new Error("Quantity must be greater than zero.");
+        }
+
+        // Check that the item we plan on updating exists and get it's stock
+        const cartItem = await client.query(
+            `SELECT c.*, p.stock 
+            FROM carts c
+            JOIN products p ON c.product_id = p.id
+            WHERE c.user_id = $1 AND c.product_id = $2`,
+            [userId, productId]
+            );
+            if (cartItem.rows.length === 0) {
+            throw new Error("Product not found in cart.");
+            }
+
+            // Check stock (assuming `stock` is available in the cart query)
+        const stock = cartItem.rows[0].stock;
+        if (newQuantity > stock) {
+            throw new Error(`Only  ${stock} units available in stock.`);
+        }
+
+        // Update quantity
+        await client.query(
+            `UPDATE carts SET quantity = $1 WHERE user_id = $2 AND product_id = $3`,
+            [newQuantity, userId, productId]
+            );
+        
+        await client.query('COMMIT');
+
+        } catch(err) {
+            await client.query('ROLLBACK');
+            throw err;
+        } finally {
+            // Release client
+            client.release();
+          }
 }

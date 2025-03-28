@@ -8,6 +8,7 @@ import flash from "express-flash";
 import passport from "passport";
 import pgSession from 'connect-pg-simple';
 import { Strategy } from "passport-local";
+import methodOverride from "method-override";
 import authRoutes from "./routes/authRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
@@ -66,6 +67,8 @@ app.use((req, res, next) => {
   next();
 })
 
+// use method-ovveride to enable PUT/PATCH/DELETE
+app.use(methodOverride('_method'));
 
 app.get("/", (req, res) => {
   res.render("index.ejs");
