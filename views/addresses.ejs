@@ -33,9 +33,14 @@
                     </div>
                     <div class="box-actions">
                         <a href="/address/shipping-address/edit/<%= address.id %>">Modify shipping address</a>
-                        <a href="#" onclick="return deleteAddress(event, <%= address.id %>)" class="delete-link">
-                            Delete shipping address
-                        </a>
+                        <form 
+                            action="/address/shipping-address/<%= address.id %>?_method=DELETE"
+                            method="POST"
+                            class="delete-form"
+                            onsubmit="return confirm('Are you sure you want to delete this address?');"
+                        >
+                        <button type="submit" class="delete-link">Delete shipping address</button>
+                        </form>
                     </div>
                 <% }) %>
          <% } %>      

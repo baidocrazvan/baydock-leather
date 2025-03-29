@@ -6,12 +6,12 @@ import { getUserAddress } from "../services/addressService.js";
 const router = express.Router();
 
 // Render page for adding address
-router.get("/shipping-addresses", authenticate, async (req, res) => {
+router.get("/shipping-address", authenticate, async (req, res) => {
   res.render("add-address.ejs");
 })
 
 // Add a shipping address to user account
-router.post("/shipping-addresses", authenticate, async (req, res) => {
+router.post("/shipping-address", authenticate, async (req, res) => {
     try{
 
         const userId = req.user.id;
@@ -34,29 +34,12 @@ router.post("/shipping-addresses", authenticate, async (req, res) => {
             [userId, isDefault, isBilling, firstName, lastName, address, city, county, postalCode, phoneNumber]
         );
 
-        res.redirect("/customer/addresses")
+        res.redirect("/customer/address")
     } catch(err) {
         console.error("Error adding shipping adress: ", err);
         res.status(500).json({ error: "Failed to add shipping address."})
     }
 });
-
-// Get all shipping addresses from user account
-// router.get("/shipping-addresses", authenticate, async (req, res) => {
-//     try {
-//       const userId = req.user.id;
-  
-//       const result = await db.query(
-//         `SELECT * FROM shipping_addresses WHERE user_id = $1`,
-//         [userId]
-//       );
-  
-//       res.json(result.rows);
-//     } catch (err) {
-//       console.error("Error fetching shipping addresses:", err);
-//       res.status(500).json({ error: "Failed to fetch shipping addresses" });
-//     }
-//   });
 
 
 // Render page for editing a specific shipping address
@@ -140,7 +123,7 @@ router.put("/shipping-address/edit/:id", authenticate, async (req, res) => {
         ]
       );
       console.log("Updated address:", result.rows[0]);
-      res.redirect("/customer/addresses");
+      res.redirect("/customer/address");
     } catch(err) {
       console.error(err);
     }
@@ -149,7 +132,7 @@ router.put("/shipping-address/edit/:id", authenticate, async (req, res) => {
 
   
 // Delete a shipping address
-router.post("/shipping-addresses/delete/:id", authenticate, async (req, res) => {
+router.delete("/shipping-address/:id", authenticate, async (req, res) => {
   try {
     const userId = req.user.id;
     await db.query(`DELETE FROM shipping_addresses WHERE id = $1 AND user_id = $2`, [req.params.id, userId]);
