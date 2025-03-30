@@ -14,7 +14,19 @@
                     <a href="/products/<%= item.id %>"><%= item.name %></a>
                     <p><%= item.quantity %> x <%= item.price %> </p>
                     <a href="/">Continue shopping</a>
-                    <form action="/cart?_method=PUT" method="post">
+
+                    <form action="/cart/delete/<%= item.id %>?_method=DELETE" method="POST">
+                        <input type="hidden" name="productId" value="<%= item.id %>">
+                        <button type="submit" class="delete-from-cart-btn">Delete item from cart</button>
+                    </form>
+
+                    <form action="/cart/delete?_method=DELETE" method="POST">
+                        <input type="hidden" name="productId" value="<%= item.id %>">
+                        <button type="submit" class="delete-from-cart-btn">Clear cart</button>
+                    </form>
+
+
+                    <form action="/cart?_method=PUT" method="POST">
                         <input type="hidden" name="productId" value="<%= item.id %>">
             
                         <div class="quantity-selector">

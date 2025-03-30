@@ -25,7 +25,7 @@ router.get("/", authenticate, async (req, res) => {
 
         
     } catch(err) {
-        console.error("Cart error:", err.message);
+        console.error("Cart GET error:", err.message);
         req.flash('error', "Cart cannot be loaded at this moment. Please try again.");
         res.redirect("/");
     }
@@ -54,8 +54,8 @@ router.post("/:id", authenticate, async (req, res) => {
         res.redirect(`/products/${productId}`);
 
     } catch(err) {
-        console.error("Cart error:", err.message);
-        req.flash('error', err.message);
+        console.error("Cart POST error:", err.message);
+        req.flash('error', "Failed to add product to cart.");
         res.redirect(`/products/${req.params.id}`);
     }
 });
@@ -71,50 +71,58 @@ router.put("/", authenticate, async (req, res) => {
       req.flash('success', 'Cart updated!');
       res.redirect("/cart");
     } catch (err) {
-      console.error("Error updating cart:", err);
-      req.flash("error", err.message);
+    console.error("PUT /cart error:", err);
+      req.flash("error", "Item quantity failed to update.");
       res.redirect("/cart");
     }
   });
 
 // Delete a product from user cart
-router.delete("/cart/:id", authenticate, async (req, res) => {
+router.delete("/delete/:id", authenticate, async (req, res) => {
     try {
 
     const userId = req.user.id;
-    const productId = req.body.productId;
+    const productId = req.params.id
 
     //Check that the item exists inside the cart
     const cartItem = await db.query(`SELECT * FROM carts WHERE user_id = $1 AND product_id = $2`, [userId, productId]); 
     if (cartItem.rows.length === 0) {
-       return res.status(404).json({ error: "Product doesn't exist inside user's cart" });
+        req.flash("error", "The specified product is not inside your cart");
+        res.redirect("/cart");
     }
 
     // Delete the product from user's cart
     await db.query(`DELETE FROM carts WHERE user_id = $1 AND product_id = $2`, [userId, productId])
-    res.json({ message: "Product removed from cart successfully" });
+    req.flash("success", "Item removed from cart");
+    res.redirect("/cart");
+
    } catch(err) {
-        console.error("Error: ", err);
-        res.status(500).json({ error: "Failed to delete cart item"});
+        console.error("DELETE /cart/:id error:", err);
+        req.flash("error", "We couldn't remove this item. Please try again.");
+        res.redirect("/cart");
     }
     
 })
 
 // Empty the cart
 
-router.delete("/cart", authenticate, async (req, res) => {
+router.delete("/delete", authenticate, async (req, res) => {
     try {
         const userId = req.user.id;
 
         const cartItems = await db.query(`SELECT * FROM carts WHERE user_id = $1`, [userId]);
         if (cartItems.rows.length === 0) {
-            return res.status(404).json({ error: "No products inside cart"});
+            req.flash("error", "You don't have any products inside the cart");
+            res.redirect("/cart");
         }
 
         await db.query(`DELETE FROM carts WHERE user_id = $1`, [userId]);
-        res.json({ message: "Products succesfully removed from cart"});
+        req.flash("success", "Cart cleared successfully");
+        res.redirect("/cart");
+
     } catch(err) {
-        console.error("Failed to delete cart contents: ", err);
+        console.error("DELETE /cart error: ", err);
+        req.flash("error", "Failed to delete cart contents.");
     }
 })
 

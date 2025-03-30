@@ -39,18 +39,6 @@
 
             <button type="submit" class="add-to-cart-btn">Add to cart</button>
         </form>
-        <% if (error && error.length > 0) { %>
-            <div class="alert alert-error">
-              <%= error[0] %> 
-            </div>
-          <% } %>
-
-        <% if (success && success.length > 0) { %>
-        <div class="alert alert-success">
-            <%= success[0] %> 
-        </div>
-        <% } %>
-
         <div class="product-main__description">
             <p><%= product.description %></p>    
         </div>

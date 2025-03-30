@@ -1,0 +1,23 @@
+@use "../util/" as u;
+
+.flash {
+    padding: 1rem;
+    margin: 0 auto;
+    max-width: 1200px;
+    text-align: center;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  
+  .flash-error {
+    background: #ffebee;
+    color: #c62828;
+    border-left: 4px solid #c62828;
+  }
+  
+  .flash-success {
+    background: #e8f5e9;
+    color: #2e7d32;
+    border-left: 4px solid #2e7d32;
+  }
