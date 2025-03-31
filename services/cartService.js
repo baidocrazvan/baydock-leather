@@ -7,7 +7,7 @@ export function validateQuantity(quantity) {
 }
 
 // Fetch all products from user's cart in order of latest added
-export async function getCartItems(userId) {
+export async function getCartData(userId) {
     const query = 
         `SELECT 
         p.id,
@@ -23,8 +23,17 @@ export async function getCartItems(userId) {
         ORDER BY c.created_at DESC`
 
     try {
-        const result = await db.query(query, [userId])
-        return result.rows;
+        const cartItems = await db.query(query, [userId]);
+        const cartTotal = cartItems.rows.reduce(
+            (sum, item) => sum + parseFloat(item.total_price),
+            0
+        ).toFixed(2);
+        
+        return {
+            items: cartItems.rows,
+            total: cartTotal
+        };
+
     } catch(err) {
         console.error("Error getting cart products from database:", err);
         throw new Error("Failed to fetch cart items");

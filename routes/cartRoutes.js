@@ -1,7 +1,7 @@
 import express from "express";
 import db from "../db.js";
 import { authenticate, isAdmin } from "../middleware/middleware.js";
-import { validateQuantity, getCartItems, updateCartItem, updateCartQuantity } from "../services/cartService.js"
+import { validateQuantity, getCartData, updateCartItem, updateCartQuantity } from "../services/cartService.js"
 
 const router = express.Router();
 
@@ -9,18 +9,12 @@ const router = express.Router();
 router.get("/", authenticate, async (req, res) => {
     try {
         const userId = req.user.id;
-        const cartItems = await getCartItems(userId);
+        const { items, total } = await getCartData(req.user.id);
         
-        // Get total order price  
-        const cartTotal = cartItems.reduce(
-            (sum, item) => sum + (item.price * item.quantity),
-            0
-        )  
-        // Get total order price with .reduce() to
-        const totalOrderPrice = cartItems
+    
         res.render("cart.ejs", {
-            cartItems,
-            cartTotal
+            cartItems: items,
+            cartTotal: total
         })
 
         
@@ -31,6 +25,21 @@ router.get("/", authenticate, async (req, res) => {
     }
     
 });
+
+
+router.get("/checkout", async (req, res) => {
+    try {
+        const { items, total } = await getCartData(req.user.id);
+        res.render("checkout.ejs", {
+            cartItems: items,
+            cartTotal: total
+        })
+    } catch (err) {
+        console.error("Cart checkout GET error:", err.message);
+        req.flash('error', "Checkout information cannot be loaded at this moment. Please try again.");
+        res.redirect("/");
+    }
+})
 
 // Add a product to user's cart
 router.post("/:id", authenticate, async (req, res) => {

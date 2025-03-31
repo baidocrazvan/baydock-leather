@@ -3,12 +3,13 @@
 <main>
     <h1>SHOPPING CART</h1>
     <div class="cart-contents">
-        <p>Product</p>
-        <p>Quantity</p>
+        
         <% if (!cartItems.length) { %>
             <p>Your cart is currently empty.</p>
         <% } else { %>
             <% cartItems.forEach(item => { %>
+                <p>Product</p>
+                <p>Quantity</p>
                 <div class="cart-item">
                     <img src="<%= item.thumbnail %>">
                     <a href="/products/<%= item.id %>"><%= item.name %></a>
@@ -19,12 +20,6 @@
                         <input type="hidden" name="productId" value="<%= item.id %>">
                         <button type="submit" class="delete-from-cart-btn">Delete item from cart</button>
                     </form>
-
-                    <form action="/cart/delete?_method=DELETE" method="POST">
-                        <input type="hidden" name="productId" value="<%= item.id %>">
-                        <button type="submit" class="delete-from-cart-btn">Clear cart</button>
-                    </form>
-
 
                     <form action="/cart?_method=PUT" method="POST">
                         <input type="hidden" name="productId" value="<%= item.id %>">
@@ -47,34 +42,40 @@
                     
                 </div>
            <% }) %>
+
+            <form action="/cart/delete?_method=DELETE" method="POST">
+                <button type="submit" class="delete-from-cart-btn">Clear cart</button>
+            </form>
+
+            <div class="cart-totals">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>
+                                Cart Total
+                            </th>
+                        </tr>
+                    </thead>
+                </table>
+                <table>
+                    <tbody>
+                        <tr class="order-total">
+                            <th>Total</th>
+                            <td>
+                                <strong><%= cartTotal %></strong>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="checkout">
+                <a href="/cart/checkout">Proceed to checkout</a>
+            </div>
+            
+
         <% } %>
 
-        <div class="cart-totals">
-            <table>
-                <thead>
-                    <tr>
-                        <th>
-                            Cart Total
-                        </th>
-                    </tr>
-                </thead>
-            </table>
-            <table>
-                <tbody>
-                    <tr class="order-total">
-                        <th>Total</th>
-                        <td>
-                            <strong><%= cartTotal %></strong>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-
-        <div class="checkout">
-            <a>Continue to checkout</a>
-        </div>
-        
     </div>
 </main>
 
