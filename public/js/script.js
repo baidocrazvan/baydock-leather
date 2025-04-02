@@ -189,3 +189,25 @@ function toggleButtons() {
 toggleButtons();
 
 });
+
+
+// Checkout address selection script
+
+document.addEventListener('DOMContentLoaded', function() {
+  const shippingSelect = document.getElementById('shippingAddress');
+  const billingSelect = document.getElementById('billingAddress');
+  const updateBtn = document.getElementById('updateDefaultBtn');
+  
+  function checkForChange() {
+    // Access the <option> selected value and check if the isShipping/isBilling has changed to false
+    const shippingChanged = shippingSelect.options[shippingSelect.selectedIndex].dataset.isShipping === 'false';
+    const billingChanged = billingSelect.options[billingSelect.selectedIndex].dataset.isBilling === 'false';
+    
+    // Show update button if defaults changed
+    updateBtn.style.display = (shippingChanged || billingChanged) ? 'block' : 'none';
+  }
+
+  shippingSelect.addEventListener('change', checkForChange);
+  billingSelect.addEventListener('change', checkForChange);
+
+});

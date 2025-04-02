@@ -8,28 +8,34 @@
           <% if (addresses && addresses.length > 0) { %>
             <!-- Address Selection for registered users with existing addresses -->
             <!-- TODO: Add a route for changing default shipping/billing address for checkout -->
-            <form method="POST" action="TODO">
-            <div class="address-selection">
-              <h3>Select Shipping Address</h3>
-              <select name="shippingAddressId" required>
-                <% addresses.forEach(address => { %>
-                  <option value="<%= address.id %>" 
-                          <%= address.is_shipping ? 'selected' : '' %>>  <!-- Show default shipping address as already selected -->
-                    <%= address.address %>, <%= address.city %>
-                  </option>
-                <% }); %>
-              </select>
-  
-              <h3>Select Billing Address</h3>
-              <select name="billingAddressId" required>
-                <% addresses.forEach(address => { %>
-                  <option value="<%= address.id %>"
-                          <%= address.is_billing ? 'selected' : '' %>> <!-- Show default billing address as already selected -->
-                    <%= address.address %>, <%= address.city %>
-                  </option>
-                <% }); %>
-              </select>
-            </div>
+            <form method="POST" action="/address/shipping-address/default?_method=PATCH">
+              <div class="address-selection">
+                <h3>Select Shipping Address</h3>
+                <select name="shippingAddressId" id="shippingAddress" required>
+                  <% addresses.forEach(address => { %>
+                    <option value="<%= address.id %>" 
+                            <%= address.is_shipping ? 'selected' : '' %>  
+                            data-is-shipping= "<%= address.is_shipping %>"> <!-- Show default shipping address as already selected -->
+                            <%= address.first_name %>, <%= address.last_name %>,<%= address.address %>, <%= address.city %>
+                    </option>
+                  <% }); %>
+                </select>
+    
+                <h3>Select Billing Address</h3>
+                <select name="billingAddressId" id="billingAddress" required>
+                  <% addresses.forEach(address => { %>
+                    <option value="<%= address.id %>"
+                            <%= address.is_billing ? 'selected' : '' %>
+                            data.is_billing = "<%= address.is_billing %>"> <!-- Show default billing address as already selected -->
+                            <%= address.first_name %>, <%= address.last_name %>,<%= address.address %>, <%= address.city %>
+                    </option>
+                  <% }); %>
+                </select>
+                <!-- Hidden update button, will only appear when default selections change -->
+                <button type="submit" id="updateDefaultBtn" style="display: none;" class="btn btn-primary">
+                  Update Default Addresses
+                </button>
+              </div>
           <% } else { %>
             <form method="POST" action="/address/shipping-address">
             <!-- Address selection for registered users without existing address-->

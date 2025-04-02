@@ -34,12 +34,11 @@ router.post("/shipping-address", authenticate, async (req, res) => {
             [userId, isShipping, isBilling, firstName, lastName, address, city, county, postalCode, phoneNumber]
         );
 
+        req.flash("success", "Address added successfully")
         if (fromCheckout) {
-          req.flash("success", "Address added successfully")
           return res.redirect("/cart/checkout");
         } else {
-          req.flash("success", "Address added successfully")
-          return res.redirect("/customer/address")
+          return res.redirect("/customer/account")
         }
 
         
@@ -138,7 +137,47 @@ router.put("/shipping-address/edit/:id", authenticate, async (req, res) => {
     }
 })
 
+// Patch route for changing default shipping/billing address at checkout
+router.patch("/shipping-address/default", authenticate, async (req, res) => {
+    const userId = req.user.id;
+    const { shippingAddressId, billingAddressId } = req.body;
 
+    try {
+      // Set all addresses to non-default
+      await db.query(
+        `UPDATE shipping_addresses
+        SET is_shipping = false, is_billing = false
+        WHERE user_id = $1`,
+        [userId]
+      );
+
+      // Set new shipping default if different from current default shipping address
+      if (shippingAddressId) {
+        await db.query(
+          `UPDATE shipping_addresses
+          SET is_shipping = true
+          WHERE id = $1 AND user_id = $2`,
+          [shippingAddressId, userId]
+        );
+      }
+
+      if (billingAddressId) {
+        await db.query(
+          `UPDATE shipping_addresses
+          SET is_billing = true
+          WHERE id = $1 AND user_id = $2`,
+          [billingAddressId, userId]
+        )
+      }
+
+      req.flash('success', "Default addresses have updated successfully.")
+      res.redirect('/cart/checkout');
+
+    } catch(err) {
+      console.error("/address/ PATCH error updating default addresses at checkout", err);
+      req.flash("error", "Failed to update default addresses");
+    }
+})
   
 // Delete a shipping address
 router.delete("/shipping-address/:id", authenticate, async (req, res) => {
