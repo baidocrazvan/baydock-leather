@@ -1,30 +1,152 @@
 <%- include("./partials/header"); %>
 
 <main>
-    <!-- checkout form in case user is not logged in -->
-    <form method="POST" action="/address/shipping-addresses">
-        <label for="firstName">First name:</label>
-        <input type="text" name="firstName">
-    
-        <label for="lastName">Last name:</label>
-        <input type="text" name="lastName">
-    
-        <label for="address">Address</label>
-        <input type="text" name="address">
-    
-        <label for="city">City</label>
-        <input type="text" name="city">
-    
-        <label for="county">County</label>
-        <input type="text" name="county">
-    
-        <label for="phoneNumber">Phone:</label>
-        <input type="text"  name="phoneNumber">
-    
-        <label for="postalCode">Postal code:</label>
-        <input type="text" name="postalCode">
-    
-        <button type="submit">Add Address</button>
+    <!-- Checkout Form Section -->
+    <div class="checkout-form">
+      <% if (user) { %>
+        <!-- User form for logged in users -->
+          <% if (addresses && addresses.length > 0) { %>
+            <!-- Address Selection for registered users with existing addresses -->
+            <!-- TODO: Add a route for changing default shipping/billing address for checkout -->
+            <form method="POST" action="TODO">
+            <div class="address-selection">
+              <h3>Select Shipping Address</h3>
+              <select name="shippingAddressId" required>
+                <% addresses.forEach(address => { %>
+                  <option value="<%= address.id %>" 
+                          <%= address.is_shipping ? 'selected' : '' %>>  <!-- Show default shipping address as already selected -->
+                    <%= address.address %>, <%= address.city %>
+                  </option>
+                <% }); %>
+              </select>
+  
+              <h3>Select Billing Address</h3>
+              <select name="billingAddressId" required>
+                <% addresses.forEach(address => { %>
+                  <option value="<%= address.id %>"
+                          <%= address.is_billing ? 'selected' : '' %>> <!-- Show default billing address as already selected -->
+                    <%= address.address %>, <%= address.city %>
+                  </option>
+                <% }); %>
+              </select>
+            </div>
+          <% } else { %>
+            <form method="POST" action="/address/shipping-address">
+            <!-- Address selection for registered users without existing address-->
+            <div class="new-address">
+              <h3>Add Shipping Address</h3>
+              <!-- <input type="hidden" name="is_shipping" value="true">
+              <input type="hidden" name="is_billing" value="true"> -->
+
+              <!-- Add fromCheckout input so that /addresses/ POST route knows the redirect user to checkout if the form came from here -->
+              <input type="hidden" name="fromCheckout" value="true">
+              
+              <label>First Name:</label>
+              <input type="text" name="firstName" value="<%= user.first_name %>" required>
+              
+              <label>Last Name:</label>
+              <input type="text" name="lastName" value="<%= user.last_name %>" required>
+          
+              <label for="address">Address</label>
+              <input type="text" name="address">
+          
+              <label for="city">City</label>
+              <input type="text" name="city">
+          
+              <label for="county">County</label>
+              <input type="text" name="county">
+          
+              <label for="phoneNumber">Phone:</label>
+              <input type="text"  name="phoneNumber">
+          
+              <label for="postalCode">Postal code:</label>
+              <input type="text" name="postalCode">
+              <button type="submit">Save Address & Continue</button>
+            </div>
+          <% } %>
+        </form>
+        <% } else { %>
+          <!-- Guest Checkout with account creation -->
+          <form method="POST" action="/guest-checkout">
+            <h3>Create Account & Checkout</h3>
+            
+            <!-- Account Fields -->
+            <div class="form-group">
+              <label>Email*</label>
+              <input type="email" name="email" required>
+            </div>
+            
+            <div class="form-group">
+              <label>Password* (min 8 characters)</label>
+              <input type="password" name="password" minlength="8" required>
+            </div>
+            
+            <!-- Shipping Address Fields -->
+            <fieldset class="address-fieldset">
+              <legend>Shipping Information</legend>
+              
+              <div class="form-row">
+                <div class="form-group">
+                  <label>First Name*</label>
+                  <input type="text" name="firstName" required>
+                </div>
+                
+                <div class="form-group">
+                  <label>Last Name*</label>
+                  <input type="text" name="lastName" required>
+                </div>
+              </div>
+              
+              <div class="form-group">
+                <label>Address*</label>
+                <input type="text" name="address" required>
+              </div>
+              
+              <div class="form-row">
+                <div class="form-group">
+                  <label>City*</label>
+                  <input type="text" name="city" required>
+                </div>
+                
+                <div class="form-group">
+                  <label>County*</label>
+                  <input type="text" name="county" required>
+                </div>
+              </div>
+              
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Postal Code*</label>
+                  <input type="text" name="postalCode" required>
+                </div>
+                
+                <div class="form-group">
+                  <label>Phone*</label>
+                  <input type="tel" name="phoneNumber" required>
+                </div>
+              </div>
+              
+              <input type="hidden" name="is_shipping" value="true">
+              <input type="hidden" name="is_billing" value="true">
+            </fieldset>
+            
+            <button type="submit" class="btn-primary">
+              Create Account & Complete Checkout
+            </button>
+            
+            <p class="login-prompt">
+              Already have an account? <a href="/login?redirect=/checkout">Log in instead.</a>
+            </p>
+          </form>
+        <% } %>
+    </div>
+
+
+
+
+
+
+
 
         <!-- checkout details  -->
     <div class="checkout">
@@ -60,8 +182,10 @@
                   </tr>
                 </tfoot>
               </table>
-        <% } %>      
-
+        <% } else { %>
+          <p> There are no products in your cart. </p>
+       <% } %>      
+    </div>
 </main>
 
 

@@ -15,7 +15,7 @@ router.post("/shipping-address", authenticate, async (req, res) => {
     try{
 
         const userId = req.user.id;
-        const { firstName, lastName, address, city, county, postalCode, phoneNumber } = req.body;
+        const { firstName, lastName, address, city, county, postalCode, phoneNumber, fromCheckout } = req.body;
 
         // Check if user has existing addresses
         const existingAddresses = await db.query(
@@ -23,21 +23,30 @@ router.post("/shipping-address", authenticate, async (req, res) => {
         [userId]
     );
         // If not, set both default and billing values to true
-        const isDefault = existingAddresses.rows.length === 0;
+        const isShipping = existingAddresses.rows.length === 0;
         const isBilling = existingAddresses.rows.length === 0;
 
         const result = await db.query(
             `INSERT INTO shipping_addresses 
-            (user_id, is_default, is_billing, first_name, last_name, address, city, county, postal_code, phone_number)
+            (user_id, is_shipping, is_billing, first_name, last_name, address, city, county, postal_code, phone_number)
             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
             RETURNING id`,
-            [userId, isDefault, isBilling, firstName, lastName, address, city, county, postalCode, phoneNumber]
+            [userId, isShipping, isBilling, firstName, lastName, address, city, county, postalCode, phoneNumber]
         );
 
-        res.redirect("/customer/address")
+        if (fromCheckout) {
+          req.flash("success", "Address added successfully")
+          return res.redirect("/cart/checkout");
+        } else {
+          req.flash("success", "Address added successfully")
+          return res.redirect("/customer/address")
+        }
+
+        
     } catch(err) {
-        console.error("Error adding shipping adress: ", err);
-        res.status(500).json({ error: "Failed to add shipping address."})
+        console.error("POST error /shipping-address when adding shipping adress: ", err);
+        req.flash("error", "Unable to add address")
+        return res.redirect("/");
     }
 });
 
