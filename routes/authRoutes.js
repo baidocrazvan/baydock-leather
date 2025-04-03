@@ -69,7 +69,7 @@ router.post("/register", async (req, res) => {
     }
   });
 
-// Logout a user, clear session cookie and end the session.
+// POST Logout a user, clear session cookie and end the session.
 router.post("/logout", function(req, res, next) { // Clear session cookie when user logs out
     req.logout((err) => { // Removes the req.user property and ends user's session
         if (err) { return next(err); }

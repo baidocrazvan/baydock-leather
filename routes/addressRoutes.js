@@ -5,12 +5,12 @@ import { getUserAddress } from "../services/addressService.js";
 
 const router = express.Router();
 
-// Render page for adding address
+// GET Render page for adding address
 router.get("/shipping-address", authenticate, async (req, res) => {
   res.render("add-address.ejs");
 })
 
-// Add a shipping address to user account
+// POST Add a shipping address to user account
 router.post("/shipping-address", authenticate, async (req, res) => {
     try{
 
@@ -50,7 +50,7 @@ router.post("/shipping-address", authenticate, async (req, res) => {
 });
 
 
-// Render page for editing a specific shipping address
+// GET Render page for editing a specific shipping address
 router.get("/shipping-address/edit/:id", authenticate, async (req, res) => {
   try {
     const address = await getUserAddress(req.user.id, req.params.id);
@@ -64,7 +64,7 @@ router.get("/shipping-address/edit/:id", authenticate, async (req, res) => {
   }
 })
 
-// Request for editing a specific shipping address
+// PUT Request for editing a specific shipping address
 router.put("/shipping-address/edit/:id", authenticate, async (req, res) => {
     try {
       const { 
@@ -137,7 +137,7 @@ router.put("/shipping-address/edit/:id", authenticate, async (req, res) => {
     }
 })
 
-// Patch route for changing default shipping/billing address at checkout
+// PATCH route for changing default shipping/billing address at checkout
 router.patch("/shipping-address/default", authenticate, async (req, res) => {
     const userId = req.user.id;
     const { shippingAddressId, billingAddressId } = req.body;
@@ -179,7 +179,7 @@ router.patch("/shipping-address/default", authenticate, async (req, res) => {
     }
 })
   
-// Delete a shipping address
+// DELETE a shipping address
 router.delete("/shipping-address/:id", authenticate, async (req, res) => {
   try {
     const userId = req.user.id;

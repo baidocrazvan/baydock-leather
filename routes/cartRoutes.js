@@ -7,7 +7,7 @@ import { getUserAddresses } from "../services/addressService.js";
 const router = express.Router();
 
 // Get a user's cart items
-router.get("/", authenticate, async (req, res) => {
+router.get("/", async (req, res) => {
     try {
         const userId = req.user.id;
         const { items, total } = await getCartData(req.user.id);
@@ -48,6 +48,48 @@ router.get("/checkout", async (req, res) => {
         console.error("Cart checkout GET error:", err.message);
         req.flash('error', "Checkout information cannot be loaded at this moment. Please try again.");
         res.redirect("/");
+    }
+})
+
+router.post("/checkout-guest", async (req, res) => {
+    const { lastName, firstName, username: email, password, cpassword: confirmPassword } = req.body;
+    const role = "user";
+  
+    try {
+  
+      if (password !== confirmPassword) {
+        req.flash("error", "Passwords do not match")
+      } else {
+  
+          const checkResult = await db.query(`SELECT * FROM users WHERE email = $1`, [email]);
+  
+          if (checkResult.rows.length > 0) {
+            req.flash('error', 'Email already exists. Please log in.');
+            res.redirect("/auth/login");
+          } else {
+              // Hash password using bcrypt
+              bcrypt.hash(password, saltRounds, async (err, hash) => {
+              if (err) {
+                console.log("Error hashing password:", err);
+              } else {
+                const result = await db.query(
+                  `INSERT INTO users (first_name, last_name, email, password, role) VALUES ($1, $2, $3, $4, $5) RETURNING *`,[
+                  firstName, lastName, email, hash, role
+              ]);
+              const user = result.rows[0];
+              console.log(user);
+              req.login(user, (err) => {
+                console.error(err)
+                res.redirect("/cart/checkout")
+              })
+            }
+        })
+      }
+      } 
+  
+    } catch (err) {
+      req.flash('error', 'Registration failed.');
+      console.log(err);
     }
 })
 
