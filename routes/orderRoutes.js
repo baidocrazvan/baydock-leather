@@ -12,39 +12,39 @@ import {
 const router = express.Router();
 
 // Get details of a specific order
-router.get("/orders/:id", authenticate, async (req, res) => {
-    try{
-        const userId = req.user.id
-    const orderId = req.params.id;
+router.get("/:id", authenticate, async (req, res) => {
+    try {
+      const userId = req.user.id
+      const orderId = req.params.id;
 
-    // Get order details
-    const result = await db.query(
-        `SELECT
-            o.id AS order_id,
-            o.status AS order_status,
-            o.total_price,
-            sa.first_name,
-            sa.last_name,
-            sa.address,
-            sa.city,
-            sa.county,
-            sa.postal_code,
-            sa.phone_number,
-            p.name AS product_name,
-            oi.quantity,
-            oi.price AS product_price
-        FROM
-            orders o
-        JOIN
-            shipping_addresses sa ON o.shipping_address_id = sa.id
-        JOIN
-            order_items oi ON o.id = oi.order_id
-        JOIN
-            products p ON oi.product_id = p.id
-        WHERE
-            o.user_id = $1 AND o.id = $2`,
-        [userId, orderId]
-        );
+      // Get order details
+      const result = await db.query(
+          `SELECT
+              o.id AS order_id,
+              o.status AS order_status,
+              o.total_price,
+              sa.first_name,
+              sa.last_name,
+              sa.address,
+              sa.city,
+              sa.county,
+              sa.postal_code,
+              sa.phone_number,
+              p.name AS product_name,
+              oi.quantity,
+              oi.price AS product_price
+          FROM
+              orders o
+          JOIN
+              shipping_addresses sa ON o.shipping_address_id = sa.id
+          JOIN
+              order_items oi ON o.id = oi.order_id
+          JOIN
+              products p ON oi.product_id = p.id
+          WHERE
+              o.user_id = $1 AND o.id = $2`,
+          [userId, orderId]
+          );
 
         if (result.rows.length === 0) {
             return res.status(404).json({ error: "Order not found" });
@@ -148,32 +148,49 @@ router.get("/orders", authenticate, async (req, res) => {
 }); 
 
 // Place an order using transactions
-router.post("/orders", authenticate, async (req, res) => {
+router.post("/new-order", authenticate, async (req, res) => {
 
     // Get a client from the pool
     const client = await db.connect(); 
     try {
         await client.query('BEGIN');
         const userId = req.user.id;
-        const { shippingAddressId } = req.body;
+        const { shippingAddressId, billingAddressId, paymentMethod } = req.body;
         
-        // Check shipping address
+        // Validate shipping and billing address
         const shippingAddress = await client.query(
         `SELECT * FROM shipping_addresses WHERE id = $1 AND user_id = $2`,
         [shippingAddressId, userId]
         );
-        if (shippingAddress.rows.length === 0) {
-            // Rollback the transaction if shipping address does not exist
-            await client.query('ROLLBACK'); 
-            return res.status(400).json({ error: "Invalid shipping address" });
-      }
+        // Rollback the transaction if shipping address does not exist or does not have is_shipping set to true
+        if (shippingAddress.rows.length === 0 || !shippingAddress.rows[0].is_shipping) {
+            await client.query('ROLLBACK');
+            req.flash('error', "Invalid shipping address"); 
+            return res.redirect("/cart/checkout");
+        }
+
+        // Check billing address if different from shipping address
+        if (billingAddressId && billingAddressId !== shippingAddressId) {
+          const billingAddress = await client.query(
+          `SELECT * FROM shipping_addresses WHERE id = $1 and user_id = $2`,
+          [billingAddressId, userId]
+        );
+        // Rollback the transaction if billing address does not exist or does not have is_billing set to true
+        if (billingAddress.rows.length === 0 || !billingAddress.rows[0].is_billing) {
+            await client.query('ROLLBACK');
+            req.flash('error', "Invalid shipping address"); 
+            return res.redirect("/cart/checkout");
+        }
+        }
+        
 
         // Check if cart is empty
         const cartItems = await db.query(`SELECT * FROM carts WHERE user_id = $1`, [userId]);
         if (cartItems.rows.length === 0) {
             // Rollback transaction if cart is empty
             await client.query('ROLLBACK'); 
-            return res.status(400).json({ error: "Cart is empty" });
+            req.flash('error', 'Your cart is empty');
+            return res.redirect('/cart');
         }
 
         // Check if there is enough stock before sending the order (some products may be sold after user has added them to his cart)
@@ -186,17 +203,15 @@ router.post("/orders", authenticate, async (req, res) => {
           if (checkStock.rows.length > 0) {
             // Rollback transaction if not enough stock
             await client.query('ROLLBACK'); 
-            return res.status(400).json({
-                error: "There is not enough quantity in stock for these items: ",
-                items: checkStock.rows, 
-            });
+            req.flash('error', `Not enough stock for: ${outOfStockItems}`);
+            return res.redirect('/cart');
           }
 
         // Calculate the total price
         const totalPrice = await calculateTotalPrice(userId);
 
         // Create order
-        const orderId = await createOrder(userId, shippingAddressId, totalPrice);
+        const orderId = await createOrder(userId, totalPrice, shippingAddressId, billingAddressId, paymentMethod);
 
         // Move items from carts table to order_items table
         await addOrderItems(orderId, userId);
@@ -209,14 +224,15 @@ router.post("/orders", authenticate, async (req, res) => {
 
         // If every step worked, commit transaction
         await client.query('COMMIT') 
-        res.status(201).json({ message: "Order sent successfully.", orderId });
+        req.flash('success', 'Order placed successfully!');
+        res.redirect(`/${orderId}`);
 
         } catch(err) {
             // Rollback transaction if err
             await client.query('ROLLBACK');
             console.error("Error creating order: ", err);
-            res.status(500).json({error: "Failed to create order" });
-
+            req.flash('error', 'Failed to create order. Please try again.');
+            res.redirect('/cart/checkout');
         } finally {
             // Release client back to the pool
             client.release();

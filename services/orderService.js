@@ -16,12 +16,12 @@ export async function calculateTotalPrice(userId) {
 }
 
 // Create entry inside orders table
-export async function createOrder(userId, shippingAddressId, totalPrice) {
+export async function createOrder(userId, totalPrice, shippingAddressId, billingAddressId, paymentMethod) {
     const result = await db.query(
-        `INSERT INTO orders (user_id, total_price, shipping_address_id)
-         VALUES($1, $2, $3)
+        `INSERT INTO orders (user_id, total_price, shipping_address_id, billing_address_id, payment_method)
+         VALUES($1, $2, $3, $4, $5)
          RETURNING id`,
-        [userId, totalPrice, shippingAddressId]
+        [userId, totalPrice, shippingAddressId, billingAddressId, paymentMethod]
     );
     // Return order id
     return result.rows[0].id;

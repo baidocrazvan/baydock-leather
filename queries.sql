@@ -33,8 +33,10 @@ CREATE TABLE orders (
   id SERIAL PRIMARY KEY,
   user_id INTEGER REFERENCES users(id),
   total_price NUMERIC(6,2),
-  shipping_address_id INTEGER REFERENCES shipping_addresses(id) ON DELETE SET NULL;
+  shipping_address_id INTEGER REFERENCES shipping_addresses(id) ON DELETE SET NULL,
+  billing_address_id INTEGER REFERENCES shipping_addresses(id) ON DELETE SET NULL,
   status VARCHAR(20) NOT NULL DEFAULT 'Pending',
+  payment_method VARCHAR(10) NOT NULL DEFAULT 'cash' CHECK (payment_method IN ('cash', 'card'),
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 

@@ -148,12 +148,23 @@
 
 
 
+    <% if (user && addresses && addresses.length > 0) { %>
+      <form method="POST" action="/orders/new-order" class="order-submission">
+        <!-- Hidden inputs to pass selected addresses -->
+        <input type="hidden" name="shippingAddressId" id="hiddenShippingAddressId">
+        <input type="hidden" name="billingAddressId" id="hiddenBillingAddressId">
+        <input type="hidden" name="paymentMethod" value="cash"> <!-- Default to cash -->
+        
+        <!-- Order submission button -->
+        <button type="submit" class="btn btn-primary btn-place-order">
+          Place Order
+        </button>
+      </form>
+      <% } %>
 
 
 
-
-
-        <!-- checkout details  -->
+        <!-- Checkout order details  -->
     <div class="checkout">
         <% if (cartItems.length > 0) { %>
             <table>
@@ -191,6 +202,28 @@
           <p> There are no products in your cart. </p>
        <% } %>      
     </div>
+
+    <% if (user) { %>
+      <!-- Payment Method Selection -->
+      <div class="payment-options">
+        <h3>Payment Method</h3>
+        <select name="paymentMethod" id="paymentMethod" class="form-control" required>
+          <option value="cash" selected>Cash on Delivery</option>
+          <option value="card" disabled>Credit/Debit Card (Coming Soon)</option>
+        </select>
+        
+        <!-- Card Payment Form (Hidden by default), shown only when card is selected. -->
+         <!-- TODO: Implement card payment -->
+        <div id="cardPaymentForm" style="display: none;">
+          <div class="form-group">
+            <label>Card Number</label>
+            <input type="text" class="form-control" disabled>
+          </div>
+          <!-- TODO: Add rest of details -->
+        </div>
+      </div>
+    <% } %>
+
 </main>
 
 

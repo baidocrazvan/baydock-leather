@@ -148,7 +148,10 @@ document.addEventListener('DOMContentLoaded', () => {
 const minusBtn = document.querySelector(".quantity-btn.minus");
 const plusBtn = document.querySelector(".quantity-btn.plus");
 const quantityInput = document.querySelector(".quantity-input");
-const max = parseInt(quantityInput.max) || 10;
+if (quantityInput) {
+  const max = parseInt(quantityInput.max) || 10;
+}
+
 
 // Minus button
 minusBtn.addEventListener('click', () => {
@@ -206,8 +209,27 @@ document.addEventListener('DOMContentLoaded', function() {
     // Show update button if defaults changed
     updateBtn.style.display = (shippingChanged || billingChanged) ? 'block' : 'none';
   }
-
-  shippingSelect.addEventListener('change', checkForChange);
-  billingSelect.addEventListener('change', checkForChange);
+  if (shippingSelect && billingSelect) {
+    shippingSelect.addEventListener('change', checkForChange);
+    billingSelect.addEventListener('change', checkForChange);
+  }
+  
 
 });
+
+
+// Order submission script, take values from address selection on page and pass them to form
+
+document.addEventListener('DOMContentLoaded', function() {
+    const orderForm = document.querySelector('.order-submission');
+    if (orderForm) {
+      orderForm.addEventListener('submit', function(e) {
+      document.getElementById('hiddenShippingAddressId').value = document.getElementById('shippingAddress').value;
+  
+      const billingSelect = document.getElementById('billingAddress');
+      document.getElementById('hiddenBillingAddressId').value = 
+      billingSelect.value || document.getElementById('shippingAddress').value;
+    }
+  )};    
+});
+

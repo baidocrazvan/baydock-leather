@@ -96,7 +96,7 @@ app.use("/cart", cartRoutes);
 
 
 // Order endpoints
-app.use("/api", orderRoutes);
+app.use("/orders", orderRoutes);
 
 // User addresses endpoints
 app.use("/address", addressRoutes);
