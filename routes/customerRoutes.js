@@ -1,13 +1,13 @@
 import express from "express";
 import db from "../db.js";
 import { authenticate, isAdmin } from "../middleware/middleware.js";
-import { getUserAddresses } from "../services/addressService.js";
+import { getActiveUserAddresses } from "../services/addressService.js";
 
 const router = express.Router();
 
 router.get("/account", authenticate, async (req, res) => {
     try {
-        const addresses = await getUserAddresses(req.user.id);
+        const addresses = await getActiveUserAddresses(req.user.id);
 
         res.render("account.ejs", {
             user: req.user,
@@ -21,7 +21,7 @@ router.get("/account", authenticate, async (req, res) => {
 
 router.get("/addresses", authenticate, async (req, res) => {
     try {
-        const addresses = await getUserAddresses(req.user.id);
+        const addresses = await getActiveUserAddresses(req.user.id);
 
         res.render("addresses.ejs", {
             addresses: addresses || []

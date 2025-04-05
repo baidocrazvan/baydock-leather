@@ -33,8 +33,8 @@ CREATE TABLE orders (
   id SERIAL PRIMARY KEY,
   user_id INTEGER REFERENCES users(id),
   total_price NUMERIC(6,2),
-  shipping_address_id INTEGER REFERENCES shipping_addresses(id) ON DELETE SET NULL,
-  billing_address_id INTEGER REFERENCES shipping_addresses(id) ON DELETE SET NULL,
+  shipping_address_id INTEGER REFERENCES shipping_addresses(id),
+  billing_address_id INTEGER REFERENCES shipping_addresses(id),
   status VARCHAR(20) NOT NULL DEFAULT 'Pending',
   payment_method VARCHAR(10) NOT NULL DEFAULT 'cash' CHECK (payment_method IN ('cash', 'card'),
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -51,6 +51,7 @@ CREATE TABLE order_items (
 CREATE TABLE shipping_addresses (
   id SERIAL PRIMARY KEY,
   user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+  is_active BOOLEAN NOT NULL DEFAULT TRUE, -- For soft delete --
   is_shipping BOOLEAN DEFAULT false,
   is_billing BOOLEAN DEFAULT false,
   first_name VARCHAR(50) NOT NULL,
@@ -60,7 +61,10 @@ CREATE TABLE shipping_addresses (
   county VARCHAR(100),
   country VARCHAR(255) NOT NULL DEFAULT 'Romania',
   postal_code VARCHAR(20) NOT NULL,
-  phone_number VARCHAR(20) NOT NULL
+  phone_number VARCHAR(20) NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  deleted_at TIMESTAMP -- For soft delete --
 );
 
 -- Session table from connect-pg-simple docs --

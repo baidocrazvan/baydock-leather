@@ -2,7 +2,7 @@ import express from "express";
 import db from "../db.js";
 import { authenticate, isAdmin } from "../middleware/middleware.js";
 import { validateQuantity, getCartData, updateCartItem, updateCartQuantity } from "../services/cartService.js"
-import { getUserAddresses } from "../services/addressService.js";
+import { getActiveUserAddresses } from "../services/addressService.js";
 
 const router = express.Router();
 
@@ -31,7 +31,7 @@ router.get("/", async (req, res) => {
 router.get("/checkout", async (req, res) => {
     try {
         const userId = req.user.id;
-        const addresses = await getUserAddresses(userId)
+        const addresses = await getActiveUserAddresses(userId)
         const { items, total } = await getCartData(userId);
         console.log("User: ", req.user);
         console.log("Addresses: ", addresses);
