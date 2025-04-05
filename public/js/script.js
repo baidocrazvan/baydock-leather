@@ -148,10 +148,10 @@ document.addEventListener('DOMContentLoaded', () => {
 const minusBtn = document.querySelector(".quantity-btn.minus");
 const plusBtn = document.querySelector(".quantity-btn.plus");
 const quantityInput = document.querySelector(".quantity-input");
-if (quantityInput) {
-  const max = parseInt(quantityInput.max) || 10;
-}
 
+if (!minusBtn && !plusBtn && !quantityInput) return;
+
+const max = parseInt(quantityInput.max) || 10;
 
 // Minus button
 minusBtn.addEventListener('click', () => {
