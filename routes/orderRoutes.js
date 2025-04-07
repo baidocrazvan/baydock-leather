@@ -64,11 +64,23 @@ router.get("/history", authenticate, async (req, res) => {
   }
 }); 
 
-// GET page containing all the details of a specific order
+// GET page containing all the details of a specific order for authenticated user with ownership validation
 router.get("/:id", authenticate, async (req, res) => {
     try {
       const userId = req.user.id
       const orderId = req.params.id;
+
+      // Check whether the order the user is trying to access belongs to him
+      const userOwnershipCheck = await db.query(
+        `SELECT id FROM orders
+        WHERE id = $1 AND user_id = $2`,
+        [orderId, userId]
+      );
+
+      if (userOwnershipCheck.rows.length === 0) {
+        req.flash("error", "Order not found");
+        return res.redirect("/orders/history");
+      }
 
       // Get order id, date, status and price, then shipping address details, billing address details, and product details
       // Use left join in case shipping address is the same as billing address
@@ -245,7 +257,7 @@ router.post("/new-order", authenticate, async (req, res) => {
         // If every step worked, commit transaction
         await client.query('COMMIT') 
         req.flash('success', 'Order placed successfully!');
-        res.redirect(`orders/${orderId}`);
+        res.redirect(`/orders/${orderId}`);
 
         } catch(err) {
             // Rollback transaction if err
