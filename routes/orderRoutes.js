@@ -11,6 +11,59 @@ import {
 
 const router = express.Router();
 
+// Get a user's order history, after join group result by order and shipping details, order by creation date
+router.get("/history", authenticate, async (req, res) => {
+    
+  try {
+      const userId = req.user.id;
+      const result = await db.query(
+          `SELECT
+             o.id AS order_id,
+             o.status AS order_status,
+             o.created_at AS order_date,
+             o.total_price AS order_total,
+             sa.first_name,
+             sa.last_name
+           FROM
+             orders o
+           JOIN
+             shipping_addresses sa ON o.shipping_address_id = sa.id
+           JOIN
+             order_items oi ON o.id = oi.order_id
+           JOIN
+             products p ON oi.product_id = p.id
+           WHERE
+             o.user_id = $1
+           GROUP BY
+             o.id, sa.first_name, sa.last_name, sa.address, sa.city, sa.county, sa.postal_code, sa.phone_number
+           ORDER BY
+             o.created_at DESC`,
+          [userId]
+        );
+
+        if (result.rows.length === 0) {
+          return res.status(404).json({ error: "No orders found" });
+        }
+
+        // Format the response
+      const orders = result.rows.map(row => ({
+      orderId: row.order_id,
+      orderStatus: row.order_status,
+      orderDate: new Date(row.order_date).toLocaleDateString(),
+      orderTotal: row.order_total,
+      shippingAddress: {
+        firstName: row.first_name,
+        lastName: row.last_name,
+      }
+    }));
+
+    res.render("order-history.ejs", { orders } );
+        
+  } catch(err) {
+      console.error("Error getting order history: ", err);
+  }
+}); 
+
 // GET page containing all the details of a specific order
 router.get("/:id", authenticate, async (req, res) => {
     try {
@@ -112,74 +165,6 @@ router.get("/:id", authenticate, async (req, res) => {
         res.redirect("/orders");
     }
     
-}); 
-
-// Get a user's order history, after join group result by order and shipping details, order by creation date
-// Use json_agg and json_build_object to turn each orders' products into a JSON array.
-router.get("/orders", authenticate, async (req, res) => {
-    
-    try {
-        const userId = req.user.id;
-        const result = await db.query(
-            `SELECT
-               o.id AS order_id,
-               o.status AS order_status,
-               o.created_at AS order_date,
-               sa.first_name,
-               sa.last_name,
-               sa.address,
-               sa.city,
-               sa.county,
-               sa.postal_code,
-               sa.phone_number,
-               json_agg(json_build_object(
-                 'name', p.name,
-                 'quantity', oi.quantity,
-                 'price', oi.price
-               )) AS products
-             FROM
-               orders o
-             JOIN
-               shipping_addresses sa ON o.shipping_address_id = sa.id
-             JOIN
-               order_items oi ON o.id = oi.order_id
-             JOIN
-               products p ON oi.product_id = p.id
-             WHERE
-               o.user_id = $1
-             GROUP BY
-               o.id, sa.first_name, sa.last_name, sa.address, sa.city, sa.county, sa.postal_code, sa.phone_number
-             ORDER BY
-               o.created_at DESC`,
-            [userId]
-          );
-
-          if (result.rows.length === 0) {
-            return res.status(404).json({ error: "No orders found" });
-          }
-
-          // Format the response
-        const orders = result.rows.map(row => ({
-        orderId: row.order_id,
-        status: row.order_status,
-        orderDate: row.order_date,
-        shippingAddress: {
-          firstName: row.first_name,
-          lastName: row.last_name,
-          address: row.address,
-          city: row.city,
-          county: row.county,
-          postalCode: row.postal_code,
-          phoneNumber: row.phone_number,
-        },
-        products: row.products,
-      }));
-  
-      res.json(orders);
-          
-    } catch(err) {
-        console.error("Error getting order history: ", err);
-    }
 }); 
 
 // Place an order using transactions

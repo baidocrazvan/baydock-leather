@@ -1,0 +1,27 @@
+<%- include("./partials/header"); %>
+
+<main>
+    <h2>My orders</h2>
+    <table>
+        <tr>
+            <th>Order ID</th>
+            <th>Customer</th>
+            <th>Date</th>
+            <th>Total (incl VAT)</th>
+            <th>Status</th>
+            <th>See order</th>
+        </tr>
+        <% orders.forEach(order => { %>
+            <tr>
+                <td><%= order.orderId %></td>
+                <td><%= order.shippingAddress.lastName %> <%= order.shippingAddress.firstName %></td>
+                <td><%= order.orderDate %></td>
+                <td><%= order.orderTotal %></td>
+                <td><%= order.orderStatus %></td>
+                <td><button><a href="/orders/<%= order.orderId%>">View</a></button></td>
+            </tr>
+        <% }) %>
+    </table>
+</main>
+
+<%- include("./partials/footer"); %>
