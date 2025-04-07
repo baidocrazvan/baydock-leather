@@ -214,7 +214,7 @@ router.delete("/shipping-address/:id", authenticate, async (req, res) => {
       SET is_active = FALSE, deleted_at = NOW()
       WHERE id = $1 AND user_id = $2`, [req.params.id, userId]);
 
-    if (result.rows === 0) {
+    if (result.rowCount === 0) {
       req.flash("error", "Address not found");
     } else {
       req.flash("success", "Address removed")

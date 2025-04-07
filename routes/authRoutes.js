@@ -34,7 +34,7 @@ router.post("/register", async (req, res) => {
     try {
   
       if (password !== confirmPassword) {
-        res.json({ message: "Password does not match confirmation password" });
+        req.flash("error", "Password does not match confirmation password");
       } else {
   
           const checkResult = await db.query(`SELECT * FROM users WHERE email = $1`, [email]);
@@ -55,8 +55,9 @@ router.post("/register", async (req, res) => {
               const user = result.rows[0];
               console.log(user);
               req.login(user, (err) => {
-                console.error(err)
-                res.redirect("/loggedin")
+                console.error(err);
+                req.flash("success", "Account registered successfully");
+                res.redirect("/")
               })
             }
         })
@@ -82,7 +83,7 @@ router.post("/logout", function(req, res, next) { // Clear session cookie when u
             httpOnly: true,
             sameSite: "strict",
         }); // Clear the session cookie
-
+        
         res.redirect('/')
         });
     });

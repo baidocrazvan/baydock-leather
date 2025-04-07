@@ -98,11 +98,13 @@ router.post("/products", authenticate, isAdmin, upload.fields([
         INSERT INTO products (name, description, price, category, stock, images, thumbnail)
         VALUES ($1, $2, $3, $4, $5, $6, $7)`,
         [ name, description, price, category, stock, images, thumbnail]);
+      req.flash("success" , "Product added successfully");
+      return res.redirect("/admin/dashboard");
       
-      res.status(201).json({ message: "Product added successfully", thumbnail, images });
     } catch(err) {
       console.error("Error adding product", err);
-      res.status(500).json({error: "Failed to add product" });
+      req.flash("error", "Error publishing product");
+      return res/redirect("/admin/dashboard");
     }
   });
 
