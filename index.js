@@ -15,7 +15,7 @@ import adminRoutes from "./routes/adminRoutes.js";
 import cartRoutes from "./routes/cartRoutes.js";
 import orderRoutes from "./routes/orderRoutes.js";
 import addressRoutes from "./routes/addressRoutes.js";
-import customerRoutes from "./routes/customerRoutes.js";
+import userRoutes from "./routes/userRoutes.js";
 
 
 const app = express();
@@ -102,7 +102,7 @@ app.use("/orders", orderRoutes);
 app.use("/address", addressRoutes);
 
 // customer account endpoints
-app.use("/customer", customerRoutes);
+app.use("/user", userRoutes);
 
 passport.use(new Strategy(async function verify(username, password, cb) {
   

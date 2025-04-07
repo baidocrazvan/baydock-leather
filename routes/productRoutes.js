@@ -41,7 +41,7 @@ router.get("/", async (req, res) => {
       });
     }
 
-    res.render("products.ejs", {
+    res.render("products/list.ejs", {
       products: products,
       currentCategory: category,
       currentSort: sort,
@@ -69,7 +69,7 @@ router.get("/:id", async (req, res) => {
       });
     }
 
-    res.render("product.ejs", {
+    res.render("products/single.ejs", {
       product: product
     });
 

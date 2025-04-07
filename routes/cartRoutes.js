@@ -13,7 +13,7 @@ router.get("/", async (req, res) => {
         const { items, total } = await getCartData(req.user.id);
         
     
-        res.render("cart.ejs", {
+        res.render("cart/cart.ejs", {
             cartItems: items,
             cartTotal: total
         })
@@ -38,7 +38,7 @@ router.get("/checkout", async (req, res) => {
         console.log("Addresses.length: ", addresses.length);
         console.log(items);
         console.log(total);
-        res.render("checkout.ejs", {
+        res.render("cart/checkout.ejs", {
             user: req.user,
             addresses: addresses,
             cartItems: items,
@@ -89,6 +89,7 @@ router.post("/checkout-guest", async (req, res) => {
   
     } catch (err) {
       req.flash('error', 'Registration failed.');
+      res.redirect("/cart/checkout");
       console.log(err);
     }
 })

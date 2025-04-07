@@ -57,7 +57,7 @@ router.get("/history", authenticate, async (req, res) => {
       }
     }));
 
-    res.render("order-history.ejs", { orders } );
+    res.render("orders/order-history.ejs", { orders } );
         
   } catch(err) {
       console.error("Error getting order history: ", err);
@@ -165,7 +165,7 @@ router.get("/:id", authenticate, async (req, res) => {
     })),
     };
       console.log(orderDetails.date);
-      res.render('order.ejs', {
+      res.render('orders/order.ejs', {
         order: orderDetails,
         sameAddress: orderDetails.shippingAddress.street === orderDetails.billingAddress.street,
         user: req.user

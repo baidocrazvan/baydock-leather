@@ -9,12 +9,12 @@ const router = express.Router();
 // GET login page
 router.get("/login", (req, res) => {
   const errors = req.flash('error');
-  res.render("login.ejs", { errors });
+  res.render("auth/login.ejs", { errors });
   });
 
 // GET register page
 router.get("/register", (req, res) => {
-    res.render("register.ejs");
+    res.render("auth/register.ejs");
   });
 
 // POST login a user
@@ -35,6 +35,7 @@ router.post("/register", async (req, res) => {
   
       if (password !== confirmPassword) {
         req.flash("error", "Password does not match confirmation password");
+        res.redirect("/auth/register");
       } else {
   
           const checkResult = await db.query(`SELECT * FROM users WHERE email = $1`, [email]);
@@ -66,6 +67,7 @@ router.post("/register", async (req, res) => {
   
     } catch (err) {
       req.flash('error', 'Registration failed.');
+      res.redirect("auth/register");
       console.log(err);
     }
   });

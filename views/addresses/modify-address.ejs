@@ -1,4 +1,4 @@
-<%- include("./partials/header"); %> <!-- Include the shared header and navbar -->
+<%- include("../partials/header"); %> <!-- Include the shared header and navbar -->
 <main>
     <form method="POST" action="/address/shipping-address/edit/<%= addressId %>?_method=PUT">
     <label for="first_name">First name:</label>
@@ -43,4 +43,4 @@
     <button type="submit">Update Address</button>
 </form>
 </main>
-<%- include("./partials/footer"); %> <!-- Include the shared footer -->
+<%- include("../partials/footer"); %> <!-- Include the shared footer -->

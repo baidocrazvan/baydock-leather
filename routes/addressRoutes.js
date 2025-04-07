@@ -7,7 +7,7 @@ const router = express.Router();
 
 // GET Render page for adding address
 router.get("/shipping-address", authenticate, async (req, res) => {
-  res.render("add-address.ejs");
+  res.render("addresses/add-address.ejs");
 })
 
 // POST Add a shipping address to user account
@@ -54,7 +54,7 @@ router.post("/shipping-address", authenticate, async (req, res) => {
 router.get("/shipping-address/edit/:id", authenticate, async (req, res) => {
   try {
     const address = await getUserAddress(req.user.id, req.params.id);
-    res.render("modify-address.ejs", {
+    res.render("addresses/modify-address.ejs", {
       addressId: req.params.id,
       address: address
     })

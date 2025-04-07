@@ -9,7 +9,7 @@ router.get("/account", authenticate, async (req, res) => {
     try {
         const addresses = await getActiveUserAddresses(req.user.id);
 
-        res.render("account.ejs", {
+        res.render("user/account.ejs", {
             user: req.user,
             addresses: addresses || []
         });
@@ -23,7 +23,7 @@ router.get("/addresses", authenticate, async (req, res) => {
     try {
         const addresses = await getActiveUserAddresses(req.user.id);
 
-        res.render("addresses.ejs", {
+        res.render("user/addresses.ejs", {
             addresses: addresses || []
         })
     } catch(err) {
