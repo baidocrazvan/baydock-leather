@@ -11,32 +11,48 @@ import {
 
 const router = express.Router();
 
-// Get details of a specific order
+// GET page containing all the details of a specific order
 router.get("/:id", authenticate, async (req, res) => {
     try {
       const userId = req.user.id
       const orderId = req.params.id;
 
-      // Get order details
+      // Get order id, date, status and price, then shipping address details, billing address details, and product details
+      // Use left join in case shipping address is the same as billing address
       const result = await db.query(
           `SELECT
               o.id AS order_id,
               o.status AS order_status,
               o.total_price,
-              sa.first_name,
-              sa.last_name,
-              sa.address,
-              sa.city,
-              sa.county,
-              sa.postal_code,
-              sa.phone_number,
+              o.payment_method,
+              o.created_at,
+              sa.first_name AS shipping_first_name,
+              sa.last_name AS shipping_last_name,
+              sa.address AS shipping_address,
+              sa.city AS shipping_city,
+              sa.county AS shipping_county,
+              sa.country AS shipping_country,
+              sa.postal_code AS shipping_postal_code,
+              sa.phone_number AS shipping_phone,
+              ba.first_name AS billing_first_name,
+              ba.last_name AS billing_last_name,
+              ba.address AS billing_address,
+              ba.city AS billing_city,
+              ba.county AS billing_county,
+              ba.country AS billing_country,
+              ba.postal_code AS billing_postal_code,
+              ba.phone_number AS billing_phone,
+              p.id AS product_id,
               p.name AS product_name,
+              p.thumbnail,
               oi.quantity,
               oi.price AS product_price
           FROM
               orders o
           JOIN
               shipping_addresses sa ON o.shipping_address_id = sa.id
+          LEFT JOIN
+              shipping_addresses ba ON o.billing_address_id = ba.id
           JOIN
               order_items oi ON o.id = oi.order_id
           JOIN
@@ -47,34 +63,53 @@ router.get("/:id", authenticate, async (req, res) => {
           );
 
         if (result.rows.length === 0) {
-            return res.status(404).json({ error: "Order not found" });
+            req.flash("error", "Order not found.");
+            return res.redirect("/orders");
           }
-
-    // Format the response
-    const order = {
-    orderId: result.rows[0].order_id,
+    console.log(result.rows[0].created_at);
+    // Transform query results
+    const orderDetails = {
+    id: result.rows[0].order_id,
     status: result.rows[0].order_status,
     total: result.rows[0].total_price,
+    payment: result.rows[0].payment_method,
+    date: new Date(result.rows[0].created_at).toLocaleDateString(),
     shippingAddress: {
-        firstName: result.rows[0].first_name,
-        lastName: result.rows[0].last_name,
-        address: result.rows[0].address,
-        city: result.rows[0].city,
-        county: result.rows[0].county,
-        postalCode: result.rows[0].postal_code,
-        phoneNumber: result.rows[0].phone_number,
+        name: `${result.rows[0].shipping_first_name} ${result.rows[0].shipping_last_name}`,
+        street: result.rows[0].shipping_address,
+        city: `${result.rows[0].shipping_city} ${result.rows[0].shipping_county}`,
+        country: result.rows[0].shipping_country,
+        postalCode: result.rows[0].shipping_postal_code,
+        phoneNumber: result.rows[0].shipping_phone_number,
     },
+    billingAddress: {
+      name: `${result.rows[0].billing_first_name || result.rows[0].shipping_first_name} ${result.rows[0].billing_last_name || result.rows[0].shipping_last_name}`,
+        street: result.rows[0].billing_address || result.rows[0].shipping_address,
+        city: `${result.rows[0].billing_city || result.rows[0].shipping_city}${result.rows[0].billing_county ? ', ' + result.rows[0].billing_county : result.rows[0].shipping_county ? ', ' + result.rows[0].shipping_county : ''}`,
+        country: result.rows[0].billing_country || result.rows[0].shipping_country,
+        postalCode: result.rows[0].billing_postal_code || result.rows[0].shipping_postal_code,
+        phone: result.rows[0].billing_phone || result.rows[0].shipping_phone
+      },
     products: result.rows.map(row => ({
+        productId: row.product_id,
         name: row.product_name,
+        thumbnail: row.thumbnail,
         quantity: row.quantity,
         price: row.product_price,
+        subtotal: (row.quantity * row.product_price).toFixed(2)
     })),
     };
-  
-      res.json(order);
+      console.log(orderDetails.date);
+      res.render('order.ejs', {
+        order: orderDetails,
+        sameAddress: orderDetails.shippingAddress.street === orderDetails.billingAddress.street,
+        user: req.user
+      });
 
     } catch(err) {
-        console.error("Error getting order: ", err);
+        console.error("GET Error getting order by id: ", err);
+        req.flash("error", "Failed to load order details");
+        res.redirect("/orders");
     }
     
 }); 
@@ -225,7 +260,7 @@ router.post("/new-order", authenticate, async (req, res) => {
         // If every step worked, commit transaction
         await client.query('COMMIT') 
         req.flash('success', 'Order placed successfully!');
-        res.redirect(`/${orderId}`);
+        res.redirect(`orders/${orderId}`);
 
         } catch(err) {
             // Rollback transaction if err

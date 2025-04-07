@@ -1,0 +1,81 @@
+<%- include("./partials/header"); %>
+    <main>
+        <h2>Order number #<%= order.id %></h2>
+        <p>Order placement date: <%= order.date %> / Order status: <%= order.status %></p>
+        <section class="addresses">
+        <div class="shipping-address">
+        <h3>Shipping Address</h3>
+        <address>
+            <%= order.shippingAddress.name %><br>
+            <%= order.shippingAddress.street %><br>
+            <%= order.shippingAddress.city %><br>
+            <%= order.shippingAddress.postalCode %><br>
+            <%= order.shippingAddress.country %>
+        </address>
+        </div>
+
+        <!-- If billing address is not the same as shipping address, show them both -->
+        <% if (!sameAddress) { %>
+        <div class="billing-address">
+            <h3>Billing Address</h3>
+            <address>
+            <%= order.billingAddress.name %><br>
+            <%= order.billingAddress.street %><br>
+            <%= order.billingAddress.city %><br>
+            <%= order.billingAddress.postalCode %><br>
+            <%= order.billingAddress.country %>
+            </address>
+        </div>
+        <% } %>
+
+        <h3>Products info:</h3>
+        <table>
+            <tr>
+                <td>Product id</td>
+                <td>Product name</td>
+                <td>Quantity</td>
+                <td>Price/item</td>
+                <td>Subtotal:</td>
+            </tr>
+            <% order.products.forEach( product => { %>
+                <tr>
+                    <td><%= product.productId %></td>
+                    <td><%= product.name %></td>
+                    <td><%= product.quantity %></td>
+                    <td><%= product.price %></td>
+                    <td><%= product.subtotal %></td>
+                </tr>
+            <% }) %>
+            
+        <h3>Order summary</h3>
+        <table>
+            <tr>
+                <th>Payment method:</th>
+                <td><%= order.payment %></td>
+            </tr>
+            <tr>
+                <th>Total without VAT</th>
+                <td>
+                    <%  const withoutVAT = order.total * 0.81 %>
+                    <%= withoutVAT.toFixed(2) %>
+                </td>
+            </tr>
+            <tr>
+                <th>VAT:</th>
+                <td> 
+                    <% const VAT =  order.total * 0.19 %>
+                    <%= VAT.toFixed(2) %>
+                </td>
+            </tr>
+            <tr>
+                <th>Total</th>
+                <td><%= order.total %></td>
+            </tr>
+        </table>
+        </table>
+    </section>
+    </main>
+    
+
+
+<%- include("./partials/footer"); %>
