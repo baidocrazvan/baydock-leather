@@ -84,7 +84,7 @@ router.get("/:id", async (req, res) => {
 
 
 // Add a new product (admin)
-router.post("/products", authenticate, isAdmin, upload.fields([
+router.post("/", authenticate, isAdmin, upload.fields([
     { name: "thumbnail", maxCount: 1}, // Thumbnail (single file)
     { name: "images", maxCount: 10} // Other images (up to 10 files)
   ]), async (req, res) => {
@@ -164,7 +164,7 @@ router.patch("/products/:id", authenticate, isAdmin, upload.fields([
 
 
 // RESTful PUT for full update of a product (admin)
-router.put("/products/:id", authenticate, isAdmin, upload.fields([
+router.put("/:id", authenticate, isAdmin, upload.fields([
     { name: "thumbnail", maxCount: 1}, // Thumbnail (single file)
     { name: "images", maxCount: 10} // Other images (up to 10 files)
   ]), async (req, res) => {

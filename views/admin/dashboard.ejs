@@ -1,20 +1,49 @@
 <%- include("../partials/header.ejs"); %>
 
 <main>
-    <h1>This is the admin dashboard. Use this form to add products in the database:</h1>
-    <form action="/shop/products" method="post" enctype="multipart/form-data">
-        <input type="text" name="name" placeholder="Product Name" required >
-        <input type="text" name="description" placeholder="Product Description" required >
-        <input type="number" name="price" placeholder="Product Price" required >
-        <input type="text" name="category" placeholder="Product Category" required>
-        <input type="number" name="stock" placeholder="Product Stock" required >
-        <label for="thumbnail">Thumbnail (Single Image)</label>
-        <input type="file" name="thumbnail" placeholder="thumbnail" accept="image/*" required>
-        <label for="images">Product Images (Multiple Images)</label>
-        <input type="file" name="images" placeholder="images" accept="image/*" multiple required >
-        <button type="submit">Add product</button>
-    </form>
-</main>
+    <% if (locals.products) { %>
+        <h2>All products in database:</h2>
+        <table>
+            <tr>
+                <th>Product Id</th>
+                <th>Thumbnail</th>
+                <th>Name</th>
+                <th>Category</th>
+                <th>Stock</th>
+                <th>Price</th>
+                <th>Date added</th>
+                <th></th>
+            </tr>
+            <% products.forEach(product => { %>
+                <tr>
+                    <td><%= product.id %></td>
+                    <td><img src="<%= product.thumbnail %>" alt="<%=product.name%>"></td>
+                    <td>
+                        <a href="/products/<%=product.id%>"><%= product.name %></a>
+                    </td>
+                    <td><%= product.category %></td>
+                    <td>
+                        <%= product.stock %>
+                    </td>
+                    <td><%= product.price %></td>
+                    <td><%= new Date(product.created_at).toLocaleDateString() %></td>
+                    <td><button><a href="/admin/modify-product/<%= product.id %>">Modify</a></button></td>
+                </tr>
+           <% }) %>
+            
+        </table>
+    <% } else { %>
+        <h2>There are no products to display.</h2>
+    <% } %>
 
+</main>
+<!-- TODO: 
+- Transform the dashboard page into a list of all products from website with scrolling pages and add delete button for each one also shipping status
+- Add form to add products to db
+- Add form to modify products from db
+- Add form to delete products from db
+- Add form to see all users
+- Add form to see all users' addresses
+- Add form to see all user's orders -->
 
 <%- include("../partials/footer.ejs"); %>
