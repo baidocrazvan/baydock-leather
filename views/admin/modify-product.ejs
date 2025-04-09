@@ -1,18 +1,18 @@
 <%- include("../partials/header.ejs"); %>
 
 <main>
-    <h1>This is the admin dashboard. Use this form to modify products:</h1>
-    <form action="products/:id&_method=PUT" method="post" enctype="multipart/form-data">
-        <input type="text" name="name" placeholder="Product Name" required >
-        <input type="text" name="description" placeholder="Product Description" required >
-        <input type="number" name="price" placeholder="Product Price" required >
-        <input type="text" name="category" placeholder="Product Category" required>
-        <input type="number" name="stock" placeholder="Product Stock" required >
+    <h2>Partially or fully update a product:</h2>
+    <form action="/products/<%= productId %>?_method=PATCH" method="POST" enctype="multipart/form-data">
+        <input type="text" name="name" placeholder="Product Name" value="<%= product.name %>" required >
+        <input type="text" name="description" placeholder="Product Description" value="<%= product.description %>" required >
+        <input type="number" name="price" placeholder="Product Price" value="<%= product.price %>" required >
+        <input type="text" name="category" placeholder="Product Category" value="<%= product.category %>" required>
+        <input type="number" name="stock" placeholder="Product Stock" value="<%= product.stock %>" required >
         <label for="thumbnail">Thumbnail (Single Image)</label>
-        <input type="file" name="thumbnail" placeholder="thumbnail" accept="image/*" required>
-        <label for="images">Product Images (Multiple Images)</label>
-        <input type="file" name="images" placeholder="images" accept="image/*" multiple required >
-        <button type="submit">Add product</button>
+        <input type="file" name="thumbnail" placeholder="thumbnail" accept="image/*" >
+        <label for="images">Product Images (Max: 10 images)</label>
+        <input type="file" name="images" placeholder="images" accept="image/*" >
+        <button type="submit">Modify product</button>
     </form>
 </main>
 

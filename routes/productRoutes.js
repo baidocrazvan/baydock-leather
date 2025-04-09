@@ -110,7 +110,7 @@ router.post("/", authenticate, isAdmin, upload.fields([
 
 
 // RESTful PATCH for partial update a product (admin)
-router.patch("/products/:id", authenticate, isAdmin, upload.fields([
+router.patch("/:id", authenticate, isAdmin, upload.fields([
     { name: "thumbnail", maxCount: 1},
     { name: "images", maxCount: 10}
   ]), async (req, res) => {
@@ -135,7 +135,8 @@ router.patch("/products/:id", authenticate, isAdmin, upload.fields([
      console.log(`Fields to update: ${fields}`);
   
     if (fields.length === 0) {
-      return res.status(400).json({ error: "No fields to update "});
+      req.flash("error", "No fields to update");
+      return res.redirect("/admin/dashboard");
     }
     
     const mappedQuery = fields.map((field, index) => `${field} = $${index + 1}`).join(", ");
@@ -152,13 +153,17 @@ router.patch("/products/:id", authenticate, isAdmin, upload.fields([
       console.log(result.rows);
   
       if (result.rows.length === 0) {
-        return res.status(404).json({ message: "Product not found"});
+        req.flash("error", "Product not found");
+        return res.redirect("/admin/dashboard");
       }
-      
-      res.json(result.rows[0]);
-  
+
+      req.flash("success", "Product updated successfully");
+      return res.redirect("/admin/dashboard");
+
     } catch(err) {
-      res.status(500).json({ error: "Failed to update product" });
+      console.error("PATCH error updating product:", err);
+      req.flash("error", "Failed to update product");
+      return res.redirect("/admin/dashboard");
     } 
   }); 
 
@@ -184,14 +189,16 @@ router.put("/:id", authenticate, isAdmin, upload.fields([
       [name, description, price, category, stock, thumbnail, images, id]);
       
       if (result.rows.length === 0) {
-        return res.status(404).json({ message: "Product not found" });
+        req.flash("error", "Product not found");
+        return res.redirect("/admin/dashboard");
       }
-  
-      res.json(result.rows[0]);
+      
+      req.flash("success", "Product updated successfully");
+      res.redirect("/admin/dashboard");
   
     } catch(err) {
-      console.error("Error:", err);
-      res.status(500).json({error: "Failed to update product" });
+      console.error("PUT eror updating product:", err);
+      req.flash("error", "Failed to update product" );
     }
   });
   
@@ -201,9 +208,12 @@ router.delete("/products/:id", authenticate, isAdmin, (req, res) => {
     const id = req.params.id;
     try{
         const result = db.query(`DELETE FROM products WHERE id = $1`, [id]);
-        res.status(200).json({ message: "Product deleted succesfully"});
+        req.flash("success", "Product deleted successfully");
+        return res.redirect('/admin/dashboard');
     } catch(err) {
-        console.error(err);
+        console.error("DELETE error deleting product:" , err);
+        req.flash("error", "Error deleting product");
+        res.redirect("/admin/dashboard");
     }
 
 }); 
