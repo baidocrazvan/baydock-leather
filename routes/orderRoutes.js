@@ -7,6 +7,7 @@ import {
     addOrderItems,
     clearCart,
     updateProductStock,
+    getOrderDetails
  } from "../services/orderService.js";
 
 const router = express.Router();
@@ -67,107 +68,11 @@ router.get("/history", authenticate, async (req, res) => {
 // GET page containing all the details of a specific order for authenticated user with ownership validation
 router.get("/:id", authenticate, async (req, res) => {
     try {
-      const userId = req.user.id
-      const orderId = req.params.id;
+      const order = await getOrderDetails(req.params.id, req.user.id);
 
-      // Check whether the order the user is trying to access belongs to him
-      const userOwnershipCheck = await db.query(
-        `SELECT id FROM orders
-        WHERE id = $1 AND user_id = $2`,
-        [orderId, userId]
-      );
-
-      if (userOwnershipCheck.rows.length === 0) {
-        req.flash("error", "Order not found");
-        return res.redirect("/orders/history");
-      }
-
-      // Get order id, date, status and price, then shipping address details, billing address details, and product details
-      // Use left join in case shipping address is the same as billing address
-      const result = await db.query(
-          `SELECT
-              o.id AS order_id,
-              o.status AS order_status,
-              o.total_price,
-              o.payment_method,
-              o.created_at,
-              sa.first_name AS shipping_first_name,
-              sa.last_name AS shipping_last_name,
-              sa.address AS shipping_address,
-              sa.city AS shipping_city,
-              sa.county AS shipping_county,
-              sa.country AS shipping_country,
-              sa.postal_code AS shipping_postal_code,
-              sa.phone_number AS shipping_phone,
-              ba.first_name AS billing_first_name,
-              ba.last_name AS billing_last_name,
-              ba.address AS billing_address,
-              ba.city AS billing_city,
-              ba.county AS billing_county,
-              ba.country AS billing_country,
-              ba.postal_code AS billing_postal_code,
-              ba.phone_number AS billing_phone,
-              p.id AS product_id,
-              p.name AS product_name,
-              p.thumbnail,
-              oi.quantity,
-              oi.price AS product_price
-          FROM
-              orders o
-          JOIN
-              shipping_addresses sa ON o.shipping_address_id = sa.id
-          LEFT JOIN
-              shipping_addresses ba ON o.billing_address_id = ba.id
-          JOIN
-              order_items oi ON o.id = oi.order_id
-          JOIN
-              products p ON oi.product_id = p.id
-          WHERE
-              o.user_id = $1 AND o.id = $2`,
-          [userId, orderId]
-          );
-
-        if (result.rows.length === 0) {
-            req.flash("error", "Order not found.");
-            return res.redirect("/orders");
-          }
-    console.log(result.rows[0].created_at);
-    // Transform query results
-    const orderDetails = {
-    id: result.rows[0].order_id,
-    status: result.rows[0].order_status,
-    total: result.rows[0].total_price,
-    payment: result.rows[0].payment_method,
-    date: new Date(result.rows[0].created_at).toLocaleDateString(),
-    shippingAddress: {
-        name: `${result.rows[0].shipping_first_name} ${result.rows[0].shipping_last_name}`,
-        street: result.rows[0].shipping_address,
-        city: `${result.rows[0].shipping_city} ${result.rows[0].shipping_county}`,
-        country: result.rows[0].shipping_country,
-        postalCode: result.rows[0].shipping_postal_code,
-        phoneNumber: result.rows[0].shipping_phone_number,
-    },
-    billingAddress: {
-      name: `${result.rows[0].billing_first_name || result.rows[0].shipping_first_name} ${result.rows[0].billing_last_name || result.rows[0].shipping_last_name}`,
-        street: result.rows[0].billing_address || result.rows[0].shipping_address,
-        city: `${result.rows[0].billing_city || result.rows[0].shipping_city}${result.rows[0].billing_county ? ', ' + result.rows[0].billing_county : result.rows[0].shipping_county ? ', ' + result.rows[0].shipping_county : ''}`,
-        country: result.rows[0].billing_country || result.rows[0].shipping_country,
-        postalCode: result.rows[0].billing_postal_code || result.rows[0].shipping_postal_code,
-        phone: result.rows[0].billing_phone || result.rows[0].shipping_phone
-      },
-    products: result.rows.map(row => ({
-        productId: row.product_id,
-        name: row.product_name,
-        thumbnail: row.thumbnail,
-        quantity: row.quantity,
-        price: row.product_price,
-        subtotal: (row.quantity * row.product_price).toFixed(2)
-    })),
-    };
-      console.log(orderDetails.date);
       res.render('orders/order.ejs', {
-        order: orderDetails,
-        sameAddress: orderDetails.shippingAddress.street === orderDetails.billingAddress.street,
+        order,
+        sameAddress: order.shippingAddress.street === order.billingAddress.street,
         user: req.user
       });
 

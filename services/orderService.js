@@ -1,37 +1,5 @@
 import db from '../db.js'
 
-// Check if cart is empty
-
-// Get all orders (for admin)
-export async function getAllOrders() {
-    try {
-
-        // Get info about all orders and their associated shipping addresses
-        const result = await db.query(
-            `SELECT
-                o.id AS order_id,
-                o.status AS order_status,
-                o.created_at AS order_date,
-                o.total_price AS order_total,
-                sa.first_name,
-                sa.last_name,
-                sa.city,
-                sa.county,
-                sa.phone_number
-             FROM
-                orders o
-            JOIN
-                shipping_addresses sa ON o.shipping_address_id = sa.id
-            ORDER BY
-                o.created_at DESC`
-        );
-        
-        return result.rows;
-    } catch(err) {
-        console.error("Error getting all orders from db:", err);       
-    }
-}
-
 // Calculate order total price
 export async function calculateTotalPrice(userId) {
     const result = await db.query(
@@ -95,4 +63,102 @@ export async function clearCart(userId) {
     await db.query(
         `DELETE FROM carts WHERE user_id = $1`, [userId]
     );
+}
+
+
+// Get a specific order's complete information
+export async function getOrderDetails(orderId, userId = null) {
+    // If userId is provided, enforce ownership. 
+    const ownershipCheck = userId 
+        ? await db.query(
+            `SELECT id FROM orders WHERE id = $1 AND user_id = $2`, 
+            [orderId, userId]
+            )
+        : { rows: [{ id: orderId }] }; // Mock successfull result for admin bypass
+
+    if (ownershipCheck.rows.length === 0) {
+    throw new Error("Order not found or access denied");
+    }
+
+    // Get order id, date, status and price, then shipping address details, billing address details, and product details
+    // Use left join in case shipping address is the same as billing address
+      const result = await db.query(
+        `SELECT
+            o.id AS order_id,
+            o.status AS order_status,
+            o.total_price,
+            o.payment_method,
+            o.created_at,
+            sa.first_name AS shipping_first_name,
+            sa.last_name AS shipping_last_name,
+            sa.address AS shipping_address,
+            sa.city AS shipping_city,
+            sa.county AS shipping_county,
+            sa.country AS shipping_country,
+            sa.postal_code AS shipping_postal_code,
+            sa.phone_number AS shipping_phone,
+            ba.first_name AS billing_first_name,
+            ba.last_name AS billing_last_name,
+            ba.address AS billing_address,
+            ba.city AS billing_city,
+            ba.county AS billing_county,
+            ba.country AS billing_country,
+            ba.postal_code AS billing_postal_code,
+            ba.phone_number AS billing_phone,
+            p.id AS product_id,
+            p.name AS product_name,
+            p.thumbnail,
+            oi.quantity,
+            oi.price AS product_price
+        FROM
+            orders o
+        JOIN
+            shipping_addresses sa ON o.shipping_address_id = sa.id
+        LEFT JOIN
+            shipping_addresses ba ON o.billing_address_id = ba.id
+        JOIN
+            order_items oi ON o.id = oi.order_id
+        JOIN
+            products p ON oi.product_id = p.id
+        WHERE
+            o.id = $1`,
+        [orderId]
+        );
+
+      if (result.rows.length === 0) {
+        throw new Error("Order details not found");
+        }
+
+    // Transform query results
+    return {
+        id: result.rows[0].order_id,
+        status: result.rows[0].order_status,
+        total: result.rows[0].total_price,
+        payment: result.rows[0].payment_method,
+        date: new Date(result.rows[0].created_at).toLocaleDateString(),
+        shippingAddress: {
+            name: `${result.rows[0].shipping_first_name} ${result.rows[0].shipping_last_name}`,
+            street: result.rows[0].shipping_address,
+            city: `${result.rows[0].shipping_city} ${result.rows[0].shipping_county}`,
+            country: result.rows[0].shipping_country,
+            postalCode: result.rows[0].shipping_postal_code,
+            phoneNumber: result.rows[0].shipping_phone_number,
+        },
+        billingAddress: {
+            name: `${result.rows[0].billing_first_name || result.rows[0].shipping_first_name} ${result.rows[0].billing_last_name || result.rows[0].shipping_last_name}`,
+            street: result.rows[0].billing_address || result.rows[0].shipping_address,
+            city: `${result.rows[0].billing_city || result.rows[0].shipping_city}${result.rows[0].billing_county ? ', ' + result.rows[0].billing_county : result.rows[0].shipping_county ? ', ' + result.rows[0].shipping_county : ''}`,
+            country: result.rows[0].billing_country || result.rows[0].shipping_country,
+            postalCode: result.rows[0].billing_postal_code || result.rows[0].shipping_postal_code,
+            phone: result.rows[0].billing_phone || result.rows[0].shipping_phone
+            },
+        products: result.rows.map(row => ({
+            productId: row.product_id,
+            name: row.product_name,
+            thumbnail: row.thumbnail,
+            quantity: row.quantity,
+            price: row.product_price,
+            subtotal: (row.quantity * row.product_price).toFixed(2)
+        })),
+    };  
 }
