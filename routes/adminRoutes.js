@@ -1,7 +1,8 @@
 import express from "express";
 import { authenticate, isAdmin } from "../middleware/middleware.js";
 import { getAllProducts, getProductById } from "../services/productService.js";
-import { getAllOrders } from "../services/orderService.js";
+import { getAllOrders } from "../services/adminService.js";
+import { getOrderDetails } from "../services/orderService.js";
 
 const router = express.Router();
 // GET admin dashboard
@@ -27,10 +28,25 @@ router.get("/modify-product/:id", authenticate, isAdmin, async(req, res) => {
 router.get("/orders", authenticate, isAdmin, async(req, res) => {
     try {
         const orders = await getAllOrders();
-        return res.render("admin/orders.ejs", { orders })
+        return res.render("admin/order-list.ejs", { orders })
     } catch(err) {
         console.error("GET error rendering all orders page (admin):" , err);
         res.redirect("/admin/dashboard");
+    }
+})
+
+// GET a specific order
+router.get("/orders/:id", authenticate, isAdmin, async(req, res) => {
+    try {
+        const order = await getOrderDetails(req.params.id);
+        res.render("admin/order.ejs", {
+            order,
+            sameAddress: order.shippingAddress.street === order.billingAddress.street,
+        })
+    } catch(err) {
+        console.error("GET error fetching specific order:", err);
+        req.flash("error", "Cannot get details about this order");
+        res.redirect("/admin/orders");
     }
 })
 
