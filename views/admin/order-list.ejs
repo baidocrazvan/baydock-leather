@@ -2,6 +2,20 @@
 
 <main>
     <h2>User orders:</h2>
+
+    <form action="/admin/orders" method="GET" class="search-form">
+        <input 
+          type="text" 
+          name="search" 
+          placeholder="Search by Order ID" 
+          value="<%= searchQuery || '' %>"
+        >
+        <button type="submit">Search</button>
+        <% if (searchQuery) { %>
+          <a href="/admin/orders" class="clear-search">Clear</a>
+        <% } %>
+      </form>
+
     <table>
         <tr>
             <th>Order ID</th>

@@ -27,8 +27,13 @@ router.get("/modify-product/:id", authenticate, isAdmin, async(req, res) => {
 // GET all orders
 router.get("/orders", authenticate, isAdmin, async(req, res) => {
     try {
-        const orders = await getAllOrders();
-        return res.render("admin/order-list.ejs", { orders })
+        const searchTerm = req.query.search || '';
+        const orders = await getAllOrders(searchTerm);
+        return res.render("admin/order-list.ejs", { 
+            orders,
+            searchQuery: searchTerm 
+        })
+        
     } catch(err) {
         console.error("GET error rendering all orders page (admin):" , err);
         res.redirect("/admin/dashboard");
