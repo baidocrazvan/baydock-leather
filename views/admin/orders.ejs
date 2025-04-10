@@ -1,0 +1,32 @@
+<%- include("../partials/header.ejs"); %>
+
+<main>
+    <h2>User orders:</h2>
+    <table>
+        <tr>
+            <th>Order ID</th>
+            <th>Order status</th>
+            <th>Customer</th>
+            <th>Address</th>
+            <th>Phone</th>
+            <th>Total (incl VAT)</th>
+            <th>Date placed</th>
+            <th>See order</th>
+        </tr>
+        <% orders.forEach(order => { %>
+            <tr>
+                <td><%= order.order_id %></td>
+                <td><%= order.order_status %></td>
+                <td><%= order.shipping_last_name %> <%= order.shipping_first_name %></td>
+                <td><%= order.city %>, <%= order.county %></td>
+                <td><%= order.phone_number %></td>
+                <td><%= order.order_total %></td>
+                <td><%= new Date(order.order_date).toLocaleDateString() %></td>
+                
+                <td><button><a href="/orders/<%= order.orderId%>">View</a></button></td>
+            </tr>
+        <% }) %>
+    </table>
+</main>
+
+<%- include("../partials/footer.ejs"); %>
