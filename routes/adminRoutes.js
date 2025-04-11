@@ -1,10 +1,12 @@
 import express from "express";
+import db from '../db.js'
 import { authenticate, isAdmin } from "../middleware/middleware.js";
 import { getAllProducts, getProductById } from "../services/productService.js";
 import { getAllOrders } from "../services/adminService.js";
 import { getOrderDetails } from "../services/orderService.js";
 
 const router = express.Router();
+
 // GET admin dashboard
 router.get("/dashboard", authenticate, isAdmin, async (req, res) => {
 try {
@@ -33,7 +35,7 @@ router.get("/orders", authenticate, isAdmin, async(req, res) => {
             orders,
             searchQuery: searchTerm 
         })
-        
+
     } catch(err) {
         console.error("GET error rendering all orders page (admin):" , err);
         res.redirect("/admin/dashboard");
@@ -52,6 +54,26 @@ router.get("/orders/:id", authenticate, isAdmin, async(req, res) => {
         console.error("GET error fetching specific order:", err);
         req.flash("error", "Cannot get details about this order");
         res.redirect("/admin/orders");
+    }
+})
+
+router.patch("/orders/:id", authenticate, isAdmin, async(req, res) => {
+    try{
+        const orderId = req.params.id;
+        const newStatus = req.body.status;
+        await db.query(`
+            UPDATE orders
+            SET status = $1
+            WHERE id = $2`,
+            [newStatus, orderId]
+        );
+
+        req.flash("success", "Order status updated successfully")
+        res.redirect(`/admin/orders/${orderId}`);
+    } catch(err) {
+        console.error("PATCH error updating order status", err);
+        req.flash("error", "Failed to update order status");
+        res.redirect(`/admin/orders/${orderId}`);
     }
 })
 
