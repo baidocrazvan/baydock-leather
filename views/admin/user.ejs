@@ -1,0 +1,70 @@
+<%- include("../partials/header.ejs"); %>
+
+<main>
+    <h1>User Details: <%= user.first_name %> <%= user.last_name %></h1>
+
+    <div class="user-info">
+    <h2>Basic Information</h2>
+    <p><strong>Email:</strong> <%= user.email %></p>
+    <p><strong>Role:</strong> <%= user.role %></p>
+    <p><strong>Member since:</strong> <%= new Date(user.created_at).toLocaleString() %></p>
+    </div>
+
+    <div class="addresses">
+    <h2>Addresses(<%= addresses.length %>):</h2>
+    <% addresses.forEach(address => { %>
+        <div class="address-card">
+        <h3><%= address.first_name %> <%= address.last_name %></h3>
+        <p><%= address.address %>, <%= address.city %></p>
+        <p><%= address.county %>, <%= address.postal_code %></p>
+        <p><%= address.country %></p>
+        <p>Phone: <%= address.phone_number %></p>
+        <div class="address-flags">
+            <span class="badge <%= address.is_shipping ? 'badge-primary' : '' %>">
+            Shipping
+            </span>
+            <span class="badge <%= address.is_billing ? 'badge-success' : '' %>">
+            Billing
+            </span>
+            <span class="badge <%= address.is_active ? 'badge-info' : 'badge-secondary' %>">
+            <%= address.is_active ? 'Active' : 'Inactive' %>
+            </span>
+        </div>
+        </div>
+    <% }) %>
+    </div>
+
+    <div class="orders">
+    <h2>Order History (<%= orders.length %>)</h2>
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Order ID</th>
+            <th>Date</th>
+            <th>Status</th>
+            <th>Shipping to:</th>
+            <th>Total</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <% orders.forEach(order => { %>
+            <tr>
+            <td><%= order.id %></td>
+            <td><%= new Date(order.created_at).toLocaleDateString() %></td>
+            <td><span class="badge badge-<%= order.status %>">
+                <%= order.status %>
+            </span></td>
+            <td><%= order.city %>, <%= order.county %></td>
+            <td><%= order.total_price %> RON</td>
+            <td>
+                <a href="/admin/orders/<%= order.id %>" class="btn btn-sm btn-info">View</a>
+            </td>
+            </tr>
+        <% }) %>
+        </tbody>
+    </table>
+    </div>
+</main>
+
+<%- include("../partials/footer.ejs"); %>

@@ -4,6 +4,7 @@ import { authenticate, isAdmin } from "../middleware/middleware.js";
 import { getAllProducts, getProductById } from "../services/productService.js";
 import { getAllOrders } from "../services/adminService.js";
 import { getOrderDetails } from "../services/orderService.js";
+import { getAllUsers, getUserDetails } from "../services/UserService.js";
 
 const router = express.Router();
 
@@ -57,6 +58,7 @@ router.get("/orders/:id", authenticate, isAdmin, async(req, res) => {
     }
 })
 
+// PATCH route for changind order status
 router.patch("/orders/:id", authenticate, isAdmin, async(req, res) => {
     try{
         const orderId = req.params.id;
@@ -77,5 +79,30 @@ router.patch("/orders/:id", authenticate, isAdmin, async(req, res) => {
     }
 })
 
-// TO DO: Add route to see and render all orders, and then to be able to change their status from pending to shipped or completed
+// GET route for getting users list
+router.get("/users", authenticate, isAdmin, async (req, res) => {
+    try{
+        const users = await getAllUsers();
+        res.render("admin/user-list.ejs", { users });
+
+    } catch(err) {
+        console.error("Error fetching users:", err);
+        res.redirect("/admin/dashboard.ejs");
+    }
+});
+
+// GET route for details of a specific user
+
+router.get('/users/:id', authenticate, isAdmin, async (req, res) => {
+    try {
+      const userDetails = await getUserDetails(req.params.id);
+      console.log(userDetails);
+      res.render('admin/user.ejs', userDetails);
+    } catch (err) {
+      console.error('Error fetching user details:', err);
+      res.redirect('/admin/users');
+    }
+  });
+
+
 export default router;

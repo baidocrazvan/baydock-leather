@@ -1,0 +1,33 @@
+<%- include("../partials/header.ejs"); %>
+
+<main>
+    <h1>User Management</h1>
+    <table class="table">
+    <thead>
+        <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Role</th>
+        <th>Joined</th>
+        <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        <% users.forEach(user => { %>
+        <tr>
+            <td><%= user.id %></td>
+            <td><%= user.first_name %> <%= user.last_name %></td>
+            <td><%= user.email %></td>
+            <td><%= user.role %></td>
+            <td><%= new Date(user.created_at).toLocaleDateString() %></td>
+            <td>
+            <a href="/admin/users/<%= user.id %>" class="btn btn-sm btn-primary">View</a>
+            </td>
+        </tr>
+        <% }) %>
+    </tbody>
+    </table>
+</main>
+
+<%- include("../partials/footer.ejs"); %>

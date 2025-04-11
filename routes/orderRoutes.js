@@ -43,7 +43,8 @@ router.get("/history", authenticate, async (req, res) => {
         );
 
         if (result.rows.length === 0) {
-          return res.status(404).json({ error: "No orders found" });
+          req.flash("error", "Failed to get order history");
+          return res.render("/user/account");
         }
 
         // Format the response
@@ -62,6 +63,7 @@ router.get("/history", authenticate, async (req, res) => {
         
   } catch(err) {
       console.error("Error getting order history: ", err);
+      return res.render("/user/account");
   }
 }); 
 
