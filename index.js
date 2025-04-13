@@ -104,14 +104,17 @@ app.use("/address", addressRoutes);
 // customer account endpoints
 app.use("/user", userRoutes);
 
-passport.use(new Strategy(async function verify(username, password, cb) {
-  
+passport.use(new Strategy(
+  {
+    usernameField: "email",
+    passwordField: "password"
+  },
+  async function verify(email, password, cb) {
   try {
-    const result = await db.query(`SELECT * FROM users WHERE email = $1`, [username]);
+    const result = await db.query(`SELECT * FROM users WHERE email = $1`, [email]);
     
     if (result.rows.length > 0) {
       const initialUser = result.rows[0]
-      console.log(initialUser);
       const hashedPassword = initialUser.password; // Hashed password created during registration process
 
       bcrypt.compare(password, hashedPassword, (err, result) => { // Compare user password against bcrypt hash from db

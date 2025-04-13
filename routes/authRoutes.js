@@ -2,6 +2,8 @@ import express from "express";
 import bcrypt from "bcryptjs";
 import passport from "passport";
 import db from "../db.js";
+import Joi from "joi";
+import { validateLogin, validateRegister } from "../middleware/validationMiddleware.js";
 
 const saltRounds = 10;
 const router = express.Router();
@@ -18,17 +20,18 @@ router.get("/register", (req, res) => {
   });
 
 // POST login a user
-router.post("/login", passport.authenticate("local", {
-  // Use message from Passport strategy
-  failureFlash: true,
-  successRedirect: "/",
-  failureRedirect: "/auth/login",
-  
-}));
+router.post("/login", validateLogin,
+  passport.authenticate("local", {
+    // Use message from Passport strategy
+    failureFlash: true,
+    successRedirect: "/",
+    failureRedirect: "/auth/login",
+    
+  }));
 
 // POST register a user
-router.post("/register", async (req, res) => {
-    const { lastName, firstName, username: email, password, cpassword: confirmPassword } = req.body;
+router.post("/register", validateRegister, async (req, res) => {
+    const { lastName, firstName, email, password, cpassword: confirmPassword } = req.body;
     const role = "user";
   
     try {
