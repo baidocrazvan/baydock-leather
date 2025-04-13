@@ -233,3 +233,174 @@ document.addEventListener('DOMContentLoaded', function() {
   )};    
 });
 
+
+// =====================
+// FORM VALIDATION
+// =====================
+
+// Validate login form before submission
+
+
+const loginForm = document.getElementById('loginForm');
+const registerForm = document.getElementById('registerForm');
+const email = document.getElementById('email');
+const password = document.getElementById('password');
+const confirmPassword = document.getElementById('cpassword')
+const firstName = document.getElementById('firstName');
+const lastName = document.getElementById('lastName');
+
+if (loginForm) {
+    loginForm.addEventListener('submit', (e) => {
+      if (!validateLoginInputs()) {
+        e.preventDefault(); // Only prevent if validation fails
+      }
+  });
+}
+
+if (registerForm) {
+  registerForm.addEventListener('submit', (e) => {
+    if(!validateRegisterInputs()) {
+      e.preventDefault();
+    }
+});
+}
+
+const setError = (element, message) => {
+  const inputControl = element.parentElement;
+  const errorDisplay = inputControl.querySelector(".error");
+
+  errorDisplay.innerText = message;
+
+  inputControl.classList.add('error');
+  inputControl.classList.remove('success');
+}
+
+const setSuccess = element => {
+  const inputControl = element.parentElement;
+  const errorDisplay = inputControl.querySelector(".error");
+
+  errorDisplay.innerText = '';
+  inputControl.classList.add('success');
+  inputControl.classList.remove('error');
+}
+
+const isValidEmail = email => {
+  const re = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/
+  return re.test(email)
+}
+
+const isValidPassword = password => {
+  const re = /(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}/
+  return re.test(password);
+}
+
+const isValidName = name => {
+  const re = /^[A-Za-zÀ-ÖØ-öø-ÿ\s'-]{2,50}$/
+  return re.test(name);
+}
+
+const validateLoginInputs = () => {
+  const emailValue = email.value.trim();
+  const passwordValue = password.value.trim();
+  let isValid = true;
+
+  if (emailValue === '') {
+      setError(email, 'Email is required');
+      isValid = false;
+  } else if (!isValidEmail(emailValue)) {
+    setError(email, 'Email address is invalid');
+    isValid = false;
+  } else {
+    setSuccess(email);
+  }
+
+  if (passwordValue === '') {
+    setError(password, "Password is required");
+    isValid = false;
+  } else if (passwordValue.length < 8 ) {
+    setError(password, "Password must be atleast 8 characters long");
+    isValid = false;
+  } else if (!isValidPassword(passwordValue)) {
+    setError(password, 'Password must contain at least one uppercase letter and atleast one number');
+    isValid = false;
+  } else {
+    setSuccess(password);
+  }
+
+  return isValid;
+}
+
+const validateRegisterInputs = () => {
+  const emailValue = email.value;
+  const passwordValue = password.value;
+  const confirmPasswordValue = confirmPassword.value;
+  const firstNameValue = firstName.value;
+  const lastNameValue = lastName.value;
+  let isValid = true;
+
+  if (emailValue === '') {
+    setError(email, 'Email is required');
+    isValid = false;
+  } else if (!isValidEmail(emailValue)) {
+    setError(email, 'Email address is invalid');
+    isValid = false;
+  } else {
+    setSuccess(email);
+  }
+
+  if (passwordValue === '') {
+    console.log(passwordValue);
+    setError(password, "Password is required");
+    isValid = false;
+  } else if (passwordValue.length < 8 ) {
+    console.log(passwordValue);
+    setError(password, "Password must be atleast 8 characters long");
+    isValid = false;
+  } else if (!isValidPassword(passwordValue)) {
+    console.log(passwordValue);
+    setError(password, 'Password must contain at least one uppercase letter and atleast one number');
+    isValid = false;
+  } else {
+    setSuccess(password);
+  }
+
+  if (confirmPasswordValue === '') {
+    console.log(confirmPasswordValue);
+    setError(confirmPassword, "Confirmation password is required");
+    isValid = false;
+  }  else if (passwordValue !== confirmPasswordValue) {
+    console.log(confirmPasswordValue);
+    setError(confirmPassword, "Confirmation password does not match password");
+    isValid = false;
+  } else {
+    setSuccess(confirmPassword);
+  }
+
+  if (firstNameValue === '') {
+    setError(firstName, "First name is required");
+    isValid = false;
+  } else if (firstNameValue.length < 2) {
+    setError(firstName, "First name needs to be at least 2 characters long.");
+    isValid = false;
+  } else if (!isValidName(firstNameValue)) {
+    setError(firstName, "Names cannot contain numbers or symbols");
+    isValid = false;
+  } else {
+    setSuccess(firstName);
+  }
+
+  if (lastNameValue === '') {
+    setError(lastName, "Last name is required");
+    isValid = false;
+  } else if (lastNameValue.length < 2) {
+    setError(lastName, "Last name needs to be at least 2 characters long.");
+    isValid = false;
+  } else if (!isValidName(lastNameValue)) {
+    setError(firstName, "Names cannot contain numbers or symbols");
+    isValid = false;
+  } else {
+    setSuccess(lastName);
+  }
+
+  return isValid;
+}
