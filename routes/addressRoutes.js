@@ -2,6 +2,7 @@ import express from "express";
 import db from "../db.js";
 import { authenticate, isAdmin } from "../middleware/middleware.js";
 import { getActiveUserAddresses, getAllUserAddresses, getUserAddress } from "../services/addressService.js";
+import { validateAddress } from "../middleware/validationMiddleware.js"
 
 const router = express.Router();
 
@@ -11,7 +12,7 @@ router.get("/shipping-address", authenticate, async (req, res) => {
 })
 
 // POST Add a shipping address to user account
-router.post("/shipping-address", authenticate, async (req, res) => {
+router.post("/shipping-address", authenticate, validateAddress, async (req, res) => {
     try{
 
         const userId = req.user.id;
@@ -38,7 +39,7 @@ router.post("/shipping-address", authenticate, async (req, res) => {
         if (fromCheckout) {
           return res.redirect("/cart/checkout");
         } else {
-          return res.redirect("/customer/account")
+          return res.redirect("/user/account")
         }
 
         
@@ -51,7 +52,7 @@ router.post("/shipping-address", authenticate, async (req, res) => {
 
 
 // GET Render page for editing a specific shipping address
-router.get("/shipping-address/edit/:id", authenticate, async (req, res) => {
+router.get("/shipping-address/edit/:id", authenticate,  async (req, res) => {
   try {
     const address = await getUserAddress(req.user.id, req.params.id);
     res.render("addresses/modify-address.ejs", {
@@ -73,15 +74,16 @@ router.get("/shipping-address/edit/:id", authenticate, async (req, res) => {
 })
 
 // PUT Request for editing a specific shipping address
-router.put("/shipping-address/edit/:id", authenticate, async (req, res) => {
+router.put("/shipping-address/edit/:id", authenticate, validateAddress, async (req, res) => {
     try {
       const { 
-      first_name,
-      last_name,
-      address, city,
-      county, country,
-      phone_number,
-      postal_code,
+      firstName,
+      lastName,
+      address,
+      city,
+      county,
+      phoneNumber,
+      postalCode,
       is_shipping,
       is_billing
     } = req.body;
@@ -121,23 +123,22 @@ router.put("/shipping-address/edit/:id", authenticate, async (req, res) => {
           address = $3,
           city = $4,
           county = $5,
-          country = $6,
-          phone_number = $7,
-          postal_code = $8,
-          is_shipping = $9,
-          is_billing = $10,
+          phone_number = $6,
+          postal_code = $7,
+          is_shipping = $8,
+          is_billing = $9,
           updated_at = NOW()
-          WHERE id = $11
-          AND user_id = $12
+          WHERE id = $10
+          AND user_id = $11
           RETURNING *`,
           [ 
-            first_name,
-            last_name,
+            firstName,
+            lastName,
             address,
-            city, county,
-            country,
-            phone_number,
-            postal_code,
+            city,
+            county,
+            phoneNumber,
+            postalCode,
             isShipping,
             isBilling,
             req.params.id,
@@ -147,7 +148,7 @@ router.put("/shipping-address/edit/:id", authenticate, async (req, res) => {
 
         await client.query('COMMIT');
         req.flash("success", "Address updated successfully");
-        res.redirect("/customer/addresses");
+        res.redirect("/user/addresses");
 
       } catch(err) {
         await client.query("ROLLBACK");

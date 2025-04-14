@@ -1,29 +1,74 @@
 <%- include("../partials/header"); %> <!-- Include the shared header and navbar -->
 <main>
-    <form method="POST" action="/address/shipping-address/edit/<%= addressId %>?_method=PUT">
-    <label for="first_name">First name:</label>
-    <input type="text" name="first_name" value="<%= address.first_name %>">
+    <form method="POST" action="/address/shipping-address/edit/<%= addressId %>?_method=PUT" id="addressForm">
+        <div class="input-control">
+            <label for="firstName">First name:</label>
+            <input
+            id="firstName"
+            type="text"
+            name="firstName"
+            class="form-input"
+            value="<%= address.first_name %>"
+            >
+            <div class="error"></div>
+        </div>
+        
+        <div class="input-control">
+            <label for="lastName">Last name:</label>
+            <input
+            id="lastName" 
+            type="text"
+            name="lastName"
+            class="form-input"
+            value="<%= address.last_name %>"
+            >
+            <div class="error"></div>
+        </div>
+        
+        <div class="input-control">
+            <label for="address">Address</label>
+            <input id="address" type="text" name="address" class="form-input" value="<%= address.address %>">
+            <div class="error"></div>
+        </div>
 
-    <label for="last_name">Last name:</label>
-    <input type="text" name="last_name" value="<%= address.last_name %>">
-
-    <label for="address">Address</label>
-    <input type="text" name="address" value="<%= address.address %>">
-
-    <label for="city">City</label>
-    <input type="text" name="city" value="<%= address.city %>">
-
-    <label for="county">County</label>
-    <input type="text" name="county" value="<%= address.county %>">
-
-    <label for="country">Country</label>
-    <input type="text"  name="country" value="<%= address.country %>">
-
-    <label for="phone_number">Phone:</label>
-    <input type="text"  name="phone_number" value="<%= address.phone_number %>">
-
-    <label for="postal_code">Postal code:</label>
-    <input type="text" name="postal_code" value="<%= address.postal_code %>">
+    
+        <div class="input-control">
+            <label for="city">City</label>
+            <input id="city" type="text" name="city" class="form-input" value="<%= address.city %>">
+            <div class="error"></div>
+        </div>
+        
+        <div class="input-control">
+            <label for="county">County</label>
+            <input id="county" type="text" name="county" class="form-input" value="<%= address.county %>">
+            <div class="error"></div>
+        </div>
+        
+    
+        <div class="input-control">
+            <label for="phoneNumber">Phone:</label>
+            <input
+            id="phoneNumber" 
+            type="text"  
+            name="phoneNumber" 
+            class="form-input"
+            value="<%= address.phone_number %>"
+            >
+            <div class="error"></div>
+        </div>
+        
+    
+        <div class="input-control">
+            <label for="postalCode">Postal code:</label>
+            <input
+            id="postalCode"
+            type="text"
+            name="postalCode"
+            class="form-input"
+            value="<%= address.postal_code %>"
+            >
+            <div class="error"></div>
+        </div>
 
     <% if (address.is_billing === false) { %>
     <label>

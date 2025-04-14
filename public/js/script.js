@@ -243,11 +243,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
 const loginForm = document.getElementById('loginForm');
 const registerForm = document.getElementById('registerForm');
+const addressForm = document.getElementById('addressForm');
 const email = document.getElementById('email');
 const password = document.getElementById('password');
-const confirmPassword = document.getElementById('cpassword')
+const confirmPassword = document.getElementById('cpassword');
 const firstName = document.getElementById('firstName');
 const lastName = document.getElementById('lastName');
+const address = document.getElementById('address');
+const city = document.getElementById('city');
+const county = document.getElementById('county');
+const phoneNumber = document.getElementById('phoneNumber');
+const postalCode = document.getElementById('postalCode');
 
 if (loginForm) {
     loginForm.addEventListener('submit', (e) => {
@@ -265,6 +271,14 @@ if (registerForm) {
 });
 }
 
+if (addressForm) {
+  addressForm.addEventListener('submit', (e) => {
+    if(!validateAddressInputs()) {
+      e.preventDefault();
+    }
+  })
+}
+
 const setError = (element, message) => {
   const inputControl = element.parentElement;
   const errorDisplay = inputControl.querySelector(".error");
@@ -279,9 +293,10 @@ const setSuccess = element => {
   const inputControl = element.parentElement;
   const errorDisplay = inputControl.querySelector(".error");
 
-  errorDisplay.innerText = '';
-  inputControl.classList.add('success');
-  inputControl.classList.remove('error');
+  if (errorDisplay.textContent !== '') {
+    errorDisplay.innerText = '';
+    inputControl.classList.remove('error');
+  }
 }
 
 const isValidEmail = email => {
@@ -297,6 +312,16 @@ const isValidPassword = password => {
 const isValidName = name => {
   const re = /^[A-Za-zÀ-ÖØ-öø-ÿ\s'-]{2,50}$/
   return re.test(name);
+}
+
+const isValidPhoneNumber = phoneNumber => {
+  const re = /^\+40\d{1,10}$/
+  return re.test(phoneNumber);
+}
+
+const isValidPostalCode = postalCode => {
+  const re = /^\d{6}$/
+  return re.test(postalCode)
 }
 
 const validateLoginInputs = () => {
@@ -400,6 +425,105 @@ const validateRegisterInputs = () => {
     isValid = false;
   } else {
     setSuccess(lastName);
+  }
+
+  return isValid;
+}
+
+
+const validateAddressInputs = () => {
+  const firstNameValue = firstName.value.trim();
+  const lastNameValue = lastName.value.trim();
+  const addressValue = address.value.trim();
+  const cityValue = city.value.trim();
+  const countyValue = county.value.trim();
+  const phoneNumberValue = phoneNumber.value.trim();
+  const postalCodeValue = postalCode.value.trim();
+  let isValid = true;
+
+  if (firstNameValue === '') {
+    setError(firstName, "First name is required");
+    isValid = false;
+  } else if (firstNameValue.length < 2) {
+    setError(firstName, "First name needs to be at least 2 characters long.");
+    isValid = false;
+  } else if (!isValidName(firstNameValue)) {
+    setError(firstName, "Names cannot contain numbers or symbols");
+    isValid = false;
+  } else {
+    setSuccess(firstName);
+  }
+
+  if (lastNameValue === '') {
+    setError(lastName, "Last name is required");
+    isValid = false;
+  } else if (lastNameValue.length < 2) {
+    setError(lastName, "Last name needs to be at least 2 characters long.");
+    isValid = false;
+  } else if (!isValidName(lastNameValue)) {
+    setError(lastName, "Names cannot contain numbers or symbols");
+    isValid = false;
+  } else {
+    setSuccess(lastName);
+  }
+
+  if (addressValue === '') {
+    setError(address, "Address is required");
+    isValid = false;
+  } else if (addressValue.length < 2) {
+    setError(address, "Address needs to be longer than 2 characters");
+    isValid = false;
+  } else if (addressValue > 50) {
+    setError(address, "Address cannot be longer than 50 characters");
+    isValid = false;
+  } else {
+    setSuccess(address);
+  }
+
+  if (cityValue === '') {
+    setError(city, "City name is required");
+    isValid = false;
+  } else if (cityValue.length < 2) {
+    setError(city, "City name needs to be longer than 2 characters");
+    isValid = false;
+  } else if (cityValue.length > 32) {
+    setError(city, "City name cannot exceed 32 characters");
+    isValid = false;
+  } else {
+    setSuccess(city);
+  }
+
+  if (countyValue === '') {
+    setError(county, "County name is required");
+    isValid = false;
+  } else if (countyValue.length < 2) {
+    setError(county, "County name needs to be longer than 2 characters");
+    isValid = false;
+  } else if (countyValue.length > 32) {
+    setError(county, "County name cannot exceed 32 characters");
+    isValid = false;
+  } else {
+    setSuccess(county);
+  }
+
+  if (phoneNumberValue === '') {
+    setError(phoneNumber, "Valid mobile phone number is required");
+    isValid = false;
+  } else if (!isValidPhoneNumber(phoneNumberValue)) {
+    setError(phoneNumber, "Phone number must start with +40 and be a valid Romanian mobile phone number");
+    isValid = false;
+  } else {
+    setSuccess(phoneNumber)
+  }
+
+  if (postalCodeValue === '') {
+    setError(postalCode, "Postal code is required");
+    isValid = false;
+  } else if (!isValidPostalCode(postalCodeValue)) {
+    setError(postalCode, "Valid 6-character postal code is required")
+    isValid = false;
+  } else {
+    setSuccess(postalCode);
   }
 
   return isValid;

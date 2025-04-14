@@ -2,27 +2,77 @@
 
 <main>
 
-    <form method="POST" action="/address/shipping-address">
-        <label for="firstName">First name:</label>
-        <input type="text" name="firstName">
+    <form method="POST" action="/address/shipping-address" id="addressForm">
+        <div class="input-control">
+            <label for="firstName">First name:</label>
+            <input
+            id="firstName"
+            type="text"
+            name="firstName"
+            class="form-input"
+            placeholder="Recipient's first name"
+            >
+            <div class="error"></div>
+        </div>
+        
+        <div class="input-control">
+            <label for="lastName">Last name:</label>
+            <input
+            id="lastName" 
+            type="text"
+            name="lastName"
+            class="form-input"
+            placeholder="Recipient's last name"
+            >
+            <div class="error"></div>
+        </div>
+        
+        <div class="input-control">
+            <label for="address">Address</label>
+            <input id="address" type="text" name="address" class="form-input" placeholder="Full address">
+            <div class="error"></div>
+        </div>
+
     
-        <label for="lastName">Last name:</label>
-        <input type="text" name="lastName">
+        <div class="input-control">
+            <label for="city">City</label>
+            <input id="city" type="text" name="city" class="form-input" placeholder="City">
+            <div class="error"></div>
+        </div>
+        
+        <div class="input-control">
+            <label for="county">County</label>
+            <input id="county" type="text" name="county" class="form-input" placeholder="County">
+            <div class="error"></div>
+        </div>
+        
     
-        <label for="address">Address</label>
-        <input type="text" name="address">
+        <div class="input-control">
+            <label for="phoneNumber">Phone:</label>
+            <input
+            id="phoneNumber" 
+            type="text"  
+            name="phoneNumber" 
+            value="+40"
+            class="form-input"
+            placeholder="Mobile number"
+            >
+            <div class="error"></div>
+        </div>
+        
     
-        <label for="city">City</label>
-        <input type="text" name="city">
-    
-        <label for="county">County</label>
-        <input type="text" name="county">
-    
-        <label for="phoneNumber">Phone:</label>
-        <input type="text"  name="phoneNumber">
-    
-        <label for="postalCode">Postal code:</label>
-        <input type="text" name="postalCode">
+        <div class="input-control">
+            <label for="postalCode">Postal code:</label>
+            <input
+            id="postalCode"
+            type="text"
+            name="postalCode"
+            class="form-input"
+            placeholder="Postal code"
+            >
+            <div class="error"></div>
+        </div>
+        
     
         <button type="submit">Add Address</button>
 
