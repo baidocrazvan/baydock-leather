@@ -15,7 +15,7 @@ export async function getActiveUserAddresses(userId) {
     
 }
 
-// Get ALL existing addresses from user account (for admin view)
+// Get ALL(both active and inactive) existing addresses from user account (for admin view)
 export async function getAllUserAddresses(userId) {
     try {
         const result = await db.query(
@@ -42,7 +42,7 @@ export async function getUserAddress(userId, addressId) {
       }
         return result.rows[0];
     } catch(err) {
-        console.err("DB failed to get shipping address:" , err);
+        console.error("DB failed to get shipping address:" , err);
         throw err;
     }
     
