@@ -1,8 +1,8 @@
 <%- include("./partials/header"); %>
 
     <main>
-
-        <p><%= message %></p>
+        <h1> Error <%= partials.error.status %></h1>
+        <p><%= locals.error.message || locals.message %></p>
 
     </main>
 

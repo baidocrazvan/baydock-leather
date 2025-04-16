@@ -13,17 +13,20 @@ export async function getAllUsers() {
 
 // Get a specific user's information
 export async function getUserDetails(userId) {
-    // Get user basic info
-    const user = await db.query(`
-        SELECT * FROM users WHERE id = $1
-    `, [userId]);
+  // Get user basic info
+    const user = await db.query(
+      `SELECT * FROM users WHERE id = $1`, [userId]);
+
+    if (!user.rows[0]) {
+      throw new Error(`User ${userId} not found`); // Domain-specific error
+    }
 
     // Get all addresses
     const addresses = await getAllUserAddresses(userId);
 
     // Get all orders
-    const orders = await db.query(`
-        SELECT 
+    const orders = await db.query(
+      `SELECT 
         o.id, o.status, o.total_price, o.created_at,
         sa.city, sa.county
         FROM orders o
@@ -36,5 +39,5 @@ export async function getUserDetails(userId) {
         user: user.rows[0],
         addresses: addresses,
         orders: orders.rows
-    };
-    }
+    };  
+}

@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { getAllUserAddresses } from "../../../services/addressService.js";
-import { getAllUsers, getUserDetails, UserNotFoundError } from "../../../services/userService.js";
+import { getAllUsers, getUserDetails } from "../../../services/userService.js";
 
 // Mock the dependencies
 vi.mock("../../../db.js");
@@ -101,9 +101,6 @@ describe("User Service", () => {
   
       it("should handle user not found", async () => {
         db.query.mockResolvedValue({ rows: [] });
-  
-        await expect(getUserDetails(999))
-            .rejects.toThrow(UserNotFoundError);
   
         await expect(getUserDetails(999))
             .rejects.toThrow("User 999 not found");

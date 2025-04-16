@@ -3,7 +3,7 @@ import db from '../db.js';
 // Validate user's quantity input
 export function validateQuantity(quantity) {
     if (isNaN(quantity)) throw new Error("Quantity must be a number.");
-    if (quantity <= 0) throw new Error("Quantity must be greater than 0.");
+    if (quantity <= 0) throw new Error("Quantity must be greater than zero.");
 }
 
 // Fetch all products from user's cart in order of latest added
@@ -103,9 +103,7 @@ export async function updateCartQuantity(userId, productId, newQuantity) {
     try {
         await client.query('BEGIN');
 
-        if (newQuantity <= 0) {
-            throw new Error("Quantity must be greater than zero.");
-        }
+        validateQuantity(newQuantity);
 
         // Check that the item we plan on updating exists and get it's stock
         const cartItem = await client.query(

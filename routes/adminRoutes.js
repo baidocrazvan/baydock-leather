@@ -4,7 +4,7 @@ import { authenticate, isAdmin } from "../middleware/middleware.js";
 import { getAllProducts, getProductById } from "../services/productService.js";
 import { getAllOrders } from "../services/adminService.js";
 import { getOrderDetails } from "../services/orderService.js";
-import { getAllUsers, getUserDetails } from "../services/UserService.js";
+import { getAllUsers, getUserDetails } from "../services/userService.js";
 
 const router = express.Router();
 
@@ -95,12 +95,12 @@ router.get("/users", authenticate, isAdmin, async (req, res) => {
 
 router.get('/users/:id', authenticate, isAdmin, async (req, res) => {
     try {
-      const userDetails = await getUserDetails(req.params.id);
-      console.log(userDetails);
-      res.render('admin/user.ejs', userDetails);
+        const userDetails = await getUserDetails(req.params.id);
+        console.log(userDetails);
+        res.render("admin/user.ejs", userDetails);
     } catch (err) {
-      console.error('Error fetching user details:', err);
-      res.redirect('/admin/users');
+        console.error("GET Error fetching user details:", err);
+        res.redirect("/admin/users");
     }
   });
 
