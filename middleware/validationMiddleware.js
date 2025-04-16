@@ -1,4 +1,4 @@
-import { loginSchema, registerSchema } from "../schemas/authSchema.js";
+import { loginSchema, registerSchema } from "../schemas/authSchemas.js";
 import { addressSchema } from "../schemas/addressSchema.js";
 
 export const validateLogin = (req, res, next) => {
