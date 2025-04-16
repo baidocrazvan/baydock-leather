@@ -3,16 +3,17 @@ import Joi from "joi";
 export const loginSchema = Joi.object({
     email: Joi.string().email().required().messages({
       "string.email": "Invalid email format",
+      'any.required': 'Email is required',
       "string.empty": "Email is required"
     }),
     password: Joi.string()
       .min(8)
-      .pattern(/[A-Z]/)
-      .pattern(/[0-9]/)
+      .pattern(/^(?=.*[A-Z])(?=.*[0-9]).*$/) // At least one uppercase letter and one number
       .required()
       .messages({
         "string.min": "Password must be at least 8 characters",
         "string.pattern.base": "Password must contain at least 1 uppercase letter and 1 number",
+        'any.required': 'Password is required',
         "string.empty": "Password is required"
       })
   });
@@ -44,12 +45,11 @@ export const loginSchema = Joi.object({
     }),
     password: Joi.string()
       .min(8)
-      .pattern(/[A-Z]/)
-      .pattern(/[0-9]/)
+      .pattern(/^(?=.*[A-Z])(?=.*[0-9]).*$/) // At least one uppercase letter and one number
       .required()
       .messages({
         "string.min": "Password must be at least 8 characters",
-        "string.pattern.base": "Must contain 1 uppercase and 1 number",
+        "string.pattern.base": "Password must contain at least 1 uppercase letter and 1 number",
         "string.empty": "Password is required"
       }),
     cpassword: Joi.any()
