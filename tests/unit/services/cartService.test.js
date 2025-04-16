@@ -68,9 +68,14 @@ describe("Cart Service", () => {
         })
 
         it("should throw error on database failure", async () => {
+            // Suppress console.error
+            const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {}); 
+
             db.query.mockRejectedValue(new Error("DB connection failed"));
       
             await expect(getCartData(1)).rejects.toThrow("Failed to fetch cart items");
+
+            consoleErrorSpy.mockRestore(); // Restore console.error after the test
           });
     });
     
