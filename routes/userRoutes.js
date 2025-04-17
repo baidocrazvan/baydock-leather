@@ -16,6 +16,10 @@ router.get("/account", authenticate, async (req, res) => {
 
     } catch(err) {
         console.error("Error fetching account data", err);
+        res.render("user/account.ejs", {
+            user: req.user,
+            addresses: []
+        });
     }
 })
 
@@ -28,6 +32,9 @@ router.get("/addresses", authenticate, async (req, res) => {
         })
     } catch(err) {
         console.error("Error fetching shipping data", err);
+        res.render("user/addresses.ejs", {
+            addresses: []
+        })
     }
 })
 

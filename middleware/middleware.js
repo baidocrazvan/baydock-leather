@@ -7,14 +7,16 @@ export const authenticate = (req, res, next) => {
     if (req.isAuthenticated()) {
         return next();
     }
-    res.status(401).json({ error: "Not logged in."}) 
+    req.flash('error', 'Not logged in');
+    res.redirect('/');
 }
 
 export const isAdmin = (req, res, next) => {
     if (req.user.role === "admin") {
       return next(); // If user is an admin, proceed to next handler/middlware
     }
-    res.status(403).json({ error: "Unauthorized: Admin Only"});
+    req.flash('error', 'Unauthorized: Admin only');
+    res.redirect('/');
   }
 
   

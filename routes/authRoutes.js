@@ -38,11 +38,11 @@ router.post("/register", validateRegister, async (req, res) => {
   
       if (password !== confirmPassword) {
         req.flash("error", "Password does not match confirmation password");
-        res.redirect("/auth/register");
+        return res.redirect("/auth/register");
       } else {
   
           const checkResult = await db.query(`SELECT * FROM users WHERE email = $1`, [email]);
-  
+          console.log('Existing user check:', checkResult.rows);
           if (checkResult.rows.length > 0) {
             req.flash('error', 'Email already exists. Please log in.');
             res.redirect("/auth/register");
@@ -52,10 +52,12 @@ router.post("/register", validateRegister, async (req, res) => {
               if (err) {
                 console.log("Error hashing password:", err);
               } else {
+                console.log('Password hashed successfully:', hash);
                 const result = await db.query(
                   `INSERT INTO users (first_name, last_name, email, password, role) VALUES ($1, $2, $3, $4, $5) RETURNING *`,[
                   firstName, lastName, email, hash, role
               ]);
+              console.log('User inserted into database:', result.rows[0]);
               const user = result.rows[0];
               console.log(user);
               req.login(user, (err) => {
