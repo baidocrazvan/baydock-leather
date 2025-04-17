@@ -1,6 +1,12 @@
 import pg from "pg";
 import env from "dotenv";
-env.config();
+const envFile = process.env.NODE_ENV === 'test'
+  ? '.env.test'
+  : process.env.NODE_ENV === 'production'
+  ? '.env.production'
+  : '.env.development'; // Default to .env.development
+
+env.config({ path: envFile });
 
 const db = new pg.Pool({
     user: process.env.PG_USER,

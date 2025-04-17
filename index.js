@@ -20,7 +20,15 @@ import userRoutes from "./routes/userRoutes.js";
 
 const app = express();
 const port = 3000;
-env.config();
+const envFile = process.env.NODE_ENV === 'test'
+  ? '.env.test'
+  : process.env.NODE_ENV === 'production'
+  ? '.env.production'
+  : '.env.development'; // Default to .env.development
+
+env.config({ path: envFile });
+
+console.log(`Running in ${process.env.NODE_ENV} mode`);
 
 // Middlewares
 app.use(express.static('public'));
@@ -165,7 +173,11 @@ passport.deserializeUser(async (id, cb) => {
   }
 });
 
-app.listen(port, () => {
-  console.log(`Server running on port ${port}`);
-});
+export { app };
+
+if (process.env.NODE_ENV !== 'test') {
+  app.listen(port, () => {
+    console.log(`Server running on port ${port}`);
+  });
+}
 
