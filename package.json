@@ -25,6 +25,7 @@
     "dev": "node --watch index.js",
     "test": "vitest",
     "test:unit": "vitest run unit",
+    "test:integration": "vitest run tests/integration",
     "coverage": "vitest run --coverage"
   },
   "author": "",
