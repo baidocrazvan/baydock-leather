@@ -139,7 +139,6 @@ passport.use(new Strategy(
               role: initialUser.role,
               created_at: initialUser.created_at
             };
-            console.log("Final user: ", user);
             return cb(null, user)
           } else {
             return cb(null, false, { message: "Incorrect password" });

@@ -61,6 +61,8 @@ describe("User Routes", () => {
     });
 
     it("should render the account page with an empty addresses array if the address service fails", async () => {
+      const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+      
       const sessionCookie = await loginUser();
     
       // Mock the address service to throw an error
@@ -76,6 +78,8 @@ describe("User Routes", () => {
       expect(res.text).toContain("Test"); // Check for user name in the HTML
       expect(res.text).not.toContain("Str Lunga 23A"); // No address details should be displayed
       expect(res.text).toContain("You haven't added any addresses yet."); // Check for a message indicating no addresses are available
+
+      consoleErrorSpy.mockRestore();
     });
   });
 
@@ -97,6 +101,7 @@ describe("User Routes", () => {
     });
 
     it("should handle errors from the address service ", async () => {
+      const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
       const sessionCookie = await loginUser();
 
       // Mock the address service to throw an error
@@ -111,7 +116,9 @@ describe("User Routes", () => {
         // No address details should be displayed
         expect(res.text).not.toContain("Str Lunga 23A");
         // Check for a message indicating no addresses are available
-        expect(res.text).toContain("You haven't added any adresses yet.") 
+        expect(res.text).toContain("You haven't added any adresses yet.")
+
+        consoleErrorSpy.mockRestore();
     });
   });
 });
