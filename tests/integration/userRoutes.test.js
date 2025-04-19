@@ -5,6 +5,20 @@ import { getActiveUserAddresses } from "../../services/addressService.js";
 
 // Mock dependencies
 vi.mock("../../services/addressService.js");
+vi.mock('../../middleware/middleware.js', () => ({
+  authenticate: (req, res, next) => {
+    req.user = {
+      id: 1,
+      first_name: "Johnny",
+      last_name: "Test",
+      email: "test@example.com",
+      role: "admin"
+    };
+    req.isAuthenticated = () => true;
+    next();
+  },
+  isAdmin: (req, res, next) => next()
+}));
 
 describe("User Routes", () => {
   const mockUser = {
@@ -27,31 +41,14 @@ describe("User Routes", () => {
     },
   ];
 
-  const loginUser = async () => {
-    const res = await request(app)
-      .post("/auth/login")
-      .type("form")
-      .send({
-        email: mockUser.email,
-        password: "Password123", // Mock password
-      })
-      .expect(302); // Login should redirect to the success page
-
-    // Extract the session cookie from the response
-    const cookies = res.headers["set-cookie"];
-    return cookies.find((cookie) => cookie.startsWith("connect.sid"));
-  };
 
   describe("GET /account", () => {
     it("should render the account page with user data and addresses for authenticated users", async () => {
-      const sessionCookie = await loginUser();
-
       // Mock the address service to return addresses
       getActiveUserAddresses.mockResolvedValue(mockAddresses);
 
       const res = await request(app)
         .get("/user/account")
-        .set("Cookie", sessionCookie) // Include the session cookie
         .expect(200)
         .expect("Content-Type", /html/); // Expect HTML content
 
@@ -62,15 +59,12 @@ describe("User Routes", () => {
 
     it("should render the account page with an empty addresses array if the address service fails", async () => {
       const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
-      
-      const sessionCookie = await loginUser();
     
       // Mock the address service to throw an error
       getActiveUserAddresses.mockRejectedValue(new Error("Database error"));
     
       const res = await request(app)
         .get("/user/account")
-        .set("Cookie", sessionCookie) // Include the session cookie
         .expect(200) // Expect the page to render successfully
         .expect("Content-Type", /html/); // Expect HTML content
     
@@ -85,14 +79,12 @@ describe("User Routes", () => {
 
   describe('GET /addresses', () => {
     it("should render the addresses page with user addresses for authenticated users", async () => {
-      const sessionCookie = await loginUser();
 
       // Mock the address service to return addresses
       getActiveUserAddresses.mockResolvedValue(mockAddresses);
 
       const res = await request(app)
         .get("/user/addresses")
-        .set("Cookie", sessionCookie) // Include the session cookie
         .expect(200)
         .expect("Content-Type", /html/); // Expect HTML content
 
@@ -102,14 +94,12 @@ describe("User Routes", () => {
 
     it("should handle errors from the address service ", async () => {
       const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
-      const sessionCookie = await loginUser();
 
       // Mock the address service to throw an error
       getActiveUserAddresses.mockRejectedValue(new Error("Database error"));
 
       const res = await request(app)
         .get("/user/addresses")
-        .set("Cookie", sessionCookie) // Include the session cookie
         .expect(200)
         .expect("Content-Type", /html/);
 
