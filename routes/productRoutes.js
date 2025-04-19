@@ -35,6 +35,7 @@ router.get("/", async (req, res) => {
     // 404 if there are  no products to be shown.   
     if (!products || products.length === 0) {
       return res.status(404).render("error.ejs", {
+        error: 404,
         message: category
             ? `No products found in ${category} category.`
             : "Oops. Seems like there are no items to display yet. Please come back later."
@@ -61,10 +62,11 @@ router.get("/", async (req, res) => {
 router.get("/:id", async (req, res) => {
   try {
     const id = req.params.id;
-    const product = await getProductById(id)
+    const product = await getProductById(id);
 
     if (!product) {
       return res.status(404).render("error.ejs", {
+        error: "404",
         message: "Product not found. It may have been removed or moved."
       });
     }
@@ -76,6 +78,7 @@ router.get("/:id", async (req, res) => {
   } catch(err) {
     console.error(err);
     res.status(500).render("error.ejs", {
+      error: "500",
       message: "Something went wrong on our part. Please try again later."
     });
   }
@@ -93,18 +96,20 @@ router.post("/", authenticate, isAdmin, upload.fields([
       const { name, description, price, category, stock } = req.body;
       const thumbnail = `/images/products/${req.files.thumbnail[0].filename}`; // Thumbnail path
       const images = req.files.images.map(file => `/images/products/${file.filename}`); // Array of images paths
+      
       // Save the product to db
       await db.query(`
         INSERT INTO products (name, description, price, category, stock, images, thumbnail)
         VALUES ($1, $2, $3, $4, $5, $6, $7)`,
         [ name, description, price, category, stock, images, thumbnail]);
+
       req.flash("success" , "Product added successfully");
       return res.redirect("/admin/dashboard");
-      
+
     } catch(err) {
       console.error("Error adding product", err);
       req.flash("error", "Error publishing product");
-      return res/redirect("/admin/dashboard");
+      return res.redirect("/admin/dashboard");
     }
   });
 
@@ -132,7 +137,6 @@ router.patch("/:id", authenticate, isAdmin, upload.fields([
         req.body.images = images; 
       }
     }
-     console.log(`Fields to update: ${fields}`);
   
     if (fields.length === 0) {
       req.flash("error", "No fields to update");
@@ -204,10 +208,10 @@ router.put("/:id", authenticate, isAdmin, upload.fields([
   
   
   //Delete a product (admin)
-router.delete("/products/:id", authenticate, isAdmin, (req, res) => {
-    const id = req.params.id;
+router.delete("/:id", authenticate, isAdmin, async (req, res) => {
+    const id = parseInt(req.params.id);
     try{
-        const result = db.query(`DELETE FROM products WHERE id = $1`, [id]);
+        await db.query(`DELETE FROM products WHERE id = $1`, [id]);
         req.flash("success", "Product deleted successfully");
         return res.redirect('/admin/dashboard');
     } catch(err) {

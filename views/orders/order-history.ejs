@@ -1,6 +1,9 @@
 <%- include("../partials/header"); %>
 
 <main>
+    <% if (orders.length === 0) { %>
+        <h2>Sorry, there is no order history to display.</h2>
+    <% } else { %>
     <h2>My orders</h2>
     <table>
         <tr>
@@ -23,5 +26,5 @@
         <% }) %>
     </table>
 </main>
-
+<% } %>
 <%- include("../partials/footer"); %>

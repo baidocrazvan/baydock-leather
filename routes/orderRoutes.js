@@ -16,7 +16,9 @@ const router = express.Router();
 router.get("/history", authenticate, async (req, res) => {
     
   try {
+    console.log('Inside /orders/history route');
       const userId = req.user.id;
+      console.log("User ID:", userId);
       const result = await db.query(
           `SELECT
              o.id AS order_id,
@@ -41,10 +43,9 @@ router.get("/history", authenticate, async (req, res) => {
              o.created_at DESC`,
           [userId]
         );
-
+        console.log("Query result:", result.rows);
         if (result.rows.length === 0) {
-          req.flash("error", "Failed to get order history");
-          return res.render("/user/account");
+          return res.render("orders/order-history.ejs", { orders: result.rows } );
         }
 
         // Format the response
@@ -58,12 +59,12 @@ router.get("/history", authenticate, async (req, res) => {
         lastName: row.last_name,
       }
     }));
-
+    console.log(orders);
     res.render("orders/order-history.ejs", { orders } );
         
   } catch(err) {
       console.error("Error getting order history: ", err);
-      return res.render("/user/account");
+      return res.redirect("/user/account");
   }
 }); 
 
@@ -124,7 +125,9 @@ router.post("/new-order", authenticate, async (req, res) => {
         
 
         // Check if cart is empty
-        const cartItems = await db.query(`SELECT * FROM carts WHERE user_id = $1`, [userId]);
+        const cartItems = await client.query(`SELECT * FROM carts WHERE user_id = $1`, [userId]);
+        console.log("Cart Items:", cartItems.rows);
+
         if (cartItems.rows.length === 0) {
             // Rollback transaction if cart is empty
             await client.query('ROLLBACK'); 
@@ -133,7 +136,7 @@ router.post("/new-order", authenticate, async (req, res) => {
         }
 
         // Check if there is enough stock before sending the order (some products may be sold after user has added them to his cart)
-        const checkStock = await db.query(
+        const checkStock = await client.query(
             `SELECT p.name FROM carts c
              JOIN products p ON c.product_id = p.id
              WHERE c.user_id = $1 AND c.quantity > p.stock`,
@@ -160,7 +163,7 @@ router.post("/new-order", authenticate, async (req, res) => {
 
         // Clear the cart
         await clearCart(userId);
-
+        console.log("All validations passed");
         // If every step worked, commit transaction
         await client.query('COMMIT') 
         req.flash('success', 'Order placed successfully!');
@@ -179,6 +182,5 @@ router.post("/new-order", authenticate, async (req, res) => {
         
 })
 
-// TODO: Add route that can make admin change order status from PENDING
 
 export default router;
