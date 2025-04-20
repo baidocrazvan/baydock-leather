@@ -21,7 +21,7 @@
                         <button type="submit" class="delete-from-cart-btn">Delete item from cart</button>
                     </form>
 
-                    <form action="/cart?_method=PUT" method="POST">
+                    <form action="/cart?_method=PATCH" method="POST">
                         <input type="hidden" name="productId" value="<%= item.id %>">
             
                         <div class="quantity-selector">

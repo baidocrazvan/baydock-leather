@@ -9,14 +9,40 @@ const router = express.Router();
 // Get a user's cart items
 router.get("/", async (req, res) => {
     try {
+      let cartItems = [];
+      let cartTotal = 0;
+
+      if (req.isAuthenticated()) {
+        // Authenticated user: Fetch cart from database
         const userId = req.user.id;
         const { items, total } = await getCartData(req.user.id);
+        cartItems = items;
+        cartTotal = total;
+      } else {
+        // Guest user: fetch cart from session
+        req.session.cart = req.session.cart || [];
+        for (const item of req.session.cart) {
+          const product = await db.query(
+            `SELECT id, name, price, thumbnail FROM products WHERE id = $1`,
+            [item.productId]
+          );
+          if (product.rows.length > 0) {
+            const productData = product.rows[0];
+            cartItems.push({
+              ...productData,
+              quantity: item.quantity,
+              total_price: (productData.price * item.quantity).toFixed(2),
+            });
+            cartTotal += productData.price * item.quantity;
+          }
+        }
+        cartTotal = cartTotal.toFixed(2);
+      }
         
-    
-        res.render("cart/cart.ejs", {
-            cartItems: items,
-            cartTotal: total
-        })
+      res.render("cart/cart.ejs", {
+          cartItems,
+          cartTotal
+      })
 
         
     } catch(err) {
@@ -95,24 +121,36 @@ router.post("/checkout-guest", async (req, res) => {
 })
 
 // Add a product to user's cart
-router.post("/:id", authenticate, async (req, res) => {
+router.post("/:id", async (req, res) => {
     try {
-        const userId = req.user.id;
+
         const productId = req.params.id;
         const quantity = parseInt(req.body.quantity);
         if (isNaN(quantity)) throw new Error("Invalid quantity");
 
-        console.log("Request Body:", req.body); // Log the request body
-        console.log("Parsed Quantity:", quantity); // Log the parsed quantity
-        console.log("Product id:", productId); // Log product id
-
         // Validate quantity
         validateQuantity(quantity);
 
-        // If the product is already in the cart, add the new quantity to existing quantity, otherwise just add product to cart
-        await updateCartItem(userId, productId, quantity);
+        if (req.isAuthenticated()) {
+            // Authenticated user : add product to database cart
+            // If the product is already in the cart, add the new quantity to existing quantity, otherwise just add product to cart
+            const userId = req.user.id;
+            await updateCartItem(userId, productId, quantity);
+            req.flash("success", "Product added to cart!");
+        } else {
+          // Guest user: Add product to session cart
+          req.session.cart = req.session.cart || [];
+          const existingItem = req.session.cart.find(item => item.productId === productId);
 
-        req.flash('success', 'Product added to cart!');
+          if (existingItem) {
+            existingItem.quantity += quantity;
+          } else {
+            req.session.cart.push({productId, quantity});
+          }
+
+          req.flash("success", "Product added to cart!");
+        }
+        
         res.redirect(`/products/${productId}`);
 
     } catch(err) {
@@ -123,40 +161,70 @@ router.post("/:id", authenticate, async (req, res) => {
 });
 
 // Update the quantity of a product already in cart
-router.put("/", authenticate, async (req, res) => {
+router.patch("/", async (req, res) => {
     try {
       const { productId, quantity } = req.body;
-      const userId = req.user.id;
-    
-      await updateCartQuantity(userId, productId, quantity);
-  
-      req.flash('success', 'Cart updated!');
+
+      if (req.isAuthenticated()) {
+        // Authenticated user: update quantity of product in database
+        const userId = req.user.id;
+        await updateCartQuantity(userId, productId, quantity);
+        req.flash("success", "Cart updated!");
+      } else {
+        // Guest user: Update quantity in session cart
+        req.session.cart = req.session.cart || [];
+        const item = req.session.cart.find((item) => item.productId === productId);
+
+        if (item) {
+          item.quantity = quantity;
+          req.flash("success", "Cart updated!");
+        } else {
+          req.flash("error", "Product not found inside cart.");
+        }
+      }
+
       res.redirect("/cart");
     } catch (err) {
-    console.error("PUT /cart error:", err);
+    console.error("PATCH /cart error while changing quantity:", err);
       req.flash("error", "Item quantity failed to update.");
       res.redirect("/cart");
     }
   });
 
 // Delete a product from user cart
-router.delete("/delete/:id", authenticate, async (req, res) => {
+router.delete("/delete/:id", async (req, res) => {
     try {
-
-    const userId = req.user.id;
     const productId = req.params.id
 
-    //Check that the item exists inside the cart
-    const cartItem = await db.query(`SELECT * FROM carts WHERE user_id = $1 AND product_id = $2`, [userId, productId]); 
-    if (cartItem.rows.length === 0) {
-        req.flash("error", "The specified product is not inside your cart");
-        res.redirect("/cart");
+    if (req.isAuthenticated()) {
+      const userId = req.user.id;
+
+      //Check that the item exists inside the cart
+      const cartItem = await db.query(`SELECT * FROM carts WHERE user_id = $1 AND product_id = $2`, [userId, productId]); 
+
+      if (cartItem.rows.length === 0) {
+          req.flash("error", "The specified product is not inside your cart.");
+          res.redirect("/cart");
+      }
+
+      // Delete the product from user's cart
+      await db.query(`DELETE FROM carts WHERE user_id = $1 AND product_id = $2`, [userId, productId])
+      req.flash("success", "Item removed from cart.");
+
+    } else {
+      // Guest user: Remove product from session cart
+      req.session.cart = req.session.cart || [];
+      const index = req.session.cart.findIndex((item) => item.productId === productId);
+
+      if (index !== -1) {
+        req.session.cart.splice(index, 1);
+        req.flash("success", "Item removed from cart.")
+      } else {
+        req.flash("error", "The specified item is not inside your cart anymore.")
+      }
     }
 
-    // Delete the product from user's cart
-    await db.query(`DELETE FROM carts WHERE user_id = $1 AND product_id = $2`, [userId, productId])
-    req.flash("success", "Item removed from cart");
-    res.redirect("/cart");
+    return res.redirect("/cart");
 
    } catch(err) {
         console.error("DELETE /cart/:id error:", err);
@@ -168,23 +236,30 @@ router.delete("/delete/:id", authenticate, async (req, res) => {
 
 // Empty the cart
 
-router.delete("/delete", authenticate, async (req, res) => {
+router.delete("/delete", async (req, res) => {
     try {
+      if (req.isAuthenticated()) {
+        // Authenticated user: Clear cart in the database
         const userId = req.user.id;
 
         const cartItems = await db.query(`SELECT * FROM carts WHERE user_id = $1`, [userId]);
         if (cartItems.rows.length === 0) {
             req.flash("error", "You don't have any products inside the cart");
-            res.redirect("/cart");
+            return res.redirect("/cart");
         }
-
         await db.query(`DELETE FROM carts WHERE user_id = $1`, [userId]);
-        req.flash("success", "Cart cleared successfully");
-        res.redirect("/cart");
+        
+      } else {
+        req.session.cart = [];
+      }
+      
+      req.flash("success", "Cart cleared successfully");
+      res.redirect("/cart");
 
     } catch(err) {
         console.error("DELETE /cart error: ", err);
         req.flash("error", "Failed to delete cart contents.");
+        res.redirect("/cart");
     }
 })
 
