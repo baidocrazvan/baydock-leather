@@ -68,10 +68,16 @@
                     </tbody>
                 </table>
             </div>
-
-            <div class="checkout">
-                <a href="/cart/checkout">Proceed to checkout</a>
-            </div>
+            <% if (user) { %>
+                <div class="checkout">
+                    <a href="/cart/checkout">Proceed to checkout</a>
+                </div>
+            <% } else { %>
+                <p>You need to register or log in to proceed to checkout.</p>
+                <a href="/auth/register" class="btn btn-primary">Register</a>
+                <a href="/auth/login" class="btn btn-secondary">Log In</a>
+            <% } %>
+            
             
 
         <% } %>

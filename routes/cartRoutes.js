@@ -38,8 +38,8 @@ router.get("/", async (req, res) => {
         }
         cartTotal = cartTotal.toFixed(2);
       }
-        
       res.render("cart/cart.ejs", {
+          user: req.user,
           cartItems,
           cartTotal
       })
@@ -77,48 +77,6 @@ router.get("/checkout", async (req, res) => {
     }
 })
 
-router.post("/checkout-guest", async (req, res) => {
-    const { lastName, firstName, username: email, password, cpassword: confirmPassword } = req.body;
-    const role = "user";
-  
-    try {
-  
-      if (password !== confirmPassword) {
-        req.flash("error", "Passwords do not match")
-      } else {
-  
-          const checkResult = await db.query(`SELECT * FROM users WHERE email = $1`, [email]);
-  
-          if (checkResult.rows.length > 0) {
-            req.flash('error', 'Email already exists. Please log in.');
-            res.redirect("/auth/login");
-          } else {
-              // Hash password using bcrypt
-              bcrypt.hash(password, saltRounds, async (err, hash) => {
-              if (err) {
-                console.log("Error hashing password:", err);
-              } else {
-                const result = await db.query(
-                  `INSERT INTO users (first_name, last_name, email, password, role) VALUES ($1, $2, $3, $4, $5) RETURNING *`,[
-                  firstName, lastName, email, hash, role
-              ]);
-              const user = result.rows[0];
-              console.log(user);
-              req.login(user, (err) => {
-                console.error(err)
-                res.redirect("/cart/checkout")
-              })
-            }
-        })
-      }
-      } 
-  
-    } catch (err) {
-      req.flash('error', 'Registration failed.');
-      res.redirect("/cart/checkout");
-      console.log(err);
-    }
-})
 
 // Add a product to user's cart
 router.post("/:id", async (req, res) => {
@@ -183,7 +141,7 @@ router.patch("/", async (req, res) => {
         }
       }
 
-      res.redirect("/cart");
+      return res.redirect("/cart");
     } catch (err) {
     console.error("PATCH /cart error while changing quantity:", err);
       req.flash("error", "Item quantity failed to update.");
@@ -220,7 +178,7 @@ router.delete("/delete/:id", async (req, res) => {
         req.session.cart.splice(index, 1);
         req.flash("success", "Item removed from cart.")
       } else {
-        req.flash("error", "The specified item is not inside your cart anymore.")
+        req.flash("error", "Specified item is not present in your cart.")
       }
     }
 
@@ -237,30 +195,30 @@ router.delete("/delete/:id", async (req, res) => {
 // Empty the cart
 
 router.delete("/delete", async (req, res) => {
-    try {
-      if (req.isAuthenticated()) {
-        // Authenticated user: Clear cart in the database
-        const userId = req.user.id;
+  try {
+    if (req.isAuthenticated()) {
+      // Authenticated user: Clear cart in the database
+      const userId = req.user.id;
 
-        const cartItems = await db.query(`SELECT * FROM carts WHERE user_id = $1`, [userId]);
-        if (cartItems.rows.length === 0) {
-            req.flash("error", "You don't have any products inside the cart");
-            return res.redirect("/cart");
-        }
-        await db.query(`DELETE FROM carts WHERE user_id = $1`, [userId]);
-        
-      } else {
-        req.session.cart = [];
+      const cartItems = await db.query(`SELECT * FROM carts WHERE user_id = $1`, [userId]);
+      if (cartItems.rows.length === 0) {
+        req.flash("error", "You don't have any products inside the cart");
+        return res.redirect("/cart");
       }
-      
-      req.flash("success", "Cart cleared successfully");
-      res.redirect("/cart");
 
-    } catch(err) {
-        console.error("DELETE /cart error: ", err);
-        req.flash("error", "Failed to delete cart contents.");
-        res.redirect("/cart");
+      await db.query(`DELETE FROM carts WHERE user_id = $1`, [userId]);
+    } else {
+      // Guest user: Clear session cart
+      req.session.cart = [];
     }
-})
+
+    req.flash("success", "Cart cleared successfully");
+    res.redirect("/cart");
+  } catch (err) {
+    console.error("DELETE /cart error: ", err);
+    req.flash("error", "Failed to delete cart contents.");
+    res.redirect("/cart");
+  }
+});
 
 export default router;
