@@ -38,7 +38,7 @@ router.get("/", async (req, res) => {
         }
         cartTotal = cartTotal.toFixed(2);
       }
-      res.render("cart/cart.ejs", {
+      return res.render("cart/cart.ejs", {
           user: req.user,
           cartItems,
           cartTotal
@@ -48,7 +48,7 @@ router.get("/", async (req, res) => {
     } catch(err) {
         console.error("Cart GET error:", err.message);
         req.flash('error', "Cart cannot be loaded at this moment. Please try again.");
-        res.redirect("/");
+        return res.redirect("/");
     }
     
 });
@@ -64,7 +64,7 @@ router.get("/checkout", async (req, res) => {
         console.log("Addresses.length: ", addresses.length);
         console.log(items);
         console.log(total);
-        res.render("cart/checkout.ejs", {
+        return res.render("cart/checkout.ejs", {
             user: req.user,
             addresses: addresses,
             cartItems: items,
@@ -73,7 +73,7 @@ router.get("/checkout", async (req, res) => {
     } catch (err) {
         console.error("Cart checkout GET error:", err.message);
         req.flash('error', "Checkout information cannot be loaded at this moment. Please try again.");
-        res.redirect("/");
+        return res.redirect("/");
     }
 })
 
@@ -109,12 +109,12 @@ router.post("/:id", async (req, res) => {
           req.flash("success", "Product added to cart!");
         }
         
-        res.redirect(`/products/${productId}`);
+        return res.redirect(`/products/${productId}`);
 
     } catch(err) {
         console.error("Cart POST error:", err.message);
         req.flash('error', "Failed to add product to cart.");
-        res.redirect(`/products/${req.params.id}`);
+        return res.redirect(`/products/${req.params.id}`);
     }
 });
 
@@ -145,7 +145,7 @@ router.patch("/", async (req, res) => {
     } catch (err) {
     console.error("PATCH /cart error while changing quantity:", err);
       req.flash("error", "Item quantity failed to update.");
-      res.redirect("/cart");
+      return res.redirect("/cart");
     }
   });
 
@@ -213,11 +213,11 @@ router.delete("/delete", async (req, res) => {
     }
 
     req.flash("success", "Cart cleared successfully");
-    res.redirect("/cart");
+    return res.redirect("/cart");
   } catch (err) {
     console.error("DELETE /cart error: ", err);
     req.flash("error", "Failed to delete cart contents.");
-    res.redirect("/cart");
+    return res.redirect("/cart");
   }
 });
 

@@ -51,7 +51,7 @@ router.get("/", async (req, res) => {
 
   } catch(err) {
     console.error(err);
-    res.status(500).render("error.ejs", {
+    return res.status(500).render("error.ejs", {
       message: "Something went wrong on our part. Please try again later."
     });
   }
@@ -77,7 +77,7 @@ router.get("/:id", async (req, res) => {
 
   } catch(err) {
     console.error(err);
-    res.status(500).render("error.ejs", {
+    return res.status(500).render("error.ejs", {
       error: "500",
       message: "Something went wrong on our part. Please try again later."
     });
@@ -114,7 +114,7 @@ router.post("/", authenticate, isAdmin, upload.fields([
   });
 
 
-// RESTful PATCH for partial update a product (admin)
+// PATCH for partial update a product (admin)
 router.patch("/:id", authenticate, isAdmin, upload.fields([
     { name: "thumbnail", maxCount: 1},
     { name: "images", maxCount: 10}
@@ -171,43 +171,8 @@ router.patch("/:id", authenticate, isAdmin, upload.fields([
     } 
   }); 
 
-
-// RESTful PUT for full update of a product (admin)
-router.put("/:id", authenticate, isAdmin, upload.fields([
-    { name: "thumbnail", maxCount: 1}, // Thumbnail (single file)
-    { name: "images", maxCount: 10} // Other images (up to 10 files)
-  ]), async (req, res) => {
-    
-    const id = req.params.id;
-    try {
-      const { name, description, price, category, stock } = req.body;
-      const thumbnail = `/images/products/${req.files.thumbnail[0].filename}`; // Thumbnail path
-      const images = req.files.images.map(file => `/images/products/${file.filename}`); // Array of images paths
-      // update product in db
-      const result = await db.query(
-        `UPDATE products SET name = $1,
-        description = $2, price = $3, category = $4,
-        stock = $5, thumbnail = $6, images = $7
-        WHERE id = $8 
-        RETURNING *`,
-      [name, description, price, category, stock, thumbnail, images, id]);
-      
-      if (result.rows.length === 0) {
-        req.flash("error", "Product not found");
-        return res.redirect("/admin/dashboard");
-      }
-      
-      req.flash("success", "Product updated successfully");
-      res.redirect("/admin/dashboard");
   
-    } catch(err) {
-      console.error("PUT eror updating product:", err);
-      req.flash("error", "Failed to update product" );
-    }
-  });
-  
-  
-  //Delete a product (admin)
+//Delete a product (admin)
 router.delete("/:id", authenticate, isAdmin, async (req, res) => {
     const id = parseInt(req.params.id);
     try{

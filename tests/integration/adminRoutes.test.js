@@ -1,5 +1,5 @@
 import request from "supertest";
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import app from "../../app.js";
 import db from "../../db.js";
 import { getAllProducts, getProductById } from "../../services/productService.js";
@@ -116,7 +116,10 @@ describe("Admin Routes", () => {
 
     beforeEach(() => {
         vi.clearAllMocks();
-        
+
+        // Supress console.error
+        vi.spyOn(console, "error").mockImplementation(() => {});
+
         // Default mocks
         getAllProducts.mockResolvedValue([mockProduct]);
         getProductById.mockResolvedValue(mockProduct);
@@ -125,6 +128,11 @@ describe("Admin Routes", () => {
         getAllUsers.mockResolvedValue([mockUser]);
         getUserDetails.mockResolvedValue(mockUserDetails);
     });
+
+    afterEach(() => {
+      // Restore console.error 
+      vi.restoreAllMocks();
+    })
 
     describe("GET /dashboard", () => {
         it("should render admin dashboard with products", async () => {

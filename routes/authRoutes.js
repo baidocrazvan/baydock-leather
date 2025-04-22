@@ -56,11 +56,11 @@ router.post("/login", validateLogin, (req, res, next) => {
           req.session.cart = []; // Clear the guest cart after merging
         }
         req.flash("success", "Logged in successfully");
-        res.redirect("/cart");
+        res.redirect("/");
       } catch (err) {
         console.error("Error merging guest cart:", err);
         req.flash("error", "Failed to merge guest cart.");
-        res.redirect("/cart");
+        res.redirect("/");
       }
     });
   })(req, res, next);
@@ -122,11 +122,11 @@ router.post("/register", validateRegister, async (req, res) => {
                     req.session.cart = [];
                   }
                   req.flash("success", "Account registered successfully");
-                  res.redirect("/cart");
+                  return res.redirect("/");
                 } catch (mergeErr) {
                   console.error("Error merging guest cart:", mergeErr);
-                  req.flash("error", "Registration successful, but failed to merge guest cart.");
-                  res.redirect("/cart");
+                  req.flash("error", "Registration successful, but failed to merge guest cart contents.");
+                  return res.redirect("/");
                 }
                 
               })

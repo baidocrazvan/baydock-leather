@@ -1,5 +1,5 @@
 import request from "supertest";
-import { describe, it, expect, vi, beforeEach, beforeAll } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import app from "../../app.js";
 import db from "../../db.js";
 import { validateAddress } from "../../middleware/validationMiddleware.js"

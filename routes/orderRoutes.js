@@ -16,9 +16,7 @@ const router = express.Router();
 router.get("/history", authenticate, async (req, res) => {
     
   try {
-    console.log('Inside /orders/history route');
       const userId = req.user.id;
-      console.log("User ID:", userId);
       const result = await db.query(
           `SELECT
              o.id AS order_id,
@@ -43,7 +41,7 @@ router.get("/history", authenticate, async (req, res) => {
              o.created_at DESC`,
           [userId]
         );
-        console.log("Query result:", result.rows);
+
         if (result.rows.length === 0) {
           return res.render("orders/order-history.ejs", { orders: result.rows } );
         }
@@ -59,8 +57,8 @@ router.get("/history", authenticate, async (req, res) => {
         lastName: row.last_name,
       }
     }));
-    console.log(orders);
-    res.render("orders/order-history.ejs", { orders } );
+    
+    return res.render("orders/order-history.ejs", { orders } );
         
   } catch(err) {
       console.error("Error getting order history: ", err);
@@ -82,7 +80,7 @@ router.get("/:id", authenticate, async (req, res) => {
     } catch(err) {
         console.error("GET Error getting order by id: ", err);
         req.flash("error", "Failed to load order details");
-        res.redirect("/orders");
+        return res.redirect("/orders");
     }
     
 }); 
@@ -123,10 +121,8 @@ router.post("/new-order", authenticate, async (req, res) => {
         }
         }
         
-
         // Check if cart is empty
         const cartItems = await client.query(`SELECT * FROM carts WHERE user_id = $1`, [userId]);
-        console.log("Cart Items:", cartItems.rows);
 
         if (cartItems.rows.length === 0) {
             // Rollback transaction if cart is empty
@@ -163,18 +159,18 @@ router.post("/new-order", authenticate, async (req, res) => {
 
         // Clear the cart
         await clearCart(userId);
-        console.log("All validations passed");
+
         // If every step worked, commit transaction
         await client.query('COMMIT') 
         req.flash('success', 'Order placed successfully!');
-        res.redirect(`/orders/${orderId}`);
+        return res.redirect(`/orders/${orderId}`);
 
         } catch(err) {
             // Rollback transaction if err
             await client.query('ROLLBACK');
             console.error("Error creating order: ", err);
             req.flash('error', 'Failed to create order. Please try again.');
-            res.redirect('/cart/checkout');
+            return res.redirect('/cart/checkout');
         } finally {
             // Release client back to the pool
             client.release();

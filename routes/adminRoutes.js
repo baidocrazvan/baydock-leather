@@ -12,11 +12,10 @@ const router = express.Router();
 router.get("/dashboard", authenticate, isAdmin, async (req, res) => {
 try {
     const products = await getAllProducts();
-    console.log(products);
-    res.render("admin/dashboard.ejs", { products });
+    return res.render("admin/dashboard.ejs", { products });
 } catch(err) {
     console.error("GET error for admin-dashboard:", err);
-    res.redirect("/");
+    return res.redirect("/");
 }
 });
 
@@ -24,7 +23,7 @@ try {
 router.get("/modify-product/:id", authenticate, isAdmin, async(req, res) => {
     const productId = req.params.id;
     const product = await getProductById(productId);
-    res.render("admin/modify-product.ejs", { productId, product });
+    return res.render("admin/modify-product.ejs", { productId, product });
 })
 
 // GET all orders
@@ -39,7 +38,7 @@ router.get("/orders", authenticate, isAdmin, async(req, res) => {
 
     } catch(err) {
         console.error("GET error rendering all orders page (admin):" , err);
-        res.redirect("/admin/dashboard");
+        return res.redirect("/admin/dashboard");
     }
 })
 
@@ -54,7 +53,7 @@ router.get("/orders/:id", authenticate, isAdmin, async(req, res) => {
     } catch(err) {
         console.error("GET error fetching specific order:", err);
         req.flash("error", "Cannot get details about this order");
-        res.redirect("/admin/orders");
+        return res.redirect("/admin/orders");
     }
 })
 
@@ -68,11 +67,11 @@ router.patch("/orders/:id", authenticate, isAdmin, async(req, res) => {
         );
 
         req.flash("success", "Order status updated successfully")
-        res.redirect(`/admin/orders/${orderId}`);
+        return res.redirect(`/admin/orders/${orderId}`);
     } catch(err) {
         console.error("PATCH error updating order status", err);
         req.flash("error", "Failed to update order status");
-        res.redirect("/admin/orders");
+        return res.redirect("/admin/orders");
     }
 })
 
@@ -80,11 +79,11 @@ router.patch("/orders/:id", authenticate, isAdmin, async(req, res) => {
 router.get("/users", authenticate, isAdmin, async (req, res) => {
     try{
         const users = await getAllUsers();
-        res.render("admin/user-list.ejs", { users });
+        return res.render("admin/user-list.ejs", { users });
 
     } catch(err) {
         console.error("Error fetching users:", err);
-        res.redirect("/admin/dashboard.ejs");
+        return res.redirect("/admin/dashboard.ejs");
     }
 });
 
@@ -93,11 +92,10 @@ router.get("/users", authenticate, isAdmin, async (req, res) => {
 router.get('/users/:id', authenticate, isAdmin, async (req, res) => {
     try {
         const userDetails = await getUserDetails(req.params.id);
-        console.log(userDetails);
-        res.render("admin/user.ejs", userDetails);
+        return res.render("admin/user.ejs", userDetails);
     } catch (err) {
         console.error("GET Error fetching user details:", err);
-        res.redirect("/admin/users");
+        return res.redirect("/admin/users");
     }
   });
 

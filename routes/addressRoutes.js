@@ -14,7 +14,6 @@ router.get("/shipping-address", authenticate, async (req, res) => {
 // POST Add a shipping address to user account
 router.post("/shipping-address", authenticate, validateAddress, async (req, res) => {
     try{
-
         const userId = req.user.id;
         const { firstName, lastName, address, city, county, postalCode, phoneNumber, fromCheckout } = req.body;
 
@@ -55,7 +54,7 @@ router.post("/shipping-address", authenticate, validateAddress, async (req, res)
 router.get("/shipping-address/edit/:id", authenticate,  async (req, res) => {
   try {
     const address = await getUserAddress(req.user.id, req.params.id);
-    res.render("addresses/modify-address.ejs", {
+    return res.render("addresses/modify-address.ejs", {
       addressId: req.params.id,
       address: address
     })
@@ -69,7 +68,7 @@ router.get("/shipping-address/edit/:id", authenticate,  async (req, res) => {
     }
 
     req.flash('error', 'Failed to load address');
-    res.redirect('/customer/addresses');
+    return res.redirect('/customer/addresses');
   }
 })
 
@@ -150,7 +149,7 @@ router.put("/shipping-address/edit/:id", authenticate, validateAddress, async (r
 
         await client.query('COMMIT');
         req.flash("success", "Address updated successfully");
-        res.redirect("/user/addresses");
+        return res.redirect("/user/addresses");
 
       } catch(err) {
         await client.query("ROLLBACK");
@@ -162,7 +161,7 @@ router.put("/shipping-address/edit/:id", authenticate, validateAddress, async (r
     } catch(err) {
       console.error("PUT error updating address:" , err);
       req.flash('error', 'Failed to update address');
-      res.redirect("/customer/addresses");
+      return res.redirect("/customer/addresses");
     }
 })
 
@@ -194,11 +193,12 @@ router.patch("/shipping-address/default", authenticate, async (req, res) => {
       }
 
       req.flash('success', "Default addresses have updated successfully.")
-      res.redirect('/cart/checkout');
+      return res.redirect('/cart/checkout');
 
     } catch(err) {
       console.error("PATCH error updating default addresses at checkout", err);
       req.flash("error", "Failed to update default addresses");
+      return res.redirect('/cart/checkout');
     }
 })
   
@@ -217,12 +217,12 @@ router.delete("/shipping-address/:id", authenticate, async (req, res) => {
       req.flash("success", "Address removed")
     }
 
-    res.redirect("/customer/addresses");
+    return res.redirect("/customer/addresses");
 
   } catch(err) {
     console.error("DELETE soft delete error while deleting address" , err);
     req.flash("error", "Error deleting specified address");
-    res.redirect("/customer/addresses");
+    return res.redirect("/customer/addresses");
   }
 })
 
