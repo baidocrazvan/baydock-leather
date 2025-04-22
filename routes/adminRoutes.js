@@ -47,7 +47,7 @@ router.get("/orders", authenticate, isAdmin, async(req, res) => {
 router.get("/orders/:id", authenticate, isAdmin, async(req, res) => {
     try {
         const order = await getOrderDetails(req.params.id);
-        res.render("admin/order.ejs", {
+        return res.render("admin/order.ejs", {
             order,
             sameAddress: order.shippingAddress.street === order.billingAddress.street,
         })
@@ -63,11 +63,8 @@ router.patch("/orders/:id", authenticate, isAdmin, async(req, res) => {
     try{
         const orderId = req.params.id;
         const newStatus = req.body.status;
-        await db.query(`
-            UPDATE orders
-            SET status = $1
-            WHERE id = $2`,
-            [newStatus, orderId]
+        await db.query(`UPDATE orders SET status = $1 WHERE id = $2`,
+        [newStatus, orderId]
         );
 
         req.flash("success", "Order status updated successfully")
@@ -75,7 +72,7 @@ router.patch("/orders/:id", authenticate, isAdmin, async(req, res) => {
     } catch(err) {
         console.error("PATCH error updating order status", err);
         req.flash("error", "Failed to update order status");
-        res.redirect(`/admin/orders/${orderId}`);
+        res.redirect("/admin/orders");
     }
 })
 

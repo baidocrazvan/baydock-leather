@@ -96,6 +96,8 @@ router.put("/shipping-address/edit/:id", authenticate, validateAddress, async (r
     // Grab a client from pg pool and use transaction to update address
     const client = await db.connect();
       try {
+        await client.query("BEGIN");
+
         // If needed, reset shipping address status
         if (isShipping) {
           await client.query(
@@ -172,27 +174,21 @@ router.patch("/shipping-address/default", authenticate, async (req, res) => {
     try {
       // Set all addresses to non-default
       await db.query(
-        `UPDATE shipping_addresses
-        SET is_shipping = false, is_billing = false
-        WHERE user_id = $1`,
+        `UPDATE shipping_addresses SET is_shipping = false, is_billing = false WHERE user_id = $1`,
         [userId]
       );
 
       // Set new shipping default if different from current default shipping address
       if (shippingAddressId) {
         await db.query(
-          `UPDATE shipping_addresses
-          SET is_shipping = true
-          WHERE id = $1 AND user_id = $2`,
+          `UPDATE shipping_addresses SET is_shipping = true WHERE id = $1 AND user_id = $2`,
           [shippingAddressId, userId]
         );
       }
 
       if (billingAddressId) {
         await db.query(
-          `UPDATE shipping_addresses
-          SET is_billing = true
-          WHERE id = $1 AND user_id = $2`,
+          `UPDATE shipping_addresses SET is_billing = true WHERE id = $1 AND user_id = $2`,
           [billingAddressId, userId]
         )
       }
@@ -210,10 +206,10 @@ router.patch("/shipping-address/default", authenticate, async (req, res) => {
 router.delete("/shipping-address/:id", authenticate, async (req, res) => {
   try {
     const userId = req.user.id;
+    const addressId = req.params.id
     const result = await db.query(
-      `UPDATE shipping_addresses
-      SET is_active = FALSE, deleted_at = NOW()
-      WHERE id = $1 AND user_id = $2`, [req.params.id, userId]);
+      `UPDATE shipping_addresses SET is_active = FALSE, deleted_at = NOW()
+      WHERE id = $1 AND user_id = $2`, [addressId, userId]);
 
     if (result.rowCount === 0) {
       req.flash("error", "Address not found");
