@@ -5,6 +5,8 @@ import { getAllProducts, getProductById } from "../services/productService.js";
 import { getAllOrders } from "../services/adminService.js";
 import { getOrderDetails } from "../services/orderService.js";
 import { getAllUsers, getUserDetails } from "../services/userService.js";
+import { validateRegister } from "../middleware/validationMiddleware.js";
+import bcrypt from "bcryptjs";
 
 const router = express.Router();
 
@@ -88,7 +90,6 @@ router.get("/users", authenticate, isAdmin, async (req, res) => {
 });
 
 // GET route for details of a specific user
-
 router.get('/users/:id', authenticate, isAdmin, async (req, res) => {
     try {
         const userDetails = await getUserDetails(req.params.id);
@@ -99,5 +100,53 @@ router.get('/users/:id', authenticate, isAdmin, async (req, res) => {
     }
   });
 
+// GET route for admin account registration
+router.get("/create", authenticate, isAdmin, async(req, res) => {
+    return res.render("admin/register.ejs");
+})
+
+// POST protected register an admin account 
+router.post("/create", validateRegister, authenticate, isAdmin, async (req, res) => {
+    const { lastName, firstName, email, password, cpassword: confirmPassword } = req.body;
+    const role = "admin";
+  
+    try {
+  
+      if (password !== confirmPassword) {
+        req.flash("error", "Password does not match confirmation password");
+        return res.redirect("/admin/create");
+      } else {
+        
+          // Check if email already exists
+          const checkResult = await db.query(`SELECT * FROM users WHERE email = $1`, [email]);
+          if (checkResult.rows.length > 0) {
+            req.flash('error', 'Email already exists. Please log in.');
+            return res.redirect("/admin/create");
+          } else {
+              // Hash password using bcrypt
+              bcrypt.hash(password, saltRounds, async (err, hash) => {
+              if (err) {
+                console.log("Error hashing password:", err);
+                req.flash("Error hashing password. Try registering again later")
+                return res.redirect("/admin/create")
+              } else {
+                const result = await db.query(
+                  `INSERT INTO users (first_name, last_name, email, password, role) VALUES ($1, $2, $3, $4, $5)`,[
+                  firstName, lastName, email, hash, role
+              ]);
+
+              req.flash("success", "Registration successful.")
+                return res.redirect("/admin/dashboard");
+            }
+        })
+      }
+      } 
+  
+    } catch (err) {
+      console.error("Registration error:", err);
+      req.flash("error", "Registration failed.");
+      res.redirect("/auth/register");
+    }
+  });
 
 export default router;

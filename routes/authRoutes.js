@@ -91,6 +91,8 @@ router.post("/register", validateRegister, async (req, res) => {
               bcrypt.hash(password, saltRounds, async (err, hash) => {
               if (err) {
                 console.log("Error hashing password:", err);
+                req.flash("Error hashing password. Try registering again later")
+                return res.redirect("/auth/register")
               } else {
                 const result = await db.query(
                   `INSERT INTO users (first_name, last_name, email, password, role) VALUES ($1, $2, $3, $4, $5) RETURNING *`,[

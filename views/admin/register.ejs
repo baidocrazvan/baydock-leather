@@ -1,0 +1,91 @@
+<%- include("../partials/header"); %> <!-- Include the shared header and navbar -->
+
+<main> 
+
+    <h1 class="page-title"><span>Create new admin account</span></h1>
+    <form action="/admin/create" method="post" id="registerForm">
+        <fieldset class="form-fieldset">
+            <legend class="legend">Personal information</legend>
+            <div class="input-control">
+                <label for="firstName" class="form-label">First name:</label>
+                <input
+                id="firstName"
+                type="text"
+                name="firstName"
+                class="form-input"
+                placeholder="First name"
+                
+                />
+                <div class="error"></div>
+            </div>
+
+            <div class="input-control">
+                <label for="lastName" class="form-label">Last name:</label>
+                <input
+                id="lastName" 
+                type="text"
+                name="lastName"
+                class="form-input"
+                placeholder="Last name"
+                
+                />
+                <div class="error"></div>
+            </div>
+        </fieldset>
+
+        <fieldset class="form-fieldset">
+            <legend class="legend">Account information</legend>
+            <div class="input-control">
+                <label for="username" class="form-label">Email:</label>
+                <input
+                id="email"
+                type="email"
+                name="email"
+                class="form-input"
+                placeholder="Email"
+                
+                />
+                <div class="error"></div>
+            </div>
+
+            <div class="input-control">
+                <label for="password" class="form-label">Password</label>
+                <input
+                id="password"
+                type="password"
+                name="password"
+                class="form-label"
+                placeholder="Password"
+                />
+                <div class="error"></div>
+            </div>
+
+            <div class="input-control">
+                <label for="password" class="form-label">Confirm Password</label>
+                <input
+                id="cpassword"
+                type="password"
+                name="cpassword"
+                class="form-label"
+                placeholder="Confirm password"
+               
+                />
+                <div class="error"></div>
+            </div>
+        </fieldset>
+        
+        <div class="form-actions">
+            <button type="submit" class="submit-button">Register</button>
+        </div>
+        
+    
+    </form>
+    <% if (error.length) { %>
+        <div class="alert register-error">
+          <%= error %>
+        </div>
+      <% } %>
+</main>
+
+
+<%- include("../partials/footer"); %> <!-- Include the shared footer -->
