@@ -127,6 +127,11 @@ describe("Admin Routes", () => {
         getOrderDetails.mockResolvedValue(mockOrderDetails);
         getAllUsers.mockResolvedValue([mockUser]);
         getUserDetails.mockResolvedValue(mockUserDetails);
+        vi.mock("../../middleware/validationMiddleware.js", () => ({
+          validateRegister: (req, res, next) => next(), // Mock validateRegister to always pass
+          validateLogin: (req, res, next) => next(),    // Mock validateLogin to always pass
+          validateAddress: (req, res, next) => next(), // Mock validateAddress to always pass
+        }));
     });
 
     afterEach(() => {
@@ -293,4 +298,54 @@ describe("Admin Routes", () => {
             .expect("Location", "/admin/users");
         });
     });
+
+    describe("GET /create", () => {
+      it("should render the admin registration page", async () => {
+        const res = await request(app)
+          .get("/admin/create")
+          .expect(200)
+          .expect("Content-Type", /html/);
+    
+        expect(res.text).toContain("Create new admin account");
+      });
+    })
+
+    describe("POST /create", () => {
+      it("should create a new admin account", async () => {
+        
+        db.query.mockResolvedValueOnce({ rows: [] }); // Simulate no existing email
+        db.query.mockResolvedValueOnce({ rows: [{ id: 1 }] }); // Second query: insert new user
+    
+        const res = await request(app)
+          .post("/admin/create")
+          .send({
+            lastName: "Admin",
+            firstName: "User",
+            email: "admin@example.com",
+            password: "Password123",
+            cpassword: "Password123",
+          })
+          .expect(302)
+          .expect("Location", "/admin/dashboard");
+    
+        expect(db.query).toHaveBeenNthCalledWith(
+          1,
+          "SELECT * FROM users WHERE email = $1",
+          ["admin@example.com"]
+        );
+
+        expect(db.query).toHaveBeenNthCalledWith(
+          2,
+          "INSERT INTO users (first_name, last_name, email, password, role) VALUES ($1, $2, $3, $4, $5)",
+          [
+            "User",
+            "Admin",
+            "admin@example.com",
+            expect.any(String), // hashed password
+            "admin"
+          ]
+        );
+
+      });
+    })
 });
