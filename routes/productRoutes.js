@@ -3,7 +3,7 @@ import db from "../db.js";
 import multer from "multer";
 import path from "path";
 import { authenticate, isAdmin } from "../middleware/middleware.js";
-import { getAllProducts, getProductById, getProductsByCategory } from "../services/productService.js";
+import { getAllProducts, getProductById, getProductsByCategory, getProductsBySearch } from "../services/productService.js";
 
 const router = express.Router();
 
@@ -24,19 +24,26 @@ const storage = multer.diskStorage({
 // Render all products page
 router.get("/", async (req, res) => {
   try {
+    let products;
 
     // filter by category, price or date added if specified in req.query, otherwise render all products
-    const { category, sort, order } = req.query;
+    const { category, sort, order, search } = req.query;
 
-      const products = category
-        ? await getProductsByCategory(category, sort, order)
-        : await getAllProducts(sort, order);  
+      if (search) {
+        products = await getProductsBySearch(search, sort, order);
+      } else if (category) {
+        products = await getProductsByCategory(category, sort, order);
+      } else {
+        products = await getAllProducts(sort, order);
+      }
 
     // 404 if there are  no products to be shown.   
     if (!products || products.length === 0) {
       return res.status(404).render("error.ejs", {
         error: 404,
-        message: category
+        message: search
+        ? `No products found matching "${search}"` 
+        : category
             ? `No products found in ${category} category.`
             : "Oops. Seems like there are no items to display yet. Please come back later."
       });
