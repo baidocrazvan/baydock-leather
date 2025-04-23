@@ -8,6 +8,7 @@ import { getAllUsers, getUserDetails } from "../services/userService.js";
 import { validateRegister } from "../middleware/validationMiddleware.js";
 import bcrypt from "bcryptjs";
 
+const saltRounds = 10;
 const router = express.Router();
 
 // GET admin dashboard
