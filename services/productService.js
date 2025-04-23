@@ -70,7 +70,7 @@ export async function getProductsBySearch(search, sort, order = 'asc') {
         console.log("Filtered by search:", result.rows);
         return result.rows;
     } catch(err) {
-        console.error("Search error:", err);
-        throw err; // Don't swallow errors
+        console.error("Search failed:", err);
+        throw err;
     }
 }

@@ -3,6 +3,7 @@ import {
   getAllProducts,
   getProductById,
   getProductsByCategory,
+  getProductsBySearch
 } from "../../../services/productService.js";
 
 // Mock the database
@@ -135,7 +136,7 @@ describe("Product Service", () => {
             
             expect(result).toEqual(mockProducts);
             expect(db.query).toHaveBeenCalledWith(
-                "SELECT * FROM PRODUCTS WHERE CATEGORY = $1",
+                "SELECT * FROM products WHERE CATEGORY = $1",
                 ["category_a"]
             );
         });
@@ -147,7 +148,7 @@ describe("Product Service", () => {
             
             expect(result).toEqual(mockProducts);
             expect(db.query).toHaveBeenCalledWith(
-                "SELECT * FROM PRODUCTS WHERE CATEGORY = $1 ORDER BY price ASC",
+                "SELECT * FROM products WHERE CATEGORY = $1 ORDER BY price ASC",
                 ["category_a"]
             );
         });
@@ -159,7 +160,7 @@ describe("Product Service", () => {
             
             expect(result).toEqual(mockProducts);
             expect(db.query).toHaveBeenCalledWith(
-                "SELECT * FROM PRODUCTS WHERE CATEGORY = $1 ORDER BY created_at DESC",
+                "SELECT * FROM products WHERE CATEGORY = $1 ORDER BY created_at DESC",
                 ["category_a"]
             );
         });
@@ -171,7 +172,7 @@ describe("Product Service", () => {
             
             expect(result).toEqual(mockProducts);
             expect(db.query).toHaveBeenCalledWith(
-                "SELECT * FROM PRODUCTS WHERE CATEGORY = $1",
+                "SELECT * FROM products WHERE CATEGORY = $1",
                 ["category_a"]
             );
         });
@@ -187,4 +188,87 @@ describe("Product Service", () => {
             consoleErrorSpy.mockRestore();
         });
     });
-})
+
+    describe('getProductsBySearch()', () => {
+        const mockProducts = [
+          { id: 1, name: 'Brown Leather Belt', description: 'Genuine leather', category: 'belts' },
+          { id: 2, name: 'Blue Keychain', description: 'Handmade', category: 'keychains' }
+        ];
+      
+        
+        beforeEach(() => {
+          vi.clearAllMocks();
+        });
+        
+        it('should return products matching search term', async () => {
+            db.query.mockResolvedValue({ rows: mockProducts });
+          
+            const result = await getProductsBySearch('brown');
+          
+            expect(result).toEqual(mockProducts);
+            expect(db.query).toHaveBeenCalledWith(
+              expect.stringContaining('SELECT * FROM products WHERE name ILIKE $1'),
+              ['%brown%'] // Verify wildcards are added
+            );
+          });
+
+        it('should find matches regardless of uppercase or lowercase characters in search term', async () => {
+        db.query.mockResolvedValue({ rows: [mockProducts[0]] });
+        
+        const result = await getProductsBySearch('BrOwN');
+        
+        expect(result).toContainEqual(mockProducts[0]);
+        expect(db.query).toHaveBeenCalledWith(
+            expect.any(String),
+            ['%BrOwN%']
+        );
+        });
+
+        it('should search name, description, and category', async () => {
+        db.query.mockResolvedValue({ rows: mockProducts });
+        
+        await getProductsBySearch('handmade');
+        
+        expect(db.query).toHaveBeenCalledWith(
+            expect.stringMatching(/name ILIKE \$1 OR description ILIKE \$1 OR category ILIKE \$1/i),
+            ['%handmade%']
+        );
+        });
+          
+        it('should sort by price ascending', async () => {
+            db.query.mockResolvedValue({ rows: mockProducts });
+          
+            await getProductsBySearch('leather', 'price', 'asc');
+          
+            expect(db.query).toHaveBeenCalledWith(
+              expect.stringContaining('ORDER BY price ASC'),
+              ['%leather%']
+            );
+          });
+          
+        it('should ignore invalid sort columns', async () => {
+            db.query.mockResolvedValue({ rows: mockProducts });
+            
+            await getProductsBySearch('belt', 'invalid_column', 'asc');
+            
+            // Should not append ORDER BY for invalid columns
+            expect(db.query).toHaveBeenCalledWith(
+                expect.not.stringContaining('ORDER BY'),
+                ['%belt%']
+            );
+        });
+        
+        it('should return empty array if no matches found', async () => {
+            db.query.mockResolvedValue({ rows: [] });
+          
+            const result = await getProductsBySearch('nonexistent');
+            expect(result).toEqual([]);
+          });
+          
+        it('should throw errors properly', async () => {
+            db.query.mockRejectedValue(new Error('DB error'));
+          
+            await expect(getProductsBySearch('test')).rejects.toThrow('DB error');
+        });
+    })
+})    
