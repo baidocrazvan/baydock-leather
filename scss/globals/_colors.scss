@@ -1,6 +1,17 @@
 :root {
-    --background-color: hsl(0, 0%, 100%);
-    --text-color: hsl(0, 0%, 0%);
-    --icon-color: hsl(0, 0%, 40%);
+
+    // Light theme (default)
+    --background-color: #ffffff;
+    --text-color:#121212;
+    --icon-color: #666666;
     --header-height: 60px;
+
+    // Dark theme variables
+    --dark-background-color: #121212;
+    --dark-text-color: #e0e0e0;
+}
+
+:root[data-theme="dark"] {
+	--background-color: var(--dark-background-color);
+    --text-color: var(--dark-text-color)
 }
