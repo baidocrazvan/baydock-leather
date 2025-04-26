@@ -34,7 +34,7 @@
     
       &__search {
         display: none; // Hidden on mobile
-        grid-column: 1; // First column (left)
+        grid-column: 1; 
         align-self: center;
     
         form {
@@ -54,7 +54,7 @@
         button {
           background: none;
           border: none;
-          margin-left: -30px; // Pulls icon over input
+          margin-left: -30px;
           cursor: pointer;
           
           svg {
@@ -104,7 +104,7 @@
                 transform: scale(1.1);
             }
 
-            &--account {
+            &--search {
                 display: none;
             }
         }
@@ -131,10 +131,8 @@
     &__navbar {
         position: fixed;
         top: 0;
-        // left: -100%;
         left: -350px;
         right: 0;
-        // width: 80%;
         width: 300px;
         height: 100vh;
         background: white;
@@ -222,7 +220,7 @@
 @include u.breakpoint(medium) {
     .header__icons {
         .header__icon {
-            &--account {
+            &--search {
                 display: block;
             }
         }
@@ -234,7 +232,7 @@
         max-width: 90%;
 
         &__hamburger {
-        display: none; // Hide hamburger
+        display: none;
         }
 
         // Show desktop search
@@ -248,7 +246,7 @@
         display: none;
         }
 
-        // Position logo correctly
+        // Position logo
         &__logo {
         grid-column: 2;
         justify-self: center;
@@ -281,7 +279,7 @@
         flex-direction: row;
         justify-content: center;
         gap: 3rem;
-        padding: 1rem 0;
+        padding: 0 0 1rem 0;
 
             a {
                 font-family: "Poppins", sans-serif;
@@ -293,8 +291,30 @@
         &__nav-item {
         text-transform: uppercase;    
         box-shadow: none;
+        position: relative;
         padding: 0;
-
+        
+        a {
+            position: relative;
+            padding-bottom: 4px; // Space for the hover line
+      
+            &::after {
+              content: '';
+              position: absolute;
+              bottom: 0;
+              left: 0;
+              width: 0;
+              height: 2px;
+              background: transparent; 
+              transition: all 0.3s ease;
+            }
+      
+            &:hover::after {
+              width: 100%;
+              background: var(--text-color); 
+            }
+        }
+            
         &:last-child {
             display: none;
         }
@@ -304,7 +324,7 @@
         }
         }
 
-        // Hide mobile-specific elements
+        // Hide mobile toggle and overlay
         &__navbar-overlay,
         &__navbar-close {
         display: none;
