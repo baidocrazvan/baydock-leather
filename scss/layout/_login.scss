@@ -1,3 +1,102 @@
+@use "../util/" as u;
+
+.page-title-wrapper {
+    border-top: 1px solid rgb(231, 231, 231);
+    background: var(--body-fill-color);
+    padding: 3.75rem 0;
+    text-align: center;
+    h1 {
+        font-size: u.rem(28);
+        font-weight: 700;
+        margin: 0 auto;
+    }
+}
+
+.login-container {
+    max-width: 90%;
+    margin: 0 auto;
+    .block-title {
+        font-size: u.rem(22);
+        line-height: 1.2;
+        margin: u.rem(15) 0;
+    }
+
+    .block-note {
+        font-size: u.rem(12);
+        margin: 0 0 u.rem(12);
+    }
+
+    .form-fieldset {
+        border: none;
+        margin: 0;
+        padding: 0;
+        .input-control {
+
+            .form-label {
+                font-size: u.em(13);
+                font-weight: 500;
+            }
+
+            input {
+                border-color: rgba(0, 0, 0, .09);
+                height: auto;
+                padding: 8px 12px;
+                font-size: u.rem(12);
+            }
+        }
+        
+    }
+
+    .form-actions {
+        .forgot-password {
+            font-size: u.rem(13);
+            line-height: 21px;
+            text-decoration: none;
+            color: var(--text-color)
+        }
+
+        .submit-button {
+            display: block;
+            width: 100%;
+            text-align: center;
+            margin: 0;
+            font-family: "Open Sans", sans-serif;
+            font-weight: 700;
+            font-size: u.rem(16);
+            line-height: 21px;
+            padding: 16px 24px;
+            border-radius: 4px;
+            letter-spacing: 0.35px;
+            margin: u.rem(22) 0;
+            background-color: var(--text-color);
+            color: var(--background-color);
+        }
+
+        .register-button {
+            display: block;
+            width: 100%;
+            text-align: center;
+            margin: 0;
+            font-family: "Open Sans", sans-serif;
+            font-weight: 500;
+            font-size: 1rem;
+            line-height: 21px;
+            padding: 16px 24px;
+            border-radius: 4px;
+            letter-spacing: 0.35px;
+            margin: u.rem(22) 0;
+            background-color: var(--text-color);
+            color: var(--background-color);
+        }
+    }
+}
+
+@media (min-width: u.rem(600)) {
+    .login-container {
+        width: clamp(300px, 50vw, 600px);
+    }
+}
+
 #form {
     width: 300px;
     margin: 20vh auto 0 auto;
@@ -40,16 +139,10 @@
     outline: 0;
 }
 
-.input-control.success input {
-    border-color: #09c372;
-}
-
-.input-control.error input {
-    border-color: #ff3860;
-}
 
 .input-control .error {
     color: #ff3860;
-    font-size: 9px;
-    height: 13px;
+    margin-top: u.rem(8);
+    font-size: u.rem(10);
+    height: u.rem(20);
 }

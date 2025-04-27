@@ -1,45 +1,51 @@
 <%- include("../partials/header"); %> <!-- Include the shared header and navbar -->
 
 <main> <!-- Makes POST request to /api/login route -->
+    <div class="page-title-wrapper">
+        <h1 class="page-title">
+            <span>Customer Login</span>
+        </h1>
+    </div>
 
-    <h1 class="page-title"><span>Customer Login</span></h1>
-    <div class="block-title"><strong>Log into account</strong></div>
-    <div class="block-note">If you already have an account, sign in using your email address.</div>
-    <form action="/auth/login" method="post" id="loginForm">
+    <div class="login-container">
+        <div class="block-title"><strong>Log into account</strong></div>
+        <div class="block-note">If you already have an account, sign in using your email address.</div>
+        <form action="/auth/login" method="post" id="loginForm">
 
-        <fieldset class="form-fieldset">
-            <div class="input-control">
-                <label for="email" class="form-label">Email</label>
-                <input
-                id="email"
-                type="email"
-                name="email"
-                class="form-input"
-                placeholder="Email"
-                 />
-                <div class="error"></div>
+            <fieldset class="form-fieldset">
+                <div class="input-control">
+                    <label for="email" class="form-label">Email</label>
+                    <input
+                    id="email"
+                    type="email"
+                    name="email"
+                    class="form-input"
+                    />
+                    <div class="error"></div>
+                </div>
+            
+                <div class="input-control">
+                    <label for="password" class="form-label">Password</label>
+                    <input
+                    id="password"
+                    type="password"
+                    name="password"
+                    class="form-input"
+                    />
+                    <div class="error"></div>
+                </div>
+            
+            </fieldset>
+
+            <div class="form-actions">
+                <a href="/auth/forgot-password" class="forgot-password">Forgot password?</a>
+                <button type="submit" class="submit-button">LOGIN</button>
+                <a href="/auth/register" class="register-button">REGISTER</a>
             </div>
-            
-            <div class="input-control">
-                <label for="password" class="form-label">Password</label>
-                <input
-                id="password"
-                type="password"
-                name="password"
-                class="form-input"
-                placeholder="Password"
-                />
-                <div class="error"></div>
-            </div>
-            
-        </fieldset>
-        <div class="form-actions">
-            <a href="/auth/forgot-password" class="forgot-password">Forgot password?</a>
-            <button type="submit" class="submit-button">Sign In</button>
-            <a href="/auth/register" class="submit-button">Register</a>
-        </div>
-            
-    </form>
+                
+        </form>
+    </div>
+    
       
 </main>
 
