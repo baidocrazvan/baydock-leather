@@ -12,7 +12,7 @@
     }
 }
 
-.login-container {
+.auth-container {
     max-width: 90%;
     margin: 0 auto;
     .block-title {
@@ -89,12 +89,31 @@
             color: var(--background-color);
         }
     }
+
+    .input-reminder {
+        margin-top: u.rem(26);
+        line-height: 21px;
+        align-items: center;
+        a:hover {
+            cursor: pointer;
+            text-decoration: underline;
+        }
+    }
 }
 
 @media (min-width: u.rem(600)) {
-    .login-container {
+    .auth-container {
         width: clamp(300px, 50vw, 600px);
     }
+
+    .register-container {
+        width: clamp(600px, 50vw, 900px);
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: u.rem(25);
+
+    }
+
 }
 
 #form {
