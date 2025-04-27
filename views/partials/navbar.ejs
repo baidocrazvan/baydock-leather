@@ -1,125 +1,127 @@
-<header class="header"> 
+<div id="header-background">
+    <header class="header"> 
 
-    <button class="header__hamburger" aria-label="Toggle menu">
-        <span></span>
-        <span></span>
-        <span></span>
-    </button>
+        <button class="header__hamburger" aria-label="Toggle menu">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
 
-    <div class="header__search">
-        <form action="/products" method="get">
-            <input type="text" name="search" placeholder="Search.."/>
-            <button type="submit">
+        <div class="header__search">
+            <form action="/products" method="get">
+                <input type="text" name="search" placeholder="Search.."/>
+                <button type="submit">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
+                    </svg>
+                </button>
+            </form>
+        </div>
+
+        <div class="header__logo">
+            <h1>
+                <a href="/">Baydock</a>
+            </h1>
+        </div>
+
+        <div class="header__icons">
+            <div class="header__icon header__icon--search">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
                     <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
                 </svg>
-            </button>
-        </form>
-    </div>
+            </div>
 
-    <div class="header__logo">
-        <h1>
-            <a href="/">Baydock</a>
-        </h1>
-    </div>
+            <div class="header__icon header__icon--account">
+                <a href="/auth/login">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6m2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0m4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4m-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10s-3.516.68-4.168 1.332c-.678.678-.83 1.418-.832 1.664z"/>
+                    </svg>
+                </a>
+            </div>
 
-    <div class="header__icons">
-        <div class="header__icon header__icon--search">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
-            </svg>
+            <div class="header__icon header__icon--cart">
+                <a href="/cart">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-cart" viewBox="0 0 16 16">
+                        <path d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 13 12H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5M3.102 4l1.313 7h8.17l1.313-7zM5 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4m7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4m-7 1a1 1 0 1 1 0 2 1 1 0 0 1 0-2m7 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2"/>
+                    </svg>
+                </a>
+            </div>
+
         </div>
 
-        <div class="header__icon header__icon--account">
-            <a href="/auth/login">
+        <!-- Search modal and overlay -->
+        <div class="header__search-modal">
+            <div class="header__search-container">
+            <button class="header__search-close">X</button>
+            <form class="header__search-form" action="/products" method="get">
+                <input type="text" class="header__search-input" name="search" placeholder="Search...">
+                <button type="submit" class="header__search-submit">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                    <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6m2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0m4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4m-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10s-3.516.68-4.168 1.332c-.678.678-.83 1.418-.832 1.664z"/>
+                    <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
                 </svg>
-            </a>
-        </div>
-
-        <div class="header__icon header__icon--cart">
-            <a href="/cart">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-cart" viewBox="0 0 16 16">
-                    <path d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 13 12H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5M3.102 4l1.313 7h8.17l1.313-7zM5 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4m7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4m-7 1a1 1 0 1 1 0 2 1 1 0 0 1 0-2m7 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2"/>
-                </svg>
-            </a>
-        </div>
-
-    </div>
-
-    <!-- Search modal and overlay -->
-    <div class="header__search-modal">
-        <div class="header__search-container">
-          <button class="header__search-close">X</button>
-          <form class="header__search-form" action="/products" method="get">
-            <input type="text" class="header__search-input" name="search" placeholder="Search...">
-            <button type="submit" class="header__search-submit">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
-              </svg>
-            </button>
-          </form>
-        </div>
-    </div>
-
-    <!-- TO DO: Cart modal and overlay 
-     <div class="header__cart-modal">
-        <div class="header__cart-container">
-            <button class="header__cart-close">X</button>
-            <div class="header__cart-content">
-                <h3 class="header__cart-title">Cart</h3>
-                <div class="header__cart-items">
-                    
-                    <p class="header__cart-empty">Your cart is empty.</p>
-                </div>
-                
-                <div class="header__cart-footer">
-                    <button class="header__cart-checkout">Checkout</button>
-                </div>
-                
-                 <div class="header__cart-back">Go back to store.</div>
+                </button>
+            </form>
             </div>
         </div>
-     </div> -->
 
-    <!-- Overlay for navbar modal -->
-    <div class="header__navbar-overlay"></div>
+        <!-- TO DO: Cart modal and overlay 
+        <div class="header__cart-modal">
+            <div class="header__cart-container">
+                <button class="header__cart-close">X</button>
+                <div class="header__cart-content">
+                    <h3 class="header__cart-title">Cart</h3>
+                    <div class="header__cart-items">
+                        
+                        <p class="header__cart-empty">Your cart is empty.</p>
+                    </div>
+                    
+                    <div class="header__cart-footer">
+                        <button class="header__cart-checkout">Checkout</button>
+                    </div>
+                    
+                    <div class="header__cart-back">Go back to store.</div>
+                </div>
+            </div>
+        </div> -->
 
-    <div class="header__navbar">
-        <button class="header__navbar-close">X</button>
-        <ul class="header__nav-list">
-            <li class="header__nav-item header__nav-item--search">
-                <form action="/products" method="get">
-                    <input type="text" name="search" placeholder="    Search.."/>
-                    <button type="submit">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                            <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
-                        </svg>
-                    </button>
-                </form>
-            </li>
-            <li class="header__nav-item"><a href="/products?category=belts">Belts</a></li>
-            <li class="header__nav-item"><a href="/products?category=wallets">Wallets</a></li>
-            <li class="header__nav-item"><a href="/products?category=bags">Bags</a></li>
-            <li class="header__nav-item"><a href="/products?category=watchstraps">Watchstraps</a></li>
-            <li class="header__nav-item"><a href="/products?category=minimalist">Minimalist</a></li>
-            <li class="header__nav-item"><a href="/products?category=accesories">Accesories</a></li>
-            <% if (locals.currentUser) { %>
-                <li class="header__nav-item">
-                    <a href="/user/account">My account</a>
-                </li> 
-            <% } %>
-            <li class="header__nav-item">
-                <% if (locals.currentUser) { %>
-                    <form action="/auth/logout" method="post" class="logout-form">
-                        <button type="submit" class="logout-button">Logout</a>
+        <!-- Overlay for navbar modal -->
+        <div class="header__navbar-overlay"></div>
+
+        <div class="header__navbar">
+            <button class="header__navbar-close">X</button>
+            <ul class="header__nav-list">
+                <li class="header__nav-item header__nav-item--search">
+                    <form action="/products" method="get">
+                        <input type="text" name="search" placeholder="    Search.."/>
+                        <button type="submit">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
+                            </svg>
+                        </button>
                     </form>
-                <% } else { %>
-                <a href="/auth/login">Login/Register</a>
+                </li>
+                <li class="header__nav-item"><a href="/products?category=belts">Belts</a></li>
+                <li class="header__nav-item"><a href="/products?category=wallets">Wallets</a></li>
+                <li class="header__nav-item"><a href="/products?category=bags">Bags</a></li>
+                <li class="header__nav-item"><a href="/products?category=watchstraps">Watchstraps</a></li>
+                <li class="header__nav-item"><a href="/products?category=minimalist">Minimalist</a></li>
+                <li class="header__nav-item"><a href="/products?category=accesories">Accesories</a></li>
+                <% if (locals.currentUser) { %>
+                    <li class="header__nav-item">
+                        <a href="/user/account">My account</a>
+                    </li> 
                 <% } %>
-            </li>
-        </ul>
-    </div>   
-       
-</header>
+                <li class="header__nav-item">
+                    <% if (locals.currentUser) { %>
+                        <form action="/auth/logout" method="post" class="logout-form">
+                            <button type="submit" class="logout-button">Logout</a>
+                        </form>
+                    <% } else { %>
+                    <a href="/auth/login">Login/Register</a>
+                    <% } %>
+                </li>
+            </ul>
+        </div>   
+        
+    </header>
+</div>    

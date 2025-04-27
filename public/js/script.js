@@ -8,11 +8,11 @@ let lastScroll = 0;
 // Make header scroll-activated
 window.addEventListener("scroll", () => {
     const currentScroll = window.pageYOffset;
-    const header = document.querySelector(".header")
-    const navbar = document.querySelector('.header__navbar');
+    const header = document.getElementById("header-background")
+    const navbar = document.querySelector(".header__navbar");
 
     // Skip if menu is open
-    if (navbar.classList.contains('active')) return;
+    if (navbar.classList.contains("active")) return;
 
     if (currentScroll <= 0) {
         // If you scroll up to the top, remove class

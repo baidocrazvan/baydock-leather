@@ -1,13 +1,20 @@
 @use "../util/" as u;
+#header-background {
+    position: sticky;
+    top: 0;
+    z-index: 998; /* One below header's z-index */
+    width: 100%;
+    background: var(--background-color);
+    transition: all 0.4s ease;
+  }
 
 .header {
-    position: sticky;
+    position: relative;
     display: grid;
     grid-template-columns: 1fr auto 1fr;
     align-items: center;
     margin: 0 auto;
     max-width: 90%;
-    transition: all 0.4s ease;
     top: 0;
     background: var(--background-color);
     // z-index: 1000;
