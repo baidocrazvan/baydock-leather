@@ -1,7 +1,9 @@
 @use "../util/" as u;
 
 .footer {
-    padding: u.rem(70) 0;
+    border-top: 1px solid rgb(231, 231, 231);
+    padding: u.rem(24) 0;
+    background-color: var(--body-fill-color);
 
     .container {
         max-width: 90%;
@@ -92,7 +94,7 @@
 
 @include u.breakpoint(large) {
     .footer {
-        padding: u.rem(70) 0;
+        padding: u.rem(24) 0;
     
         .container {
             max-width: 90%;
