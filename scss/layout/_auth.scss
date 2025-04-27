@@ -14,7 +14,7 @@
 
 .auth-container {
     max-width: 90%;
-    margin: 0 auto;
+    margin: u.rem(40) auto 0;
     .block-title {
         font-size: u.rem(22);
         line-height: 1.2;
@@ -67,6 +67,7 @@
             padding: 16px 24px;
             border-radius: 4px;
             letter-spacing: 0.35px;
+            cursor: pointer;
             margin: u.rem(22) 0;
             background-color: var(--text-color);
             color: var(--background-color);
