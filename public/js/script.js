@@ -60,26 +60,26 @@ overlay.addEventListener("click", function() {
 
 // Search icon modal
 // Get elements
-const searchIcon = document.querySelector('.header__icon--search');
-const searchModal = document.querySelector('.header__search-modal');
-const searchClose = document.querySelector('.header__search-close');
+const searchIcon = document.querySelector(".header__icon--search");
+const searchModal = document.querySelector(".header__search-modal");
+const searchClose = document.querySelector(".header__search-close");
 
 // Toggle modal
-searchIcon.addEventListener('click', () => {
-  searchModal.classList.add('header__search-modal--active');
-  document.querySelector('.header__search-input').focus();
+searchIcon.addEventListener("click", () => {
+  searchModal.classList.add("header__search-modal--active");
+  document.querySelector(".header__search-input").focus();
   document.body.style.overflow = "hidden";
 });
 
 // Close modal
-searchClose.addEventListener('click', () => {
-  searchModal.classList.remove('header__search-modal--active');
+searchClose.addEventListener("click", () => {
+  searchModal.classList.remove("header__search-modal--active");
 });
 
 // Close when clicking outside
-searchModal.addEventListener('click', (e) => {
+searchModal.addEventListener("click", (e) => {
   if (e.target === searchModal) {
-    searchModal.classList.remove('header__search-modal--active');
+    searchModal.classList.remove("header__search-modal--active");
   }
 });
 
@@ -87,7 +87,7 @@ searchModal.addEventListener('click', (e) => {
 async function deleteAddress(event, id) {
   event.preventDefault(); // Critical - prevents page jump
   
-  if (!confirm('Are you sure you want to delete this address?')) {
+  if (!confirm("Are you sure you want to delete this address?")) {
     return false;
   }
 
@@ -98,23 +98,23 @@ async function deleteAddress(event, id) {
       window.location.reload();
     }
   } catch (error) {
-    console.error('Delete failed:', error);
-    alert('Delete failed: ' + 
+    console.error("Delete failed:", error);
+    alert("Delete failed: " + 
       (error.response?.data?.message || 
        error.message || 
-       'Server error'));
+       "Server error"));
   }
   
   return false;
 }
 
 // Image switching for product page, swap main image src with clicked image src
-document.addEventListener('DOMContentLoaded', () => {
-  const mainImage = document.querySelector('.product-main__image img');
-  const thumbnails = document.querySelectorAll('.product-main__slideshow img');
+document.addEventListener("DOMContentLoaded", () => {
+  const mainImage = document.querySelector(".product-main__image img");
+  const thumbnails = document.querySelectorAll(".product-main__slideshow img");
   
   thumbnails.forEach(thumbnail => {
-    thumbnail.addEventListener('click', () => {
+    thumbnail.addEventListener("click", () => {
       mainImage.src = thumbnail.src;
     });
   });
@@ -143,7 +143,7 @@ function productSort() {
 }
 
 // Manage value inside quantity field on product page
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener("DOMContentLoaded", () => {
 // Product quantity button
 const minusBtn = document.querySelector(".quantity-btn.minus");
 const plusBtn = document.querySelector(".quantity-btn.plus");
@@ -154,7 +154,7 @@ if (!minusBtn && !plusBtn && !quantityInput) return;
 const max = parseInt(quantityInput.max) || 10;
 
 // Minus button
-minusBtn.addEventListener('click', () => {
+minusBtn.addEventListener("click", () => {
   let value = parseInt(quantityInput.value);
   if (value > 1) {
     quantityInput.value = value - 1;
@@ -163,7 +163,7 @@ minusBtn.addEventListener('click', () => {
 });
 
 // Plus button
-plusBtn.addEventListener('click', () => {
+plusBtn.addEventListener("click", () => {
   let value = parseInt(quantityInput.value);
   if (value < max) {
     quantityInput.value = value + 1;
@@ -172,7 +172,7 @@ plusBtn.addEventListener('click', () => {
 });
 
 // Change quantity value if it exceeds upper and lower limits
-quantityInput.addEventListener('change', () => {
+quantityInput.addEventListener("change", () => {
   let value = parseInt(quantityInput.value);
   if (isNaN(value) || value < 1) {
     quantityInput.value = 1;
@@ -196,22 +196,22 @@ toggleButtons();
 
 // Checkout address selection script
 
-document.addEventListener('DOMContentLoaded', function() {
-  const shippingSelect = document.getElementById('shippingAddress');
-  const billingSelect = document.getElementById('billingAddress');
-  const updateBtn = document.getElementById('updateDefaultBtn');
+document.addEventListener("DOMContentLoaded", function() {
+  const shippingSelect = document.getElementById("shippingAddress");
+  const billingSelect = document.getElementById("billingAddress");
+  const updateBtn = document.getElementById("updateDefaultBtn");
   
   function checkForChange() {
     // Access the <option> selected value and check if the isShipping/isBilling has changed to false
-    const shippingChanged = shippingSelect.options[shippingSelect.selectedIndex].dataset.isShipping === 'false';
-    const billingChanged = billingSelect.options[billingSelect.selectedIndex].dataset.isBilling === 'false';
+    const shippingChanged = shippingSelect.options[shippingSelect.selectedIndex].dataset.isShipping === "false";
+    const billingChanged = billingSelect.options[billingSelect.selectedIndex].dataset.isBilling === "false";
     
     // Show update button if defaults changed
-    updateBtn.style.display = (shippingChanged || billingChanged) ? 'block' : 'none';
+    updateBtn.style.display = (shippingChanged || billingChanged) ? "block" : "none";
   }
   if (shippingSelect && billingSelect) {
-    shippingSelect.addEventListener('change', checkForChange);
-    billingSelect.addEventListener('change', checkForChange);
+    shippingSelect.addEventListener("change", checkForChange);
+    billingSelect.addEventListener("change", checkForChange);
   }
   
 
@@ -220,56 +220,61 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Order submission script, take values from address selection on page and pass them to form
 
-document.addEventListener('DOMContentLoaded', function() {
-    const orderForm = document.querySelector('.order-submission');
+document.addEventListener("DOMContentLoaded", function() {
+    const orderForm = document.querySelector(".order-submission");
     if (orderForm) {
-      orderForm.addEventListener('submit', function(e) {
-      document.getElementById('hiddenShippingAddressId').value = document.getElementById('shippingAddress').value;
+      orderForm.addEventListener("submit", function(e) {
+      document.getElementById("hiddenShippingAddressId").value = document.getElementById("shippingAddress").value;
   
-      const billingSelect = document.getElementById('billingAddress');
-      document.getElementById('hiddenBillingAddressId').value = 
-      billingSelect.value || document.getElementById('shippingAddress').value;
+      const billingSelect = document.getElementById("billingAddress");
+      document.getElementById("hiddenBillingAddressId").value = 
+      billingSelect.value || document.getElementById("shippingAddress").value;
     }
   )};    
 });
 
 // Script for products price slider
-document.addEventListener('DOMContentLoaded', function() {
-  const minThumb = document.querySelector('.min-thumb');
-  const maxThumb = document.querySelector('.max-thumb');
-  const track = document.querySelector('.slider-track');
-  const minPriceDisplay = document.querySelector('.min-price');
-  const maxPriceDisplay = document.querySelector('.max-price');
+document.addEventListener("DOMContentLoaded", function() {
+  const filterForm = document.querySelector(".price-filter");
+  const minThumb = document.querySelector(".min-thumb");
+  const maxThumb = document.querySelector(".max-thumb");
+  const track = document.querySelector(".slider-track");
+  const minPriceDisplay = document.querySelector(".min-price");
+  const maxPriceDisplay = document.querySelector(".max-price");
   const minPriceInput = document.querySelector('input[name="min_price"]');
   const maxPriceInput = document.querySelector('input[name="max_price"]');
 
-  function updateSlider() {
-    const minVal = parseInt(minThumb.value);
-    const maxVal = parseInt(maxThumb.value);
-    
-    // Prevent sliders crossing
-    if (minVal > maxVal - 10) {
-      minThumb.value = maxVal - 10;
-      return;
+  if (filterForm) {
+    function updateSlider() {
+      const minVal = parseInt(minThumb.value);
+      const maxVal = parseInt(maxThumb.value);
+      
+      // Prevent sliders crossing
+      if (minVal > maxVal - 10) {
+        minThumb.value = maxVal - 10;
+        return;
+      }
+      
+      // Update track position
+      track.style.left = `${(minVal / 1000) * 100}%`;
+      track.style.right = `${100 - (maxVal / 1000) * 100}%`;
+      
+      // Update price displays
+      minPriceDisplay.textContent = `$${minVal}`;
+      maxPriceDisplay.textContent = `$${maxVal}`;
+      minPriceInput.value = minVal;
+      maxPriceInput.value = maxVal;
     }
-    
-    // Update track position
-    track.style.left = `${(minVal / 1000) * 100}%`;
-    track.style.right = `${100 - (maxVal / 1000) * 100}%`;
-    
-    // Update price displays
-    minPriceDisplay.textContent = `$${minVal}`;
-    maxPriceDisplay.textContent = `$${maxVal}`;
-    minPriceInput.value = minVal;
-    maxPriceInput.value = maxVal;
-  }
 
-  minThumb.addEventListener('input', updateSlider);
-  maxThumb.addEventListener('input', updateSlider);
+    if (minThumb && maxThumb) {
+      minThumb.addEventListener("input", updateSlider);
+      maxThumb.addEventListener("input", updateSlider);
+    }
   
-  // Initialize
-  updateSlider();
-
+    
+    // Initialize
+    updateSlider();
+  }
 });
 
 // =====================
@@ -279,22 +284,22 @@ document.addEventListener('DOMContentLoaded', function() {
 // Validate login form before submission
 
 
-const loginForm = document.getElementById('loginForm');
-const registerForm = document.getElementById('registerForm');
-const addressForm = document.getElementById('addressForm');
-const email = document.getElementById('email');
-const password = document.getElementById('password');
-const confirmPassword = document.getElementById('cpassword');
-const firstName = document.getElementById('firstName');
-const lastName = document.getElementById('lastName');
-const address = document.getElementById('address');
-const city = document.getElementById('city');
-const county = document.getElementById('county');
-const phoneNumber = document.getElementById('phoneNumber');
-const postalCode = document.getElementById('postalCode');
+const loginForm = document.getElementById("loginForm");
+const registerForm = document.getElementById("registerForm");
+const addressForm = document.getElementById("addressForm");
+const email = document.getElementById("email");
+const password = document.getElementById("password");
+const confirmPassword = document.getElementById("cpassword");
+const firstName = document.getElementById("firstName");
+const lastName = document.getElementById("lastName");
+const address = document.getElementById("address");
+const city = document.getElementById("city");
+const county = document.getElementById("county");
+const phoneNumber = document.getElementById("phoneNumber");
+const postalCode = document.getElementById("postalCode");
 
 if (loginForm) {
-    loginForm.addEventListener('submit', (e) => {
+    loginForm.addEventListener("submit", (e) => {
       if (!validateLoginInputs()) {
         e.preventDefault(); // Only prevent if validation fails
       }
@@ -302,7 +307,7 @@ if (loginForm) {
 }
 
 if (registerForm) {
-  registerForm.addEventListener('submit', (e) => {
+  registerForm.addEventListener("submit", (e) => {
     if(!validateRegisterInputs()) {
       e.preventDefault();
     }
@@ -310,7 +315,7 @@ if (registerForm) {
 }
 
 if (addressForm) {
-  addressForm.addEventListener('submit', (e) => {
+  addressForm.addEventListener("submit", (e) => {
     if(!validateAddressInputs()) {
       e.preventDefault();
     }
@@ -323,17 +328,17 @@ const setError = (element, message) => {
 
   errorDisplay.innerText = message;
 
-  inputControl.classList.add('error');
-  inputControl.classList.remove('success');
+  inputControl.classList.add("error");
+  inputControl.classList.remove("success");
 }
 
 const setSuccess = element => {
   const inputControl = element.parentElement;
   const errorDisplay = inputControl.querySelector(".error");
 
-  if (errorDisplay.textContent !== '') {
-    errorDisplay.innerText = '';
-    inputControl.classList.remove('error');
+  if (errorDisplay.textContent !== "") {
+    errorDisplay.innerText = "";
+    inputControl.classList.remove("error");
   }
 }
 
@@ -367,24 +372,24 @@ const validateLoginInputs = () => {
   const passwordValue = password.value.trim();
   let isValid = true;
 
-  if (emailValue === '') {
-      setError(email, 'Email is required');
+  if (emailValue === "") {
+      setError(email, "Email is required");
       isValid = false;
   } else if (!isValidEmail(emailValue)) {
-    setError(email, 'Email address is invalid');
+    setError(email, "Email address is invalid");
     isValid = false;
   } else {
     setSuccess(email);
   }
 
-  if (passwordValue === '') {
+  if (passwordValue === "") {
     setError(password, "Password is required");
     isValid = false;
   } else if (passwordValue.length < 8 ) {
     setError(password, "Password must be atleast 8 characters long");
     isValid = false;
   } else if (!isValidPassword(passwordValue)) {
-    setError(password, 'Password must contain at least one uppercase letter and atleast one number');
+    setError(password, "Password must contain at least one uppercase letter and atleast one number");
     isValid = false;
   } else {
     setSuccess(password);
@@ -401,17 +406,17 @@ const validateRegisterInputs = () => {
   const lastNameValue = lastName.value;
   let isValid = true;
 
-  if (emailValue === '') {
-    setError(email, 'Email is required');
+  if (emailValue === "") {
+    setError(email, "Email is required");
     isValid = false;
   } else if (!isValidEmail(emailValue)) {
-    setError(email, 'Email address is invalid');
+    setError(email, "Email address is invalid");
     isValid = false;
   } else {
     setSuccess(email);
   }
 
-  if (passwordValue === '') {
+  if (passwordValue === "") {
     console.log(passwordValue);
     setError(password, "Password is required");
     isValid = false;
@@ -421,13 +426,13 @@ const validateRegisterInputs = () => {
     isValid = false;
   } else if (!isValidPassword(passwordValue)) {
     console.log(passwordValue);
-    setError(password, 'Password must contain at least one uppercase letter and atleast one number');
+    setError(password, "Password must contain at least one uppercase letter and atleast one number");
     isValid = false;
   } else {
     setSuccess(password);
   }
 
-  if (confirmPasswordValue === '') {
+  if (confirmPasswordValue === "") {
     console.log(confirmPasswordValue);
     setError(confirmPassword, "Confirmation password is required");
     isValid = false;
@@ -439,7 +444,7 @@ const validateRegisterInputs = () => {
     setSuccess(confirmPassword);
   }
 
-  if (firstNameValue === '') {
+  if (firstNameValue === "") {
     setError(firstName, "First name is required");
     isValid = false;
   } else if (firstNameValue.length < 2) {
@@ -452,7 +457,7 @@ const validateRegisterInputs = () => {
     setSuccess(firstName);
   }
 
-  if (lastNameValue === '') {
+  if (lastNameValue === "") {
     setError(lastName, "Last name is required");
     isValid = false;
   } else if (lastNameValue.length < 2) {
@@ -479,7 +484,7 @@ const validateAddressInputs = () => {
   const postalCodeValue = postalCode.value.trim();
   let isValid = true;
 
-  if (firstNameValue === '') {
+  if (firstNameValue === "") {
     setError(firstName, "First name is required");
     isValid = false;
   } else if (firstNameValue.length < 2) {
@@ -492,7 +497,7 @@ const validateAddressInputs = () => {
     setSuccess(firstName);
   }
 
-  if (lastNameValue === '') {
+  if (lastNameValue === "") {
     setError(lastName, "Last name is required");
     isValid = false;
   } else if (lastNameValue.length < 2) {
@@ -505,7 +510,7 @@ const validateAddressInputs = () => {
     setSuccess(lastName);
   }
 
-  if (addressValue === '') {
+  if (addressValue === "") {
     setError(address, "Address is required");
     isValid = false;
   } else if (addressValue.length < 2) {
@@ -518,7 +523,7 @@ const validateAddressInputs = () => {
     setSuccess(address);
   }
 
-  if (cityValue === '') {
+  if (cityValue === "") {
     setError(city, "City name is required");
     isValid = false;
   } else if (cityValue.length < 2) {
@@ -531,7 +536,7 @@ const validateAddressInputs = () => {
     setSuccess(city);
   }
 
-  if (countyValue === '') {
+  if (countyValue === "") {
     setError(county, "County name is required");
     isValid = false;
   } else if (countyValue.length < 2) {
@@ -544,7 +549,7 @@ const validateAddressInputs = () => {
     setSuccess(county);
   }
 
-  if (phoneNumberValue === '') {
+  if (phoneNumberValue === "") {
     setError(phoneNumber, "Valid mobile phone number is required");
     isValid = false;
   } else if (!isValidPhoneNumber(phoneNumberValue)) {
@@ -554,7 +559,7 @@ const validateAddressInputs = () => {
     setSuccess(phoneNumber)
   }
 
-  if (postalCodeValue === '') {
+  if (postalCodeValue === "") {
     setError(postalCode, "Postal code is required");
     isValid = false;
   } else if (!isValidPostalCode(postalCodeValue)) {
