@@ -1,57 +1,122 @@
 <%- include("../partials/header"); %>
 
 <main>
-    <!-- Dropdown for selecting sort options -->
-    <select id="sort-select" onchange="productSort()">
-        <option value="">Default</option>
-        
-        <option value="price-asc"
-        <%= currentSort === "price" && currentOrder === 'asc' ? "selected" : "" %> >
-        Price ascending
-        </option>
+    <div id="page-title-bg">
+        <div class="page-title">
+            <div class="title-row">
+                <span class="category-title"><%= currentCategory || 'All Products' %></span>
+            </div>
+            <!-- Dropdown for selecting sort options -->
+            <div class="select-row">
+                <select id="sort-select" onchange="productSort()">
+                    <option value="">Default sorting</option>
+                    
+                    <option value="price-asc"
+                    <%= currentSort === "price" && currentOrder === 'asc' ? "selected" : "" %> >
+                    Price ascending
+                    </option>
 
-        <option value="price-desc"
-        <%= currentSort === "price" && currentOrder === 'desc' ? "selected" : "" %> >
-        Price descending
-        </option>
+                    <option value="price-desc"
+                    <%= currentSort === "price" && currentOrder === 'desc' ? "selected" : "" %> >
+                    Price descending
+                    </option>
 
-        <option value="created_at-desc"
-        <%= currentSort === "created_at" && currentOrder === 'desc' ? "selected" : "" %>>
-        Recently added
-        </option>
+                    <option value="created_at-desc"
+                    <%= currentSort === "created_at" && currentOrder === 'desc' ? "selected" : "" %>>
+                    Recently added
+                    </option>
 
-        <option value="created_at-asc"
-        <%= currentSort === "created_at" && currentOrder === 'asc' ? "selected" : "" %> >
-        Oldest added
-        </option>
-    </select>
+                    <option value="created_at-asc"
+                    <%= currentSort === "created_at" && currentOrder === 'asc' ? "selected" : "" %> >
+                    Oldest added
+                    </option>
+                </select>
+            </div>
+            
+        </div>
+    </div>
 
     <!-- Grid containing products -->
-    <div class="products-box">
+    <div class="products-container">
+        
+        <!-- Categories sidebar (desktop only) -->
+        <aside class="categories-sidebar">
+            <span>PRODUCT CATEGORIES</span>
+            <nav class="category-links">
+                <ul>
 
-        <% products.forEach( product => { %>
-        <div class="product">
+                    <li>
+                        <a href="/products?category=belts">Belts</a>
+                    </li>
 
-            <div class="product__image">
-                <img src="<%= product.thumbnail %>">
-            </div>
+                    <li>
+                        <a href="/products?category=wallets">Wallets</a>
+                    </li>
 
-            <div class="product__text-box">
+                    <li>
+                        <a href="/products?category=bags">Bags</a>
+                    </li>
 
-                <div class="product__title">
-                <a href="/products/<%=product.id%>"><%= product.name %></a>
+                    <li>
+                        <a href="/products?category=watchstraps">Watchstraps</a>
+                    </li>
+
+                    <li>
+                        <a href="/products?category=minimalist">Minimalist</a>
+                    </li>
+
+                    <li>
+                        <a href="/products?category=accesories">Accessories</a>
+                    </li>
+            
+                </ul>
+                
+            </nav>
+
+            <form method="get" action="" class="price-filter">
+                <h3 class="filter-title">Filter by price</h3>
+                <div class="price-slider">
+                  <div class="slider-track"></div>
+                  <input type="range" min="0" max="1000" value="0" class="slider-thumb min-thumb">
+                  <input type="range" min="0" max="1000" value="1000" class="slider-thumb max-thumb">
+                </div>
+                <div class="price-inputs">
+                  <div class="price-display">
+                    Price: <span class="min-price">$0</span> — <span class="max-price">$1000</span>
+                  </div>
+                  <input type="hidden" name="min_price" value="0">
+                  <input type="hidden" name="max_price" value="1000">
+                  <button type="submit" class="filter-button">Filter</button>
+                </div>
+            </form>
+        </aside>
+
+        <div class="products-box">
+            
+            <% products.forEach( product => { %>
+            <div class="product">
+
+                <div class="product__image">
+                    <img src="<%= product.thumbnail %>">
                 </div>
 
-                <div class="product__price">
-                    <%= product.price %>$
-                </div>
+                <div class="product__text-box">
 
+                    <div class="product__title">
+                    <a href="/products/<%=product.id%>"><%= product.name %></a>
+                    </div>
+
+                    <div class="product__price">
+                        <%= product.price %>$
+                    </div>
+
+                </div>
             </div>
+            <% }) %>
 
         </div>
-        <% }) %>
-
     </div>
+    
     
 </main>
 
