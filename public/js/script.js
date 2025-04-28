@@ -233,6 +233,44 @@ document.addEventListener('DOMContentLoaded', function() {
   )};    
 });
 
+// Script for products price slider
+document.addEventListener('DOMContentLoaded', function() {
+  const minThumb = document.querySelector('.min-thumb');
+  const maxThumb = document.querySelector('.max-thumb');
+  const track = document.querySelector('.slider-track');
+  const minPriceDisplay = document.querySelector('.min-price');
+  const maxPriceDisplay = document.querySelector('.max-price');
+  const minPriceInput = document.querySelector('input[name="min_price"]');
+  const maxPriceInput = document.querySelector('input[name="max_price"]');
+
+  function updateSlider() {
+    const minVal = parseInt(minThumb.value);
+    const maxVal = parseInt(maxThumb.value);
+    
+    // Prevent sliders crossing
+    if (minVal > maxVal - 10) {
+      minThumb.value = maxVal - 10;
+      return;
+    }
+    
+    // Update track position
+    track.style.left = `${(minVal / 1000) * 100}%`;
+    track.style.right = `${100 - (maxVal / 1000) * 100}%`;
+    
+    // Update price displays
+    minPriceDisplay.textContent = `$${minVal}`;
+    maxPriceDisplay.textContent = `$${maxVal}`;
+    minPriceInput.value = minVal;
+    maxPriceInput.value = maxVal;
+  }
+
+  minThumb.addEventListener('input', updateSlider);
+  maxThumb.addEventListener('input', updateSlider);
+  
+  // Initialize
+  updateSlider();
+
+});
 
 // =====================
 // FORM VALIDATION

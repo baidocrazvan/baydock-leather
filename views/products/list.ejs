@@ -76,16 +76,18 @@
             <form method="get" action="" class="price-filter">
                 <h3 class="filter-title">Filter by price</h3>
                 <div class="price-slider">
-                  <div class="slider-track"></div>
-                  <input type="range" min="0" max="1000" value="0" class="slider-thumb min-thumb">
-                  <input type="range" min="0" max="1000" value="1000" class="slider-thumb max-thumb">
+                    <div class="slider-track" 
+                    style="left: <%= (min_price || 0) / 10 %>%; 
+                           right: <%= 100 - (max_price || 1000) / 10 %>%"></div>
+                  <input type="range" min="0" max="1000" value="<%= min_price %>" class="slider-thumb min-thumb">
+                  <input type="range" min="0" max="1000" value="<%= max_price %>" class="slider-thumb max-thumb">
                 </div>
                 <div class="price-inputs">
                   <div class="price-display">
                     Price: <span class="min-price">$0</span> — <span class="max-price">$1000</span>
                   </div>
-                  <input type="hidden" name="min_price" value="0">
-                  <input type="hidden" name="max_price" value="1000">
+                  <input type="hidden" name="min_price" value="<%= min_price || 0 %>">
+                  <input type="hidden" name="max_price" value="<%= max_price || 1000 %>">
                   <button type="submit" class="filter-button">Filter</button>
                 </div>
             </form>

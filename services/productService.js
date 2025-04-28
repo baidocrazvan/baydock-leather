@@ -2,10 +2,18 @@ import db from '../db.js'
 
 // Get all products, with or without sort query
 
-export async function getAllProducts(sort, order = 'asc') {
+export async function getAllProducts(sort, order = 'asc', minPrice, maxPrice) {
     try {
 
         let query = `SELECT * FROM products`;
+        const params = [];
+        let paramCount = 1;
+
+        // Add price range filtering if provided
+        if (minPrice && maxPrice) {
+            query += ` WHERE price >= $${paramCount++} AND price <= $${paramCount++}`
+            params.push(minPrice, maxPrice);
+        }
 
         // check if sort query exists and is valid
         const validSortColumns = ['price', 'created_at'];
@@ -14,7 +22,7 @@ export async function getAllProducts(sort, order = 'asc') {
             query += ` ORDER BY ${sort} ${order === 'desc' ? 'DESC' : 'ASC'}`;
         }
 
-        const result = await db.query(query);
+        const result = await db.query(query, params);
         return result.rows;
 
     } catch(err) {

@@ -26,15 +26,15 @@ router.get("/", async (req, res) => {
   try {
     let products;
 
-    // filter by category, price or date added if specified in req.query, otherwise render all products
-    const { category, sort, order, search } = req.query;
+    // filter by category, min-max price, price asc/desc or date added if specified in req.query, otherwise render all products
+    const { category, sort, order, search, min_price, max_price } = req.query;
 
       if (search) {
-        products = await getProductsBySearch(search, sort, order);
+        products = await getProductsBySearch(search, sort, order, min_price, max_price);
       } else if (category) {
-        products = await getProductsByCategory(category, sort, order);
+        products = await getProductsByCategory(category, sort, order, min_price, max_price);
       } else {
-        products = await getAllProducts(sort, order);
+        products = await getAllProducts(sort, order, min_price, max_price);
       }
 
     // 404 if there are  no products to be shown.   
@@ -53,7 +53,9 @@ router.get("/", async (req, res) => {
       products: products,
       currentCategory: category,
       currentSort: sort,
-      currentOrder: order
+      currentOrder: order,
+      min_price: min_price || 0,
+      max_price: max_price || 1000
     });
 
   } catch(err) {
