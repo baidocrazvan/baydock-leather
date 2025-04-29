@@ -2,7 +2,7 @@
 
 <main>
     <div class="product-main">
-
+        
         <div class="product-main__image">
             <img src="<%= product.thumbnail %>">
         </div>
@@ -12,44 +12,138 @@
                 <img src="<%= image %>" >
            <% }) %>
         </div>
+        <div class="product-main__information">
+          <div class="product-main__title">
+              <h1><%= product.name %></h1>
+          </div>
 
-        <div class="product-main__title">
-            <h1><%= product.name %></h1>
+          <div class="product-main__price">
+              <p><%= product.price %>$</p>    
+          </div>
+
+          <div class="product-main__description">
+              <p><%= product.description %></p>    
+          </div>
+
+          <div class="product-main__add-to-cart">
+            <form action="/cart/<%=product.id%>" method="POST">
+                <input type="hidden" name="productId" value="<%= product.id %>">
+
+                <div class="size-form">
+                  <label for="belt-size">Size:</label>
+                  <select id="belt-size" name="belt-size" class="size-control" required>
+                    <option value="" disabled selected>Choose a size</option>
+                    <option value="80">80cm</option>
+                    <option value="85">85cm</option>
+                    <option value="90">90cm</option>
+                    <option value="95">95cm</option>
+                    <option value="100">100cm</option>
+                    <option value="105">105cm</option>
+                    <option value="110">110cm</option>
+                    <option value="115">115cm</option>
+                    <option value="120">120cm</option>
+                  </select>
+                </div>
+
+                <div class="quantity-selector">
+                    <button type="button" class="quantity-btn minus">-</button>
+                    <input 
+                    type="number"
+                    name="quantity"
+                    class="quantity-input"
+                    value="1"
+                    min="1"
+                    max="<%= product.stock || 10 %>" 
+                    >
+                    <button type="button" class="quantity-btn plus">+</button>
+                </div>
+
+                <button type="submit" class="add-to-cart-btn">ADD TO CART</button>
+            </form>
+          </div>
+
+          <div class="product-main__category">
+              <p>Category: <%=product.category%></p>
+          </div>
         </div>
-
-        <div class="product-main__price">
-            <p><%= product.price %>$</p>    
-        </div>
-        
-        <form action="/cart/<%=product.id%>" method="POST">
-            <input type="hidden" name="productId" value="<%= product.id %>">
-
-            <div class="quantity-selector">
-                <button type="button" class="quantity-btn minus">-</button>
-                <input 
-                type="number"
-                name="quantity"
-                class="quantity-input"
-                value="1"
-                min="1"
-                max="<%= product.stock || 10 %>" 
-                >
-                <button type="button" class="quantity-btn plus">+</button>
-            </div>
-
-            <button type="submit" class="add-to-cart-btn">Add to cart</button>
-        </form>
-        <div class="product-main__description">
-            <p><%= product.description %></p>    
-        </div>
-
-
-        <div class="product-main__category">
-            <p>Category: <%=product.category%></p>
-        </div>
-
         
     </div>
+
+    <div class="product-tabs">
+        <ul class="tabs" >
+          <li class="selected" id="tab-title-description">
+            <button type="button">Description</button>
+          </li>
+          <li id="tab-title-sizes">
+            <button type="button">Available sizes</button>
+          </li>
+          <li id="tab-title-delivery-return">
+            <button type="button">Delivery and Return</button>
+          </li>
+          <li id="tab-title-warranty">
+            <button type="button">Product warranty</button>
+          </li>
+          <li id="tab-title-payment">
+            <button type="button">Payment policy</button>
+          </li>
+          <li id="tab-title-leather">
+            <button type="button">Leather</button>
+          </li>
+          <li id="tab-title-metal-accessories">
+            <button type="button">Metal accessories</button>
+          </li>
+        </ul>
+        
+        <div class="tab-panels">
+          <div class="panel active" id="tab-description">
+            <h2>Product description</h2>
+            <p><%= product.description %></p>
+          </div>
+
+          <div class="panel" id="tab-sizes">
+            <h2>Available sizes</h2>
+            <ul>
+              <li>It is made to order, according to the actual size of your waist.</li>
+              <li>Measure your pant's waist size and that's the size you need. If you are in between sizes, just round up.</li>
+            </ul>
+          </div>
+          
+          <div class="panel" id="tab-delivery-return">
+            <h2>Delivery and Return</h2>
+            <ul>
+              <li>Shipment will be handled by the courier, in approximately 3-7 working days</li>
+              <li>The products are delivered accompanied by the receipt and warranty certificate.</li>
+            </ul>
+          </div>
+          
+          <div class="panel" id="tab-warranty">
+            <h2>Product warranty</h2>
+            <p>We offer lifetime warranty on almost all products. The only exception are watchstraps.</p>
+          </div>
+          
+          <div class="panel" id="tab-payment">
+            <h2>Payment policy</h2>
+            <p>Before finalizing the order, you have the opportunity to choose your payment method:</p>
+            <ul>
+              <li>Cash on delivery only in Romania.</li>
+              <li>Card payments will be implemented soon, but as of now are inactive.</li>
+            </ul>
+          </div>
+          
+          <div class="panel" id="tab-leather">
+            <h2>Leather</h2>
+            <p>Each belt is made from a single layer of leather being completely unique.</p>
+            <p>Vegetable tanned leather is made through a special process that harnesses the power of natural tannins.</p>
+          </div>
+          
+          <div class="panel" id="tab-metal-accessories">
+            <h2>Metal accessories</h2>
+            <p>The accessories are made Britania alloy, also known as "Lead Free Pewter" which is one of the best alloys according to European Norm no 1907/2000 regarding the content of Lead, Cadmium and Nickel in jewelry.</p>
+            <p>The metal accessories that come into direct contact with the skin are covered with a layer of varnish painted in an electrostatic field. They don't oxidize, rust or change color over time.</p>
+          </div>
+          
+        </div>
+      </div>
 </main>
 
     

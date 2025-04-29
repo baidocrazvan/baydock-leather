@@ -2,23 +2,20 @@
 
 .product-main {
     width: 90%;
-    max-width: 1200px; // Prevent becoming too wide on large screens
+    max-width: 1200px;
     margin: 0 auto;
     padding: 2rem 0;
     display: grid;
     grid-template-areas:
       "image"
       "slideshow"
-      "title"
-      "price"
-      "description"
-      "category";
+      "information";
     gap: 1.5rem;
-  
+
     &__image {
       grid-area: image;
       width: 100%;
-      aspect-ratio: 4/3; // Maintain consistent image ratio (adjust as needed)
+      aspect-ratio: 4/3; // Maintain consistent image ratio 
       
       img {
         width: 100%;
@@ -59,9 +56,12 @@
         border-radius: 2px;
       }
     }
-  
+    &__information {
+      display: flex;
+      flex-direction: column;
+    }
     &__title {
-      grid-area: title;
+      grid-area: information;
       h1 {
         margin: 0;
         font-size: 1.8rem;
@@ -69,7 +69,7 @@
     }
   
     &__price {
-      grid-area: price;
+      grid-area: information;
       p {
         margin: 0;
         font-size: 1.5rem;
@@ -77,9 +77,46 @@
         color: #333;
       }
     }
+
+    &__add-to-cart {
+      grid-area: information;
+      label {
+        font-weight: 500;
+      }
+      .size-control {
+        width: 100%;
+        margin: u.rem(8) 0;
+        padding: 0 u.rem(22) 0 u.rem(12);
+        height: u.rem(40);
+        font-size: u.rem(16);
+        border: 1px solid #ccc;
+        border-radius: u.rem(4);
+        cursor: pointer;
+
+        // Custom arrow
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23333' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right u.rem(12) center;
+        background-size: u.rem(16) u.rem(16);
+
+        &:focus {
+          outline: none;
+        }
+        
+        option {
+          padding: 0.5rem;
+
+          &:hover {
+            background-color: var(--icon-color);
+          }
+        }
+
+      }
+    }
   
     &__description {
-      grid-area: description;
+      grid-area: information;
       p {
         margin: 0;
         line-height: 1.6;
@@ -87,7 +124,7 @@
     }
   
     &__category {
-      grid-area: category;
+      grid-area: information;
       p {
         margin: 0;
         color: #666;
@@ -96,14 +133,14 @@
     }
 
     .quantity-selector {
-      display: flex;
+      display: inline-flex;
       align-items: center;
       gap: 0.5rem;
       margin: 1rem 0;
     
       .quantity-btn {
-        width: 2rem;
-        height: 2rem;
+        width: u.rem(32);
+        height: u.rem(40);
         background: #f0f0f0;
         border: 1px solid #ddd;
         border-radius: 4px;
@@ -122,15 +159,14 @@
       }
     
       .quantity-input {
-        width: 3rem;
-        height: 2rem;
+        width: u.rem(32);
+        height: u.rem(40);
         text-align: center;
         border: 1px solid #ddd;
         border-radius: 4px;
         font-size: 1rem;
     
         /* Hide number input arrows */
-        -moz-appearance: textfield;
         &::-webkit-outer-spin-button,
         &::-webkit-inner-spin-button {
           -webkit-appearance: none;
@@ -141,15 +177,125 @@
     
     .add-to-cart-btn {
       padding: 0.75rem 1.5rem;
-      background: #007bff;
+      background: lighten(#121212, 30%);
       color: white;
       border: none;
       border-radius: 4px;
       cursor: pointer;
       transition: background 0.2s;
+      margin: 0 u.rem(16);
     
       &:hover {
-        background: #0056b3;
+        background: var(--text-color);
+      }
+    }
+}
+
+@include u.breakpoint(large) {
+  .product-main {
+    display: grid;
+    grid-template-columns: 60% 40%;
+    grid-template-rows: auto;
+    grid-template-areas:
+      "image information"
+      "slideshow information";
+    gap: 1.5rem;
+
+    // Left column (image + slideshow)
+    &__image {
+      grid-area: image;
+      height: 100%;
+    }
+
+    &__slideshow {
+      grid-area: slideshow;
+    }
+
+    // Right column container
+    &__information {
+      grid-area: information;
+      flex-direction: column;
+      gap: 1rem;
+      height: 100%;
+      overflow-y: auto;
+      padding-right: 0.5rem;
+    }
+  }
+}  // <-- This closes both the mixin and the rule
+
+.product-tabs {
+  width: 90%;
+  max-width: u.rem(1200);
+  margin: 2rem auto;
+
+  .tabs {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 1rem 0;
+    width: 100%;
+
+    li {
+      margin-bottom: 0.5rem;
+
+      button {
+        width: 100%;
+        padding: 1rem;
+        text-align: left;
+        background: none;
+        border: 1px solid #e0e0e0;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-size: 1rem;
+
+        &:hover {
+          background: var(--body-fill-color);
+        }
+      }
+
+      &.selected button {
+        border-color: var(--text-color);
+        font-weight: 500;
+        background: var(--body-fill-color);
       }
     }
   }
+}
+
+.tab-panels {
+  width: 100%;
+  
+  .panel {
+    display: none;
+    padding: 1rem 0;
+
+    &.active {
+      display: block;
+    }
+  }
+}
+
+  
+@media (min-width: u.rem(550)) {
+  .product-tabs {
+    display: flex;
+    gap: 2rem;
+
+    .tabs {
+      width: u.rem(220);
+      margin-bottom: 0;
+    }
+
+    .tab-panels {
+      flex: 1;
+      border-left: 1px solid #e0e0e0;
+      padding-left: 2rem;
+      
+      .panel {
+        padding: 0 0 0 1rem;
+      }
+    }
+  }
+}
+
+  
