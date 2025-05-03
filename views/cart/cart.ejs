@@ -1,87 +1,113 @@
 <%- include("../partials/header"); %>
 
 <main>
-    <h1>SHOPPING CART</h1>
-    <div class="cart-contents">
+    <div class="cart-wrapper">
+        <div class="cart-title-wrapper">
+            <span class="cart-title">Shopping Cart</span>
+        </div>
         
-        <% if (!cartItems.length) { %>
-            <p>Your cart is currently empty.</p>
-        <% } else { %>
-            <% cartItems.forEach(item => { %>
-                <p>Product</p>
-                <p>Quantity</p>
-                <div class="cart-item">
-                    <img src="<%= item.thumbnail %>">
-                    <a href="/products/<%= item.id %>"><%= item.name %></a>
-                    <p><%= item.quantity %> x <%= item.price %> </p>
-                    <a href="/">Continue shopping</a>
+        <div class="cart-contents">
+            <div class="main-display-wrapper">
+                <div class="cart-columns">
+                    <p class="title-column">PRODUCT</p>
+                    <p class="quantity-column">QUANTITY</p>
+                </div>
+                
+                <% if (!cartItems.length) { %>
+                    <p>Your cart is currently empty.</p>
+                <% } else { %>
+                    <% cartItems.forEach(item => { %>
+                        
+                        <div class="cart-item">
+                            <div class="cart-item__thumbnail">
+                                <img src="<%= item.thumbnail %>">
+                            </div>
+                            <div class="cart-item__content">
+                                <a class="item-title" href="/products/<%= item.id %>"><%= item.name %></a>
+                                <p class="item-price"><%= item.quantity %> x <span><%= item.price %>$</span></p>
 
-                    <form action="/cart/delete/<%= item.id %>?_method=DELETE" method="POST">
-                        <input type="hidden" name="productId" value="<%= item.id %>">
-                        <button type="submit" class="delete-from-cart-btn">Delete item from cart</button>
-                    </form>
+                                <form action="/cart/delete/<%= item.id %>?_method=DELETE" method="POST" class="item-delete">
+                                    <input type="hidden" name="productId" value="<%= item.id %>">
+                                    <button type="submit" class="delete-from-cart-btn">Delete item from cart</button>
+                                </form>
+                            </div>
+                            <div class="cart-item__quantity">
+                                <form action="/cart?_method=PATCH" method="POST" class="item-update">
+                                    <input type="hidden" name="productId" value="<%= item.id %>">
+                        
+                                    <div class="quantity-selector">
+                                        <button type="button" class="quantity-btn minus">-</button>
+                                        <input 
+                                        type="number"
+                                        name="quantity"
+                                        class="quantity-input"
+                                        value="<%= item.quantity %>"
+                                        min="1"
+                                        max="<%= item.stock || 10 %>" 
+                                        >
+                                        <button type="button" class="quantity-btn plus">+</button>
+                                    </div>
+                                    
+                                    <button type="submit" class="add-to-cart-btn">Update cart</button>
+                                </form>
+                            </div>
+                        </div>
+                <% }) %>
+                        <div class="cart-actions">
+                            <button class="continue-shopping-btn"><a href="/products/">← CONTINUE SHOPPING</a></button>
+                            <form action="/cart/delete?_method=DELETE" method="POST" class="clear-cart">
+                                <button type="submit" class="delete-from-cart-btn">CLEAR CART</button>
+                            </form>
+                        </div>
+                    
+            </div>
 
-                    <form action="/cart?_method=PATCH" method="POST">
-                        <input type="hidden" name="productId" value="<%= item.id %>">
-            
-                        <div class="quantity-selector">
-                            <button type="button" class="quantity-btn minus">-</button>
-                            <input 
-                            type="number"
-                            name="quantity"
-                            class="quantity-input"
-                            value="1"
-                            min="1"
-                            max="<%= item.stock || 10 %>" 
-                            >
-                            <button type="button" class="quantity-btn plus">+</button>
+            <div class="secondary-display-wrapper">
+                <div class="cart-totals">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>
+                                    <span class="title-th">CART TOTALS</span>
+                                </th>
+                            </tr>
+                        </thead>
+                    </table>
+                    <table>
+                        <tbody>
+                            <tr class="order-total">
+                                <th>Subtotal</th>
+                                <td>
+                                    <strong>$<%= cartTotal %></strong>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Total</th>
+                                <td>
+                                    <strong>$<%= cartTotal %></strong>(includes <strong>$<%= (parseFloat(cartTotal) / 100 * 20).toFixed(2)%></strong> VAT)
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="checkout">
+                    <% if (user) { %>
+                            <a class="big-btn btn-checkout" href="/cart/checkout">Proceed to checkout</a>
+                        
+                    <% } else { %>
+                        <div class="not-authenticated">
+                            <p>You need to register or log in to proceed to checkout.</p>
+                            <a href="/auth/register" class="big-btn btn-primary">Register</a>
+                            <a href="/auth/login" class="big-btn btn-secondary">Log In</a>
                         </div>
                         
-                        <button type="submit" class="add-to-cart-btn">Update cart</button>
-                    </form>
-                    
+                    <% } %>
                 </div>
-           <% }) %>
+                
 
-            <form action="/cart/delete?_method=DELETE" method="POST">
-                <button type="submit" class="delete-from-cart-btn">Clear cart</button>
-            </form>
-
-            <div class="cart-totals">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>
-                                Cart Total
-                            </th>
-                        </tr>
-                    </thead>
-                </table>
-                <table>
-                    <tbody>
-                        <tr class="order-total">
-                            <th>Total</th>
-                            <td>
-                                <strong><%= cartTotal %></strong>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-            <% if (user) { %>
-                <div class="checkout">
-                    <a href="/cart/checkout">Proceed to checkout</a>
-                </div>
-            <% } else { %>
-                <p>You need to register or log in to proceed to checkout.</p>
-                <a href="/auth/register" class="btn btn-primary">Register</a>
-                <a href="/auth/login" class="btn btn-secondary">Log In</a>
             <% } %>
-            
-            
-
-        <% } %>
-
+            </div>
+        </div>
     </div>
 </main>
 
