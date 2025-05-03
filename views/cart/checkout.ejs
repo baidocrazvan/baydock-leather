@@ -1,159 +1,192 @@
 <%- include("../partials/header"); %>
 
-<main>
-    <!-- Checkout Form Section -->
-    <div class="checkout-form">
-      <% if (user) { %>
-        <!-- User form for logged in users -->
-          <% if (addresses && addresses.length > 0) { %>
-            <!-- Address Selection for registered users with existing addresses -->
-            <form method="POST" action="/address/shipping-address/default?_method=PATCH">
-              <div class="address-selection">
-                <h3>Select Shipping Address</h3>
-                <select name="shippingAddressId" id="shippingAddress" required>
-                  <% addresses.forEach(address => { %>
-                    <option value="<%= address.id %>" 
-                            <%= address.is_shipping ? 'selected' : '' %>  
-                            data-is-shipping= "<%= address.is_shipping %>"> <!-- Show default shipping address as already selected -->
-                            <%= address.first_name %>, <%= address.last_name %>,<%= address.address %>, <%= address.city %>
-                    </option>
-                  <% }); %>
-                </select>
-    
+<main class="checkout-page">
+      <!-- Checkout Form Section -->
+      
+          <div class="checkout-address">
+          <!-- User form for logged in users -->
+            <% if (addresses && addresses.length > 0) { %>
+              <!-- Address Selection for registered users with existing addresses -->
+              <form method="POST" action="/address/shipping-address/default?_method=PATCH">
+                <div class="address-selection">
+                  <h3>Select Shipping Address</h3>
+                  <select name="shippingAddressId" id="shippingAddress" required class="address-select">
+                    <% addresses.forEach(address => { %>
+                      <option value="<%= address.id %>" 
+                              <%= address.is_shipping ? 'selected' : '' %>  
+                              data-is-shipping="<%= address.is_shipping %>"
+                              data-address='<%= JSON.stringify(address) %>'>
+                              <%= address.first_name %> <%= address.last_name %>, <%= address.address %>, <%= address.city %>
+                      </option>
+                    <% }); %>
+                  </select>
+                  
+                  <!-- Address summary container -->
+                  <div class="address-summary" id="shippingAddressSummary">
+                    <% if (addresses.find(a => a.is_shipping)) { %>
+                      <% const selected = addresses.find(a => a.is_shipping); %>
+                      <div class="address-card">
+                        <p><strong><%= selected.first_name %> <%= selected.last_name %></strong></p>
+                        <p><%= selected.address %></p>
+                        <p><%= selected.city %>, <%= selected.county %></p>
+                        <p><%= selected.country %>, <%= selected.postal_code %></p>
+                        <p>Phone: <%= selected.phone_number %></p>
+                      </div>
+                    <% } %>
+                  </div>
+                </div>
+                
+                <!-- Similar structure for billing address -->
                 <h3>Select Billing Address</h3>
-                <select name="billingAddressId" id="billingAddress" required>
+                <select name="billingAddressId" id="billingAddress" required class="address-select">
                   <% addresses.forEach(address => { %>
                     <option value="<%= address.id %>"
                             <%= address.is_billing ? 'selected' : '' %>
-                            data.is_billing = "<%= address.is_billing %>"> <!-- Show default billing address as already selected -->
-                            <%= address.first_name %>, <%= address.last_name %>,<%= address.address %>, <%= address.city %>
+                            data-is-billing="<%= address.is_billing %>"
+                            data-address='<%= JSON.stringify(address) %>'>
+                            <%= address.first_name %> <%= address.last_name %>, <%= address.address %>, <%= address.city %>
                     </option>
                   <% }); %>
                 </select>
-                <!-- Hidden update button, will only appear when default selections change -->
+                
+                <div class="address-summary" id="billingAddressSummary">
+                  <% if (addresses.find(a => a.is_billing)) { %>
+                    <% const selected = addresses.find(a => a.is_billing); %>
+                    <div class="address-card">
+                      <p><strong><%= selected.first_name %> <%= selected.last_name %></strong></p>
+                      <p><%= selected.address %></p>
+                      <p><%= selected.city %>, <%= selected.county %></p>
+                      <p><%= selected.country %>, <%= selected.postal_code %></p>
+                      <p>Phone: <%= selected.phone_number %></p>
+                    </div>
+                  <% } %>
+                </div>
+                
+                <!-- Hidden update button -->
                 <button type="submit" id="updateDefaultBtn" style="display: none;" class="btn btn-primary">
                   Update Default Addresses
                 </button>
+              </form>
+            <% } else { %>
+              <form method="POST" action="/address/shipping-address">
+              <!-- Address selection for registered users without existing address-->
+              <div class="new-address">
+                <h3>Add Shipping Address</h3>
+
+                <!-- Add fromCheckout input so that /address/ POST route knows the redirect user to checkout if the form came from here -->
+                <input type="hidden" name="fromCheckout" value="true">
+                
+                <label>First Name:</label>
+                <input type="text" name="firstName" value="<%= user.first_name %>" required>
+                
+                <label>Last Name:</label>
+                <input type="text" name="lastName" value="<%= user.last_name %>" required>
+            
+                <label for="address">Address</label>
+                <input type="text" name="address">
+            
+                <label for="city">City</label>
+                <input type="text" name="city">
+            
+                <label for="county">County</label>
+                <input type="text" name="county">
+            
+                <label for="phoneNumber">Phone:</label>
+                <input type="text"  name="phoneNumber">
+            
+                <label for="postalCode">Postal code:</label>
+                <input type="text" name="postalCode">
+                <button type="submit">Save Address & Continue</button>
               </div>
-          <% } else { %>
-            <form method="POST" action="/address/shipping-address">
-            <!-- Address selection for registered users without existing address-->
-            <div class="new-address">
-              <h3>Add Shipping Address</h3>
+            <% } %>
+          </form>
 
-              <!-- Add fromCheckout input so that /address/ POST route knows the redirect user to checkout if the form came from here -->
-              <input type="hidden" name="fromCheckout" value="true">
-              
-              <label>First Name:</label>
-              <input type="text" name="firstName" value="<%= user.first_name %>" required>
-              
-              <label>Last Name:</label>
-              <input type="text" name="lastName" value="<%= user.last_name %>" required>
-          
-              <label for="address">Address</label>
-              <input type="text" name="address">
-          
-              <label for="city">City</label>
-              <input type="text" name="city">
-          
-              <label for="county">County</label>
-              <input type="text" name="county">
-          
-              <label for="phoneNumber">Phone:</label>
-              <input type="text"  name="phoneNumber">
-          
-              <label for="postalCode">Postal code:</label>
-              <input type="text" name="postalCode">
-              <button type="submit">Save Address & Continue</button>
-            </div>
-          <% } %>
-        </form>
-        <% } else { %>
-          <h2>Guest Checkout</h2>
-          <p>You need to register or log in to complete your order.</p>
-          <a href="/auth/register" class="btn btn-primary">Register</a>
-          <a href="/auth/login" class="btn btn-secondary">Log In</a>
-        <% } %>
-    </div>
-
-
-
-    <% if (user && addresses && addresses.length > 0) { %>
-      <form method="POST" action="/orders/new-order" class="order-submission">
-        <!-- Hidden inputs to pass selected addresses -->
-        <input type="hidden" name="shippingAddressId" id="hiddenShippingAddressId">
-        <input type="hidden" name="billingAddressId" id="hiddenBillingAddressId">
-        <input type="hidden" name="paymentMethod" value="cash"> <!-- Default to cash -->
-        
-        <!-- Order submission button -->
-        <button type="submit" class="btn btn-primary btn-place-order">
-          Place Order
-        </button>
-      </form>
-      <% } %>
-
-
-
-        <!-- Checkout order details  -->
-    <div class="checkout">
-        <% if (cartItems.length > 0) { %>
-            <table>
-                <thead>
-                  <tr>
-                    <th>Produs</th>
-                    <th>Sub-total</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <% cartItems.forEach(item => { %>
-                    <tr>
-                      <td>
-                        <%= item.name %>
-                        <strong>×&nbsp;<%= item.quantity %></strong>
-                      </td>
-                      <td>
-                        <%= item.total_price %> lei
-                      </td>
-                    </tr>
-                  <% }); %>
-                </tbody>
-                <tfoot>
-                  <tr>
-                    <th>Sub-total</th>
-                    <td><%= cartTotal %> lei</td>
-                  </tr>
-                  <tr>
-                    <th>Total</th>
-                    <td><strong><%= cartTotal %> lei</strong></td>
-                  </tr>
-                </tfoot>
-              </table>
-        <% } else { %>
-          <p> There are no products in your cart. </p>
-       <% } %>      
-    </div>
-
-    <% if (user) { %>
-      <!-- Payment Method Selection -->
-      <div class="payment-options">
-        <h3>Payment Method</h3>
-        <select name="paymentMethod" id="paymentMethod" class="form-control" required>
-          <option value="cash" selected>Cash on Delivery</option>
-          <option value="card" disabled>Credit/Debit Card (Coming Soon)</option>
-        </select>
-        
-        <!-- Card Payment Form (Hidden by default), shown only when card is selected. -->
-         <!-- TODO: Implement card payment -->
-        <div id="cardPaymentForm" style="display: none;">
-          <div class="form-group">
-            <label>Card Number</label>
-            <input type="text" class="form-control" disabled>
-          </div>
-          <!-- TODO: Add rest of details -->
         </div>
-      </div>
-    <% } %>
 
+      <!-- Checkout order details  -->
+      <div class="right-column-group">
+        <div class="checkout">
+            <% if (cartItems.length > 0) { %>
+                <table>
+                    <thead>
+                      <tr>
+                        <th>Product</th>
+                        <th>Sub-total</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <% cartItems.forEach(item => { %>
+                        <tr>
+                          <td>
+                            <%= item.name %>
+                            <strong>×&nbsp;<%= item.quantity %></strong>
+                          </td>
+                          <td>
+                            $<%= item.total_price %>
+                          </td>
+                        </tr>
+                      <% }); %>
+                    </tbody>
+                    <tfoot>
+                      <tr>
+                        <th>Sub-total</th>
+                        <td>$<%= cartTotal %></td>
+                      </tr>
+                      <tr>
+                        <th>Total</th>
+                        <td><strong>$<%= cartTotal %></strong></td>
+                      </tr>
+                    </tfoot>
+                  </table>
+            <% } else { %>
+              <p> There are no products in your cart. </p>
+          <% } %>      
+        </div>
+
+          <!-- Payment Method Selection -->
+          <div class="payment-options">
+            <h3>Payment Method</h3>
+            <select name="paymentMethod" id="paymentMethod" class="form-control" required>
+              <option value="cash" selected>Cash on Delivery</option>
+              <option value="card" disabled>Credit/Debit Card (Coming Soon)</option>
+            </select>
+            
+            <!-- Card Payment Form (Hidden by default), shown only when card is selected. -->
+            <!-- TODO: Implement card payment -->
+            <div id="cardPaymentForm" style="display: none;">
+              <div class="form-group">
+                <label>Card Number</label>
+                <input type="text" class="form-control" disabled>
+              </div>
+              <!-- TODO: Add rest of details -->
+            </div>
+          </div>
+
+          <% if (user && addresses && addresses.length > 0) { %>
+            <form method="POST" action="/orders/new-order" class="order-submission">
+              <!-- Hidden inputs to pass selected addresses -->
+              <input type="hidden" name="shippingAddressId" id="hiddenShippingAddressId">
+              <input type="hidden" name="billingAddressId" id="hiddenBillingAddressId">
+              <input type="hidden" name="paymentMethod" value="cash"> <!-- Default to cash -->
+              
+              <!-- Terms checkbox -->
+              <div class="terms-checkbox">
+                <input type="checkbox" id="agreeTerms" name="agreeTerms" required>
+                <label for="agreeTerms">I have read and agree to the website <a href="/terms" target="_blank">terms and conditions</a></label>
+              </div>
+
+              <!-- Order submission button -->
+              <button type="submit" class="btn btn-primary btn-place-order">
+                Place Order
+              </button>
+
+              <!-- Privacy notice -->
+              <div class="privacy-notice">
+                <span>Your personal data will be used to process your order, to support your experience on this website and for other purposes described on our <a href="/privacy-policy" target="_blank">privacy policy</a> page.</span>
+              </div>
+            </form>
+            <% } %>
+        </div>
 </main>
 
 
