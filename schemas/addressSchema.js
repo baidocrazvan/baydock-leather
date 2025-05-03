@@ -68,5 +68,6 @@ export const addressSchema = Joi.object({
       "string.pattern.base": "Must be a valid 6-character post code"
     }),
     is_billing: Joi.optional(),
-    is_shipping: Joi.optional()
+    is_shipping: Joi.optional(),
+    fromCheckout: Joi.optional()
   })
