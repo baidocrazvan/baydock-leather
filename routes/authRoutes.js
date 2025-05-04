@@ -4,19 +4,21 @@ import passport from "passport";
 import db from "../db.js";
 import Joi from "joi";
 import { validateLogin, validateRegister } from "../middleware/validationMiddleware.js";
+import { redirectIfAuthenticated } from "../middleware/middleware.js";
 import { updateCartItem } from "../services/cartService.js";
+
 
 const saltRounds = 10;
 const router = express.Router();
 
 // GET login page
-router.get("/login", (req, res) => {
+router.get("/login", redirectIfAuthenticated, (req, res) => {
   const errors = req.flash('error');
   res.render("auth/login.ejs", { errors });
   });
 
 // GET register page
-router.get("/register", (req, res) => {
+router.get("/register", redirectIfAuthenticated, (req, res) => {
     res.render("auth/register.ejs");
   });
 

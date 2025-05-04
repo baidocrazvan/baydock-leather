@@ -15,4 +15,11 @@ export const isAdmin = (req, res, next) => {
     res.redirect('/');
   }
 
+export const redirectIfAuthenticated = (req, res, next) => {
+    if (req.isAuthenticated()) { 
+      return res.redirect('/user/account');
+    }
+    next();
+  }
+
   
