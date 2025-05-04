@@ -142,7 +142,7 @@ export async function getOrderDetails(orderId, userId = null) {
             city: `${result.rows[0].shipping_city} ${result.rows[0].shipping_county}`,
             country: result.rows[0].shipping_country,
             postalCode: result.rows[0].shipping_postal_code,
-            phoneNumber: result.rows[0].shipping_phone_number,
+            phoneNumber: result.rows[0].shipping_phone,
         },
         billingAddress: {
             name: `${result.rows[0].billing_first_name || result.rows[0].shipping_first_name} ${result.rows[0].billing_last_name || result.rows[0].shipping_last_name}`,
@@ -150,7 +150,7 @@ export async function getOrderDetails(orderId, userId = null) {
             city: `${result.rows[0].billing_city || result.rows[0].shipping_city}${result.rows[0].billing_county ? ', ' + result.rows[0].billing_county : result.rows[0].shipping_county ? ', ' + result.rows[0].shipping_county : ''}`,
             country: result.rows[0].billing_country || result.rows[0].shipping_country,
             postalCode: result.rows[0].billing_postal_code || result.rows[0].shipping_postal_code,
-            phone: result.rows[0].billing_phone || result.rows[0].shipping_phone
+            phoneNumber: result.rows[0].billing_phone || result.rows[0].shipping_phone
             },
         products: result.rows.map(row => ({
             productId: row.product_id,
