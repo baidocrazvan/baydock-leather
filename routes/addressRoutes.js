@@ -217,12 +217,12 @@ router.delete("/shipping-address/:id", authenticate, async (req, res) => {
       req.flash("success", "Address removed")
     }
 
-    return res.redirect("/customer/addresses");
+    return res.redirect("/user/addresses");
 
   } catch(err) {
     console.error("DELETE soft delete error while deleting address" , err);
     req.flash("error", "Error deleting specified address");
-    return res.redirect("/customer/addresses");
+    return res.redirect("/user/addresses");
   }
 })
 
