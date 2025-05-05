@@ -12,6 +12,18 @@ export async function calculateTotalPrice(userId) {
     return result.rows[0].total_price;
 }
 
+// Get a user's last 5 orders
+export async function getOrdersForUser(userId) {
+    const result = await db.query(
+        `SELECT o.id, o.total_price, o.status, o.created_at, sa.first_name, sa.last_name 
+        FROM orders o
+        JOIN shipping_addresses sa ON o.billing_address_id = sa.id
+        WHERE o.user_id = $1`,
+        [userId]
+    );
+    return result.rows;
+}
+
 // Create entry inside orders table
 export async function createOrder(userId, totalPrice, shippingAddressId, billingAddressId, paymentMethod) {
     const result = await db.query(
