@@ -1,0 +1,230 @@
+@use "../util" as u;
+
+.addresses-page {
+  width: 95%;
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+  color: var(--grey-text-color);
+
+  .page-header {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-bottom: 2rem;
+
+    h1 {
+      font-size: 1.6rem;
+      color: var(--text-color);
+      margin-bottom: 1rem;
+    }
+
+    .add-address-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1.5rem;
+      background-color: var(--text-color);
+      color: var(--background-color);
+      border: u.rem(1) solid var(--text-color);
+      border-radius: u.rem(8);
+      text-decoration: none;
+      font-weight: 500;
+      transition: 0.3s ease-in;
+
+      &:hover {
+        background-color: var(--background-color);
+        color: var(--text-color);
+      }
+    }
+  }
+
+  .addresses-container {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  .address-section {
+    .section-header {
+      margin-bottom: 1.5rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--line-color);
+
+      h2 {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 1.3rem;
+        color: var(--text-color);
+
+        
+      }
+    }
+
+    .no-address {
+      background: #f8f9fa;
+      padding: 2rem;
+      border-radius: u.rem(8);
+      text-align: center;
+
+      p {
+        margin-bottom: 1rem;
+        color: var(--grey-text-color);
+      }
+
+      .btn-primary {
+        display: inline-block;
+        padding: 0.75rem 1.5rem;
+        background-color: var(--text-color);
+        color: white;
+        border-radius: u.rem(8);
+        text-decoration: none;
+        font-weight: 500;
+        transition: background-color 0.3s ease;
+
+        &:hover {
+          background-color: var(--background-color);
+        }
+      }
+    }
+
+    .address-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+
+      @media (min-width: u.rem(768)) {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      @media (min-width: u.rem(1024)) {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    .address-card {
+      background: var(--background-color);
+      border-radius: u.rem(8);
+      box-shadow: 0 u.rem(4) u.rem(12) rgba(0, 0, 0, 0.05);
+      overflow: hidden;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      border: 1px solid var(--line-color);
+
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 u.rem(6) u.rem(16) rgba(0, 0, 0, 0.1);
+      }
+
+      &.default {
+        border-left: u.rem(4) solid var(--text-color);
+      }
+
+      .address-content {
+        padding: 1.5rem;
+
+        .address-details {
+          h3 {
+            font-size: 1.1rem;
+            margin-bottom: 0.75rem;
+            color: var(--grey-text-color);
+          }
+
+          p {
+            margin: 0.25rem 0;
+            line-height: 1.5;
+            font-size: 0.9rem;
+
+            &.phone {
+              margin-top: 0.75rem;
+              padding-top: 0.75rem;
+              border-top: u.rem(1) solid var(--line-color);
+            }
+          }
+        }
+
+        .default-badge {
+          display: inline-flex;
+          align-items: center;
+          gap: 0.3rem;
+          margin-top: 1rem;
+          padding: 0.4rem 0.8rem;
+          background: rgba(#121212, 0.1);
+          color: var(--text-color);
+          border-radius: u.rem(20);
+          font-size: 0.8rem;
+          font-weight: 500;
+        }
+      }
+
+      .address-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        padding: 1rem;
+        border-top: u.rem(1) solid var(--line-color);
+        background: #f8f9fa;
+
+        .edit-btn, .delete-btn {
+          display: inline-flex;
+          align-items: center;
+          gap: 0.3rem;
+          padding: 0.5rem 0.8rem;
+          font-family: "Poppins", sans-serif;
+          font-size: 0.85rem;
+          border-radius: u.rem(4);
+          cursor: pointer;
+          transition: all 0.3s ease-in;
+        }
+
+        .edit-btn {
+          background: var(--background-color);
+          color: var(--text-color);
+          border: 1px solid var(--text-color);
+          text-decoration: none;
+
+          &:hover {
+            background: lighten(#121212, 85%);
+          }
+        }
+
+        .delete-btn {
+          background: var(--background-color);
+          color: #ff3333;
+          border: u.rem(1) solid #ff3333;
+
+          &:hover {
+            background: rgba(#ff3333, 0.1);
+          }
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: u.rem(600)) {
+  .addresses-page {
+    .page-header {
+      flex-direction: column;
+      align-items: stretch;
+
+      .add-address-btn {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+
+    .address-section {
+      .address-card {
+        .address-actions {
+          flex-direction: column;
+
+          a, button {
+            width: 100%;
+            justify-content: center;
+          }
+        }
+      }
+    }
+  }
+}

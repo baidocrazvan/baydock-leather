@@ -1,82 +1,161 @@
-<%- include("../partials/header"); %> <!-- Include the shared header and navbar -->
+<%- include("../partials/header"); %>
 
-<main>
+<main class="addresses-page">
+  <div class="page-header">
+    <h1>Your Addresses</h1>
+    <a href="/address/shipping-address" class="add-address-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 16 16">
+            <path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2"/>
+        </svg>
+      Add New Address
+    </a>
+  </div>
 
-    <div class="block-title">
-        <strong>Your addresses:</strong>
-    </div>
+  <div class="addresses-container">
+    <!-- Shipping Address Section -->
+    <section class="address-section">
+      <div class="section-header">
+        <h2>
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-geo-alt" viewBox="0 0 16 16">
+                <path d="M12.166 8.94c-.524 1.062-1.234 2.12-1.96 3.07A32 32 0 0 1 8 14.58a32 32 0 0 1-2.206-2.57c-.726-.95-1.436-2.008-1.96-3.07C3.304 7.867 3 6.862 3 6a5 5 0 0 1 10 0c0 .862-.305 1.867-.834 2.94M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10"/>
+                <path d="M8 8a2 2 0 1 1 0-4 2 2 0 0 1 0 4m0 1a3 3 0 1 0 0-6 3 3 0 0 0 0 6"/>
+            </svg>
+          Shipping Addresses
+        </h2>
+      </div>
 
-    <div class="block-information">
-        <div class="box-title">
-            <strong><span>Shipping Address</span></strong>
+      <% if (!addresses.length) { %>
+        <div class="no-address">
+          <p>You haven't added any addresses yet.</p>
         </div>
-        <% if (!addresses.length) { %>
-            <div class="box-content"></div>
-            <p>You haven't added any adresses yet.</p>
+      <% } else { %>
+        <div class="address-grid">
+          <% addresses.forEach(address => { %>
+            <div class="address-card <%= address.is_shipping ? 'default' : '' %>">
+              <div class="address-content">
+                <div class="address-details">
+                  <h3><%= address.first_name %> <%= address.last_name %></h3>
+                  <p><%= address.address %></p>
+                  <p><%= address.city %>, <%= address.county %></p>
+                  <p><%= address.postal_code %></p>
+                  <p><%= address.country %></p>
+                  <p class="phone">Phone: <%= address.phone_number %></p>
+                </div>
+                <% if (address.is_shipping) { %>
+                  <div class="default-badge">
+                    Default Shipping
+                  </div>
+                <% } %>
+              </div>
+              <div class="address-actions">
+                <a href="/address/shipping-address/edit/<%= address.id %>" class="edit-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
+                        <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
+                        <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"/>
+                    </svg>
+                  Edit
+                </a>
+                <form 
+                  action="/address/shipping-address/<%= address.id %>?_method=DELETE"
+                  method="POST"
+                  class="delete-form"
+                  onsubmit="return confirm('Are you sure you want to delete this address?');"
+                >
+                  <button type="submit" class="delete-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
+                        <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"/>
+                        <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"/>
+                    </svg>
+                    Delete
+                  </button>
+                </form>
+                
+              </div>
             </div>
-        <% } %>
-        
-         <% if (addresses.length)  { %>
-            
-                <% addresses.forEach( address => { %>
-                    <div class="box-content"></div>
-                        <address>
-                            <%= address.first_Name %> <% address.last_name %>.<br>
-                            <%= address.address %><br>
-                            <%= address.city %> <%= address.county %> <%= address.postal_code %><br>
-                            <%= address.country %><br>
-                            T: <%= address.phone_number %><br>
-                            <% if (address.is_shipping === true) { %>
-                                This is the default shipping address.
-                            <% } %>
-                        </address>
-                    </div>
-                    <div class="box-actions">
-                        <a href="/address/shipping-address/edit/<%= address.id %>">Modify address</a>
-                        <form 
-                            action="/address/shipping-address/<%= address.id %>?_method=DELETE"
-                            method="POST"
-                            class="delete-form"
-                            onsubmit="return confirm('Are you sure you want to delete this address?');"
-                        >
-                        <button type="submit" class="delete-link">Delete shipping address</button>
-                        </form>
-                    </div>
-                <% }) %>
-         <% } %>      
-    </div>
-
-    <div class="block-information">
-        <div class="box-title">
-            <strong><span>Billing Address</span></strong>
+          <% }) %>
         </div>
-        <% if (!addresses.length) { %>
-            <div class="box-content"></div>
-            <p>You haven't added any adresses yet.</p>
-            </div>
-        <% } %>
-        
-         <% if (addresses.length)  { %>
-            <div class="box-content">
-                <% addresses.forEach( address => { %>
-                    <% if (address.is_billing) { %>
-                    <address>
-                        <%= address.first_Name %> <% address.last_name %>.<br>
-                        <%= address.address %><br>
-                        <%= address.city %> <%= address.county %> <%= address.postal_code %><br>
-                        <%= address.country %><br>
-                        T: <%= address.phone_number %><br>
-                        This is the default billing address
-                    </address>
-                    <% } %>
-                <% }) %>
-            </div>
-         <% } %>      
-    </div>
+      <% } %>
+    </section>
 
-    <a href="/address/shipping-address" class="submit-button">Add address</a>
-    <!-- Axios script to handle address deletion -->
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <!-- Billing Address Section -->
+    <section class="address-section">
+      <div class="section-header">
+        <h2>
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-credit-card" viewBox="0 0 16 16">
+                <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v1h14V4a1 1 0 0 0-1-1zm13 4H1v5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1z"/>
+                <path d="M2 10a1 1 0 0 1 1-1h1a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1z"/>
+            </svg>
+          Billing Address
+        </h2>
+      </div>
+
+      <% if (!addresses.length) { %>
+        <div class="no-address">
+          <p>You haven't added any addresses yet.</p>
+        </div>
+      <% } else { %>
+        <div class="address-grid">
+          <% addresses.forEach(address => { %>
+            <% if (address.is_billing) { %>
+              <div class="address-card <%= address.is_billing ? 'default' : '' %>">
+                <div class="address-content">
+                  <div class="address-details">
+                    <h3><%= address.first_name %> <%= address.last_name %></h3>
+                    <p><%= address.address %></p>
+                    <p><%= address.city %>, <%= address.county %></p>
+                    <p><%= address.postal_code %></p>
+                    <p><%= address.country %></p>
+                    <p class="phone">Phone: <%= address.phone_number %></p>
+                  </div>
+                  <% if (address.is_billing) { %>
+                    <div class="default-badge">
+                      Default Billing
+                    </div>
+                  <% } %>
+                </div>
+                <div class="address-actions">
+                  <a href="/address/shipping-address/edit/<%= address.id %>" class="edit-btn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                      <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                    </svg>
+                    Edit
+                  </a>
+                  <form 
+                    action="/address/shipping-address/<%= address.id %>?_method=DELETE"
+                    method="POST"
+                    class="delete-form"
+                    onsubmit="return confirm('Are you sure you want to delete this address?');"
+                  >
+                    <button type="submit" class="delete-btn">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <polyline points="3 6 5 6 21 6"/>
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                        <line x1="10" y1="11" x2="10" y2="17"/>
+                        <line x1="14" y1="11" x2="14" y2="17"/>
+                      </svg>
+                      Delete
+                    </button>
+                  </form>
+                  <% if (!address.is_billing) { %>
+                    <form 
+                      action="/address/billing-address/default/<%= address.id %>?_method=PATCH"
+                      method="POST"
+                      class="default-form"
+                    >
+                      <button type="submit" class="set-default-btn">
+                        Set as Default
+                      </button>
+                    </form>
+                  <% } %>
+                </div>
+              </div>
+            <% } %>
+          <% }) %>
+        </div>
+      <% } %>
+    </section>
+  </div>
 </main>
 
-<%- include("../partials/footer"); %> <!-- Include the shared footer -->
+<%- include("../partials/footer"); %>
