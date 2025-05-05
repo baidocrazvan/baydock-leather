@@ -4,7 +4,6 @@ $success-color: #4bb543;
 $warning-color: #ffcc00;
 $error-color: #ff3333;
 
-// Base Styles
 .account-dashboard {
   max-width: u.rem(1200);
   margin: 0 auto;
@@ -40,7 +39,7 @@ $error-color: #ff3333;
 
   // Card Styles
   .dashboard-card {
-    background: white;
+    background: var(--background-color);
     border-radius: u.rem(12);
     box-shadow: 0 u.rem(4) u.rem(12) rgba(0, 0, 0, 0.05);
     overflow: hidden;
@@ -88,7 +87,14 @@ $error-color: #ff3333;
   .account-info {
     .card-body {
         padding: 1rem;
+        .button-group {
+          display: flex;
+          gap: 1rem; 
+          margin-top: 1rem;
+          flex-wrap: wrap; 
+        }
     }
+
     .info-item {
       margin-bottom: 1rem;
 
@@ -103,6 +109,10 @@ $error-color: #ff3333;
       .info-value {
         font-size: 1rem;
       }
+    }
+
+    .edit-btn, .logout-form {
+      margin-top: 0;
     }
 
     .edit-btn {
@@ -122,57 +132,116 @@ $error-color: #ff3333;
         text-decoration: none;
       }
     }
+
+    .logout-btn {
+      display: inline-flex;
+      margin-top: 1rem;
+      padding: 0.5rem 1rem;
+      font-family: "Poppins", sans-serif;
+      background: var(--background-color);
+      color: #ff3333;
+      border: u.rem(1) solid #ff3333;
+      border-radius: u.rem(6);
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: 0.3s ease;
+      cursor: pointer;
+      
+      &:hover {
+        background: rgba(#ff3333, 0.1);
+      }
+}
   }
 
   // Addresses Section
   .addresses {
-    @include u.breakpoint(large) {
-      grid-column: span 2;
-    }
-
     .address-grid {
       display: grid;
       gap: 1.5rem;
       grid-template-columns: 1fr;
-
+  
       @media (min-width: u.rem(700)) {
         grid-template-columns: 1fr 1fr;
       }
     }
-
+  
     .address-card {
-        padding: 1rem;
-      h3 {
-        font-size: 1.1rem;
-        margin-bottom: 1rem;
-        color: var(--text-color);
+      background: var(--background-color);
+      border-radius: u.rem(8);
+      box-shadow: 0 u.rem(4) u.rem(12) rgba(0, 0, 0, 0.05);
+      overflow: hidden;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      border: 1px solid var(--line-color);
+  
+      &.default {
+        border-left: u.rem(4) solid var(--text-color);
       }
-
-      .address-details {
-        p {
-          margin: 0.5rem 0;
-          line-height: 1.5;
+  
+      .address-content {
+        padding: 1.5rem;
+  
+        .address-details {
+          h3 {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.1rem;
+            margin-bottom: 0.75rem;
+            color: var(--grey-text-color);
+          }
+  
+          p {
+            margin: 0.25rem 0;
+            line-height: 1.5;
+            font-size: 0.9rem;
+  
+            &.phone {
+              margin-top: 0.75rem;
+              padding-top: 0.75rem;
+              border-top: u.rem(1) solid var(--line-color);
+            }
+          }
+  
+          .no-address {
+            color: var(--grey-text-color);
+            font-style: italic;
+          }
+        }
+  
+        .default-badge {
+          display: inline-flex;
+          align-items: center;
+          gap: 0.3rem;
+          margin-top: 1rem;
+          padding: 0.4rem 0.8rem;
+          background: rgba(#121212, 0.1);
+          color: var(--text-color);
+          border-radius: u.rem(20);
+          font-size: 0.8rem;
+          font-weight: 500;
         }
       }
-
-      .no-address {
-        color: var(--grey-text-color);
-        font-style: italic;
-        margin-bottom: 1rem;
-      }
-
-      .add-btn {
-        display: inline-block;
-        padding: 0.5rem 1rem;
-        background: lighten(#121212, 20%);
-        color: var(--background-color);
-        border-radius: u.rem(6);
-        text-decoration: none;
-        font-size: 0.9rem;
-        transition: all 0.3s ease;
-
-        &:hover {
+  
+      .address-actions {
+        display: flex;
+        padding: 1rem;
+        border-top: u.rem(1) solid var(--line-color);
+        background: #f8f9fa;
+  
+        .add-btn {
+          display: inline-block;
+          padding: 0.5rem 1rem;
           background: var(--text-color);
+          color: var(--background-color);
+          border-radius: u.rem(6);
+          text-decoration: none;
+          font-size: 0.9rem;
+          transition: background 0.3s ease;
+  
+          &:hover {
+            background: var(--background-color);
+            color: var(--text-color);
+          }
         }
       }
     }

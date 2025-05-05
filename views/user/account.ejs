@@ -1,4 +1,4 @@
-<%- include("../partials/header"); %> <!-- Include the shared header and navbar -->
+<%- include("../partials/header"); %>
 
 <main class="account-dashboard">
     <div class="dashboard-header">
@@ -21,7 +21,13 @@
             <span class="info-label">Email:</span>
             <span class="info-value"><%= user.email %></span>
           </div>
-          <a href="/user/edit" class="edit-btn">Edit Profile</a>
+
+          <div class="button-group">
+            <a href="/user/edit" class="edit-btn">Edit Profile</a>
+            <form action="/auth/logout" method="post" class="logout-form">
+              <button type="submit" class="logout-btn">Logout</a>
+            </form>
+          </div>
         </div>
       </section>
   
@@ -33,47 +39,81 @@
         </div>
         
         <div class="address-grid">
-          <!-- Shipping  -->
-          <div class="address-card">
-            <h3>Shipping Address</h3>
-            <% if (addresses.length > 0 && addresses.some(a => a.is_shipping)) { %>
-              <% addresses.forEach(address => { %>
-                <% if (address.is_shipping) { %>
-                  <div class="address-details">
-                    <p><%= address.first_name %> <%= address.last_name %></p>
-                    <p><%= address.address %></p>
-                    <p><%= address.city %>, <%= address.county %></p>
-                    <p><%= address.postal_code %></p>
-                    <p><%= address.country %></p>
-                    <p>Phone: <%= address.phone_number %></p>
-                  </div>
+          <!-- Shipping Address -->
+          <div class="address-card <%= addresses.some(a => a.is_shipping) ? 'default' : '' %>">
+            <div class="address-content">
+              <div class="address-details">
+                <h3>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-geo-alt" viewBox="0 0 16 16">
+                    <path d="M12.166 8.94c-.524 1.062-1.234 2.12-1.96 3.07A32 32 0 0 1 8 14.58a32 32 0 0 1-2.206-2.57c-.726-.95-1.436-2.008-1.96-3.07C3.304 7.867 3 6.862 3 6a5 5 0 0 1 10 0c0 .862-.305 1.867-.834 2.94M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10"/>
+                    <path d="M8 8a2 2 0 1 1 0-4 2 2 0 0 1 0 4m0 1a3 3 0 1 0 0-6 3 3 0 0 0 0 6"/>
+                  </svg>
+                  Shipping Address
+                </h3>
+                <% if (addresses.length > 0 && addresses.some(a => a.is_shipping)) { %>
+                  <% addresses.forEach(address => { %>
+                    <% if (address.is_shipping) { %>
+                      <p><%= address.first_name %> <%= address.last_name %></p>
+                      <p><%= address.address %></p>
+                      <p><%= address.city %>, <%= address.county %></p>
+                      <p><%= address.postal_code %></p>
+                      <p><%= address.country %></p>
+                      <p class="phone">Phone: <%= address.phone_number %></p>
+                    <% } %>
+                  <% }) %>
+                <% } else { %>
+                  <p class="no-address">No shipping address saved</p>
                 <% } %>
-              <% }) %>
-            <% } else { %>
-              <p class="no-address">No shipping address saved</p>
-              <a href="/address/shipping-address" class="add-btn">Add Shipping Address</a>
+              </div>
+              <% if (addresses.some(a => a.is_shipping)) { %>
+                <div class="default-badge">
+                  Default Shipping
+                </div>
+              <% } %>
+            </div>
+            <% if (!addresses.some(a => a.is_shipping)) { %>
+              <div class="address-actions">
+                <a href="/address/shipping-address" class="add-btn">Add Shipping Address</a>
+              </div>
             <% } %>
           </div>
   
-          <!-- Billing  -->
-          <div class="address-card">
-            <h3>Billing Address</h3>
-            <% if (addresses.length > 0 && addresses.some(a => a.is_billing)) { %>
-              <% addresses.forEach(address => { %>
-                <% if (address.is_billing) { %>
-                  <div class="address-details">
-                    <p><%= address.first_name %> <%= address.last_name %></p>
-                    <p><%= address.address %></p>
-                    <p><%= address.city %>, <%= address.county %></p>
-                    <p><%= address.postal_code %></p>
-                    <p><%= address.country %></p>
-                    <p>Phone: <%= address.phone_number %></p>
-                  </div>
+          <!-- Billing Address -->
+          <div class="address-card <%= addresses.some(a => a.is_billing) ? 'default' : '' %>">
+            <div class="address-content">
+              <div class="address-details">
+                <h3>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-credit-card" viewBox="0 0 16 16">
+                    <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v1h14V4a1 1 0 0 0-1-1zm13 4H1v5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1z"/>
+                    <path d="M2 10a1 1 0 0 1 1-1h1a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1z"/>
+                  </svg>
+                  Billing Address
+                </h3>
+                <% if (addresses.length > 0 && addresses.some(a => a.is_billing)) { %>
+                  <% addresses.forEach(address => { %>
+                    <% if (address.is_billing) { %>
+                      <p><%= address.first_name %> <%= address.last_name %></p>
+                      <p><%= address.address %></p>
+                      <p><%= address.city %>, <%= address.county %></p>
+                      <p><%= address.postal_code %></p>
+                      <p><%= address.country %></p>
+                      <p class="phone">Phone: <%= address.phone_number %></p>
+                    <% } %>
+                  <% }) %>
+                <% } else { %>
+                  <p class="no-address">No billing address saved</p>
                 <% } %>
-              <% }) %>
-            <% } else { %>
-              <p class="no-address">No billing address saved</p>
-              <a href="/address/shipping-addresses" class="add-btn">Add Billing Address</a>
+              </div>
+              <% if (addresses.some(a => a.is_billing)) { %>
+                <div class="default-badge">
+                  Default Billing
+                </div>
+              <% } %>
+            </div>
+            <% if (!addresses.some(a => a.is_billing)) { %>
+              <div class="address-actions">
+                <a href="/address/shipping-address" class="add-btn">Add Billing Address</a>
+              </div>
             <% } %>
           </div>
         </div>
@@ -134,4 +174,4 @@
     </div>
   </main>
 
-<%- include("../partials/footer"); %> <!-- Include the shared footer -->
+<%- include("../partials/footer"); %>
