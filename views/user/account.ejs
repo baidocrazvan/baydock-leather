@@ -1,125 +1,137 @@
 <%- include("../partials/header"); %> <!-- Include the shared header and navbar -->
 
-<main>
-    
-    <h1 class="page-title"><span>Welcome, <%= user.first_name %></span></h1>
-
-    <div class="block-title">Account Information</div>
-    <div class="box box-information">
-        <div class="box-title">
-            <strong>Contact information</strong>
-        </div>
-        <div class="box-content">
-            <p class="name">
-                <%= user.first_name %> <%= user.last_name %>
-            </p>
-            <p class="email">
-                <%= user.email %>
-            </p>
-        </div>
+<main class="account-dashboard">
+    <div class="dashboard-header">
+      <h1 class="welcome-message">Welcome back, <%= user.first_name %></h1>
+      <p class="account-since">Member since <%= new Date(user.created_at).toLocaleDateString() %></p>
     </div>
-    
-    <div class="block-title">
-        <strong>
-            Your Addresses:
-        </strong>
-        <a href="/user/addresses" class="action edit">Manage addresses</a>
-    </div>
-    <div class="box box-information">
-        <div class="box-title">
-            <strong><span>Currenctly active shipping address</span></strong>
+  
+    <div class="dashboard-grid">
+      <!-- Account Info Section -->
+      <section class="dashboard-card account-info">
+        <div class="card-header">
+          <h2>Account Information</h2>
         </div>
-
-            <% if (!addresses.length) { %>
-                <div class="box-content">
-                    <p>You haven't added any addresses yet.</p>
-                </div>
-            <% } %>
-
-            <% if (addresses.length > 0) { %>
-            <div class="box-content">
-                <% addresses.forEach( address => { %>
-                    <% if (address.is_shipping) { %>
-                    <div class="address-card">
-                        <p><span>Name:</span> <%= address.first_name %> <%= address.last_name %>.</p>
-                        <p><span>Address:</span> <%= address.address %></p>
-                        <p><span>City:</span> <%= address.city %></p> 
-                        <p><span>County:</span> <%= address.county %></p>
-                        <p><span>Postal code:</span> <%= address.postal_code %></p>
-                        <p><span>Phone:</span> <%= address.phone_number %></p>
-                    </div>
-                    <% } %>
-                <% }) %>
-            </div>
-            <% } %>
-    </div>
-
-    <div class="box-information">
-        <div class="box-title">
-            <strong><span>Currenctly active billing address</span></strong>
+        <div class="card-body">
+          <div class="info-item">
+            <span class="info-label">Full Name:</span>
+            <span class="info-value"><%= user.first_name %> <%= user.last_name %></span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Email:</span>
+            <span class="info-value"><%= user.email %></span>
+          </div>
+          <a href="/user/edit" class="edit-btn">Edit Profile</a>
         </div>
-
-        <% if (!addresses.length) { %>
-            <div class="box-content">
-                <p>You haven't added any addresses yet.</p>
-            </div>
-            <a href="/address/shipping-addresses" class="btn">Add new address</a>
-        <% } %>
-
-        <% if (addresses.length > 0) { %>
-            <div class="box-content">
-                <% addresses.forEach( address => { %>
-                    <% if (address.is_billing) { %>
-                        <div class="address-card">
-                            <p><span>Name:</span> <%= address.first_name %> <%= address.last_name %>.</p>
-                            <p><span>Address:</span> <%= address.address %></p>
-                            <p><span>City:</span> <%= address.city %></p> 
-                            <p><span>County:</span> <%= address.county %></p>
-                            <p><span>Postal code:</span> <%= address.postal_code %></p>
-                            <p><span>Phone:</span> <%= address.phone_number %></p>
-                        </div>
+      </section>
+  
+      <!-- Addresses Section -->
+      <section class="dashboard-card addresses">
+        <div class="card-header">
+          <h2>Your Addresses</h2>
+          <a href="/user/addresses" class="manage-btn">Manage Addresses</a>
+        </div>
+        
+        <div class="address-grid">
+          <!-- Shipping  -->
+          <div class="address-card">
+            <h3>Shipping Address</h3>
+            <% if (addresses.length > 0 && addresses.some(a => a.is_shipping)) { %>
+              <% addresses.forEach(address => { %>
+                <% if (address.is_shipping) { %>
+                  <div class="address-details">
+                    <p><%= address.first_name %> <%= address.last_name %></p>
+                    <p><%= address.address %></p>
+                    <p><%= address.city %>, <%= address.county %></p>
+                    <p><%= address.postal_code %></p>
+                    <p><%= address.country %></p>
+                    <p>Phone: <%= address.phone_number %></p>
+                  </div>
                 <% } %>
-                <% }) %>
-            </div>
-        <% } %>   
-    </div> 
-    
-    <!-- TO DO: Add last order information -->
-    <div class="box-information">
-        <div class="box-title">
-            <strong><span>Orders</span></strong>
-        </div>
-        <div class="box-content">
-            <% if (orders.length > 0) { %>
-                <table class="order-history-table">
-                    <thead>
-                        <tr>
-                            <th>Order ID</th>
-                            <th>Client</th>
-                            <th>Order Date</th>
-                            <th>Total</th>
-                            <th>Status</th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    <% orders.forEach(order => { %>
-                        <tr>
-                            <td><%= order.id %></td>
-                            <td><%= order.first_name %> <%= order.last_name %></td>
-                            <td><%= new Date(order.created_at).toLocaleDateString() %></td>
-                            <td><%= order.total_price %></td>
-                            <td><%= order.status %></td>
-                            <td><a href="/orders/<%=order.id%>">View</a></td>
-                        </tr>
-                    <% }) %>
-                    </tbody>
-            </table>
+              <% }) %>
             <% } else { %>
-                <p>You have not placed any orders yet.</p>
+              <p class="no-address">No shipping address saved</p>
+              <a href="/address/shipping-address" class="add-btn">Add Shipping Address</a>
             <% } %>
+          </div>
+  
+          <!-- Billing  -->
+          <div class="address-card">
+            <h3>Billing Address</h3>
+            <% if (addresses.length > 0 && addresses.some(a => a.is_billing)) { %>
+              <% addresses.forEach(address => { %>
+                <% if (address.is_billing) { %>
+                  <div class="address-details">
+                    <p><%= address.first_name %> <%= address.last_name %></p>
+                    <p><%= address.address %></p>
+                    <p><%= address.city %>, <%= address.county %></p>
+                    <p><%= address.postal_code %></p>
+                    <p><%= address.country %></p>
+                    <p>Phone: <%= address.phone_number %></p>
+                  </div>
+                <% } %>
+              <% }) %>
+            <% } else { %>
+              <p class="no-address">No billing address saved</p>
+              <a href="/address/shipping-addresses" class="add-btn">Add Billing Address</a>
+            <% } %>
+          </div>
         </div>
+      </section>
+  
+      <!-- Orders -->
+      <section class="dashboard-card recent-orders">
+        <div class="card-header">
+          <h2>Recent Orders</h2>
+        </div>
+        
+        <div class="card-body">
+          <% if (orders.length > 0) { %>
+            <div class="orders-table-container">
+              <table class="orders-table">
+                <thead>
+                  <tr>
+                    <th>Order #</th>
+                    <th>Date</th>
+                    <th>Total</th>
+                    <th>Status</th>
+                    <th>Details</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% orders.forEach(order => { %>
+                    <tr>
+                      <td><%= order.id %></td>
+                      <td><%= new Date(order.created_at).toLocaleDateString() %></td>
+                      <td>$<%= order.total_price %></td>
+                      <td>
+                        <span class="status-badge <%= order.status.toLowerCase() %>">
+                          <%= order.status %>
+                        </span>
+                      </td>
+                      <td>
+                        <a href="/orders/<%= order.id %>" class="view-order">
+                          View
+                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M5 12h14M12 5l7 7-7 7"/>
+                          </svg>
+                        </a>
+                      </td>
+                    </tr>
+                  <% }) %>
+                </tbody>
+              </table>
+            </div>
+            <a href="/user/orders" class="view-all">View All Orders</a>
+          <% } else { %>
+            <div class="no-orders">
+              <p>You haven't placed any orders yet</p>
+              <a href="/products" class="shop-btn">Start Shopping</a>
+            </div>
+          <% } %>
+        </div>
+      </section>
     </div>
-</main>
+  </main>
 
 <%- include("../partials/footer"); %> <!-- Include the shared footer -->

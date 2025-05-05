@@ -1,0 +1,299 @@
+@use "../util/" as u;
+
+$success-color: #4bb543;
+$warning-color: #ffcc00;
+$error-color: #ff3333;
+
+// Base Styles
+.account-dashboard {
+  max-width: u.rem(1200);
+  margin: 0 auto;
+  padding: 2rem 1rem;
+  color: #333;
+
+  .dashboard-header {
+    margin-bottom: 2.5rem;
+    text-align: center;
+
+    .welcome-message {
+      font-size: 2rem;
+      font-weight: 600;
+      color: var(--text-color);
+      margin-bottom: 0.5rem;
+    }
+
+    .account-since {
+      color: var(--grey-text-color);
+      font-size: 0.9rem;
+    }
+  }
+
+  .dashboard-grid {
+    display: grid;
+    gap: 2rem;
+    grid-template-columns: 1fr;
+
+    @include u.breakpoint(large) {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  // Card Styles
+  .dashboard-card {
+    background: white;
+    border-radius: u.rem(12);
+    box-shadow: 0 u.rem(4) u.rem(12) rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+    &:hover {
+      box-shadow: 0 u.rem(6) u.rem(16) rgba(0, 0, 0, 0.1);
+    }
+
+    .card-header {
+      padding: 1.5rem;
+      border-bottom: u.rem(1) solid var(--line-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      h2 {
+        font-size: 1.3rem;
+        font-weight: 600;
+        margin: 0;
+        color: var(--text-color);
+      }
+
+      .manage-btn, .edit-btn {
+        background: none;
+        border: none;
+        color: var(--text-color);
+        font-weight: 500;
+        cursor: pointer;
+        text-decoration: none;
+        font-size: 0.9rem;
+
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+    }
+
+    .card-body {
+      margin: 0 auto;
+    }
+  }
+
+  // Account Info Card
+  .account-info {
+    .card-body {
+        padding: 1rem;
+    }
+    .info-item {
+      margin-bottom: 1rem;
+
+      .info-label {
+        display: block;
+        font-weight: 500;
+        color: var(--grey-text-color);
+        font-size: 0.9rem;
+        margin-bottom: 0.2rem;
+      }
+
+      .info-value {
+        font-size: 1rem;
+      }
+    }
+
+    .edit-btn {
+      display: inline-block;
+      margin-top: 1rem;
+      padding: 0.5rem 1rem;
+      background: lighten(#121212, 20%);
+      color: var(--background-color);
+      
+      border-radius: u.rem(6);
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: 0.3s ease;
+
+      &:hover {
+        background: var(--text-color);
+        text-decoration: none;
+      }
+    }
+  }
+
+  // Addresses Section
+  .addresses {
+    @include u.breakpoint(large) {
+      grid-column: span 2;
+    }
+
+    .address-grid {
+      display: grid;
+      gap: 1.5rem;
+      grid-template-columns: 1fr;
+
+      @media (min-width: u.rem(700)) {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    .address-card {
+        padding: 1rem;
+      h3 {
+        font-size: 1.1rem;
+        margin-bottom: 1rem;
+        color: var(--text-color);
+      }
+
+      .address-details {
+        p {
+          margin: 0.5rem 0;
+          line-height: 1.5;
+        }
+      }
+
+      .no-address {
+        color: var(--grey-text-color);
+        font-style: italic;
+        margin-bottom: 1rem;
+      }
+
+      .add-btn {
+        display: inline-block;
+        padding: 0.5rem 1rem;
+        background: lighten(#121212, 20%);
+        color: var(--background-color);
+        border-radius: u.rem(6);
+        text-decoration: none;
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+
+        &:hover {
+          background: var(--text-color);
+        }
+      }
+    }
+  }
+
+  // Orders Section
+  .recent-orders {
+    @include u.breakpoint(large) {
+      grid-column: span 2;
+    }
+
+    .orders-table-container {
+      overflow-x: auto;
+    }
+
+    .orders-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+
+      th, td {
+        padding: 1rem;
+        text-align: left;
+        border-bottom: u.rem(1) solid var(--line-color);
+      }
+
+      th {
+        font-weight: 600;
+        color: var(--text-color);
+        background: var(--body-fill-color);
+      }
+
+      tr:hover {
+        background: rgba(var(--text-color), 0.03);
+      }
+
+      .status-badge {
+        display: inline-block;
+        padding: 0.3rem 0.6rem;
+        border-radius: u.rem(20);
+        font-size: 0.8rem;
+        font-weight: 500;
+
+        &.completed, &.delivered {
+          background: rgba($success-color, 0.1);
+          color: $success-color;
+        }
+
+        &.processing {
+          background: rgba(var(--text-color), 0.1);
+          color: var(--text-color);
+        }
+
+        &.pending {
+          background: rgba($warning-color, 0.1);
+          color: darken($warning-color, 30%);
+        }
+
+        &.cancelled {
+          background: rgba($error-color, 0.1);
+          color: $error-color;
+        }
+      }
+
+      .view-order {
+        color: var(--text-color);
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+        font-weight: 500;
+
+        svg {
+          transition: transform 0.3s ease;
+        }
+
+        &:hover {
+          text-decoration: underline;
+
+          svg {
+            transform: translateX(u.rem(3));
+          }
+        }
+      }
+    }
+
+    .view-all {
+      display: inline-block;
+      margin-top: 1.5rem;
+      color: var(--text-color);
+      text-decoration: none;
+      font-weight: 500;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+
+    .no-orders {
+      text-align: center;
+      padding: 2rem;
+
+      p {
+        color: var(--grey-text-color);
+        margin-bottom: 1rem;
+      }
+
+      .shop-btn {
+        display: inline-block;
+        padding: 0.7rem 1.5rem;
+        background: var(--text-color);
+        color: var(--background-color);
+        border-radius: u.rem(6);
+        text-decoration: none;
+        font-weight: 500;
+        transition: background 0.3s ease;
+
+        &:hover {
+          background: var(--background-color);
+        }
+      }
+    }
+  }
+}
