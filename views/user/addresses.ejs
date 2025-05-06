@@ -97,7 +97,7 @@
         <div class="address-grid">
           <% addresses.forEach(address => { %>
             <% if (address.is_billing) { %>
-              <div class="address-card <%= address.is_billing ? 'default' : '' %>">
+              <div class="address-card default">
                 <div class="address-content">
                   <div class="address-details">
                     <h3><%= address.first_name %> <%= address.last_name %></h3>
@@ -137,17 +137,6 @@
                       Delete
                     </button>
                   </form>
-                  <% if (!address.is_billing) { %>
-                    <form 
-                      action="/address/billing-address/default/<%= address.id %>?_method=PATCH"
-                      method="POST"
-                      class="default-form"
-                    >
-                      <button type="submit" class="set-default-btn">
-                        Set as Default
-                      </button>
-                    </form>
-                  <% } %>
                 </div>
               </div>
             <% } %>
