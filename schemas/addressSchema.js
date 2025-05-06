@@ -69,5 +69,7 @@ export const addressSchema = Joi.object({
     }),
     is_billing: Joi.optional(),
     is_shipping: Joi.optional(),
+    current_is_billing: Joi.optional(),
+    current_is_shipping: Joi.optional(),
     fromCheckout: Joi.optional()
   })

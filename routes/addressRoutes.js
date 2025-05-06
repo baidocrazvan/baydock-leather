@@ -84,14 +84,17 @@ router.put("/shipping-address/edit/:id", authenticate, validateAddress, async (r
       phoneNumber,
       postalCode,
       is_shipping,
-      is_billing
+      is_billing,
+      current_is_billing,
+      current_is_shipping
     } = req.body;
 
     //Convert checkbox values to bool
 
-    const isShipping = is_shipping === "on";
-    const isBilling = is_billing === "on";
-
+    const isShipping = is_shipping === "on" || current_is_shipping === "true";
+    const isBilling = is_billing === "on" || current_is_billing === "true";
+    console.log("isShipping: ", isShipping);
+    console.log("isBilling: ", isBilling);
     // Grab a client from pg pool and use transaction to update address
     const client = await db.connect();
       try {
