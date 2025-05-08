@@ -1,0 +1,12 @@
+.admin-footer {
+    background: var(--body-fill-color);
+    padding: 1rem;
+    text-align: center;
+    font-size: 0.8rem;
+    color: var(--grey-text-color);
+    border-top: 1px solid var(--line-color);
+    
+    a {
+      color: var(--text-color);
+    }
+  }

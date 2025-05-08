@@ -1,0 +1,153 @@
+@use "../util/" as u;
+
+/* Main header */
+
+#admin-header {
+	background-color: var(--background-color);
+	border-bottom: 1px solid var(--line-color);
+	height: var(--header-height);
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	z-index: 1000;
+  }
+  
+  .admin-nav {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	height: 100%;
+	padding: 0 1.5rem;
+	
+	&__toggle {
+	  background: none;
+	  border: none;
+	  cursor: pointer;
+	  padding: 0.5rem;
+	  
+	  svg {
+		width: 1.5rem;
+		height: 1.5rem;
+		fill: var(--text-color);
+	  }
+	  
+	  #toggle-icon-close {
+		display: none;
+	  }
+	}
+	
+	&__brand {
+	  font-weight: bold;
+	  color: var(--text-color);
+	  
+	  a {
+		color: inherit;
+		text-decoration: none;
+	  }
+	}
+	
+	&__user {
+	  color: var(--text-color);
+	  font-size: 0.9rem;
+	}
+  }
+  
+  #admin-sidebar {
+	position: fixed;
+	top: var(--header-height);
+	left: 0;
+	bottom: 0;
+	width: 250px;
+	background-color: var(--background-color);
+	border-right: 1px solid var(--line-color);
+	transform: translateX(-100%);
+	transition: transform 0.3s ease;
+	z-index: 999;
+	
+	&__nav {
+	  padding: 1rem 0;
+	  
+	  ul {
+		list-style: none;
+		padding: 0;
+		margin: 0;
+	  }
+	  
+	  li a {
+		display: block;
+		padding: 0.75rem 1.5rem;
+		color: var(--grey-text-color);
+		text-decoration: none;
+		transition: all 0.2s;
+		
+		&:hover {
+		  background-color: var(--body-fill-color);
+		  color: var(--text-color);
+		}
+		
+		&.active {
+		  background-color: var(--body-fill-color);
+		  color: var(--text-color);
+		  border-left: 3px solid var(--text-color);
+		}
+	  }
+	}
+  }
+  
+  #admin-overlay {
+	position: fixed;
+	top: var(--header-height);
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background-color: rgba(0,0,0,0.5);
+	opacity: 0;
+	visibility: hidden;
+	transition: all 0.3s;
+	z-index: 998;
+  }
+  
+  body.admin-sidebar-open {
+	#admin-sidebar {
+	  transform: translateX(0);
+	}
+	
+	#admin-overlay {
+	  opacity: 1;
+	  visibility: visible;
+	}
+	
+	#toggle-icon-menu {
+	  display: none;
+	}
+	
+	#toggle-icon-close {
+	  display: block;
+	}
+  }
+  
+  // Main content adjustment for admin pages
+  .admin-main {
+	margin-top: var(--header-height);
+	padding: 1.5rem;
+	
+	@media (min-width: 992px) {
+	  margin-left: 250px;
+	}
+  }
+  
+  // Responsive adjustments
+  @media (min-width: 992px) {
+	#admin-sidebar {
+	  transform: translateX(0);
+	}
+	
+	#admin-overlay {
+	  display: none;
+	}
+	
+	.admin-nav__toggle {
+	  display: none;
+	}
+  }
