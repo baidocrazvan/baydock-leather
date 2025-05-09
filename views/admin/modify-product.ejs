@@ -1,19 +1,27 @@
-<%- include("../partials/header.ejs"); %>
+<%- include("../partials/admin-header.ejs"); %>
 
-<main>
-    <h2>Partially or fully update a product:</h2>
-    <form action="/products/<%= productId %>?_method=PATCH" method="POST" enctype="multipart/form-data">
+<main class="admin-main">
+    <div class="modify-products-container">
+        <h1>Partially or fully update a product:</h2>
+    <form action="/products/<%= productId %>?_method=PATCH" method="post" enctype="multipart/form-data">
+        <label for="name">Product name:</label>
         <input type="text" name="name" placeholder="Product Name" value="<%= product.name %>" required >
-        <input type="text" name="description" placeholder="Product Description" value="<%= product.description %>" required >
-        <input type="number" name="price" placeholder="Product Price" value="<%= product.price %>" required >
-        <input type="text" name="category" placeholder="Product Category" value="<%= product.category %>" required>
-        <input type="number" name="stock" placeholder="Product Stock" value="<%= product.stock %>" required >
-        <label for="thumbnail">Thumbnail (Single Image)</label>
-        <input type="file" name="thumbnail" placeholder="thumbnail" accept="image/*" >
-        <label for="images">Product Images (Max: 10 images)</label>
-        <input type="file" name="images" placeholder="images" accept="image/*" >
+        <label for="description">Product description:</label>
+        <input type="text" name="description" value="<%= product.description %>" required >
+        <label for="price">Price:</label>
+        <input type="number" name="price" value="<%= product.price %>" required >
+        <label for="category">Category:</label>
+        <input type="text" name="category" value="<%= product.category %>" required>
+        <label for="stock">Stock number:</label>
+        <input type="number" name="stock" value="<%= product.stock %>" required >
+        <label for="thumbnail">Thumbnail:</label>
+        <input type="file" name="thumbnail" accept="image/*" >
+        <label for="images">Product Images: (Multiple Images, up to 10)</label>
+        <input type="file" name="images" accept="image/*" >
         <button type="submit">Modify product</button>
     </form>
+    </div>
+    
 </main>
 
-<%- include("../partials/footer.ejs"); %>
+<%- include("../partials/admin-footer.ejs"); %>
