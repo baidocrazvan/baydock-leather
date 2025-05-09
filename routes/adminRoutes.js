@@ -12,15 +12,55 @@ const saltRounds = 10;
 const router = express.Router();
 
 // GET admin dashboard
-router.get("/dashboard", authenticate, isAdmin, async (req, res) => {
-try {
-    const products = await getAllProducts();
-    return res.render("admin/dashboard.ejs", { products });
-} catch(err) {
-    console.error("GET error for admin-dashboard:", err);
-    return res.redirect("/");
-}
+router.get("/products", authenticate, isAdmin, async (req, res) => {
+    try {
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 12;
+        const search = req.query.search || '';
+        
+        // Get total count for pagination
+        const countQuery = search 
+            ? `SELECT COUNT(*) FROM products WHERE name ILIKE $1 OR id::text ILIKE $1`
+            : `SELECT COUNT(*) FROM products`;
+        const countParams = search ? [`%${search}%`] : [];
+        const countResult = await db.query(countQuery, countParams);
+        const total = parseInt(countResult.rows[0].count);
+        const pages = Math.ceil(total / limit);
+        
+        // Get paginated products
+        const offset = (page - 1) * limit;
+        let productsQuery = `SELECT * FROM products`;
+        let queryParams = [];
+        
+        if (search) {
+            productsQuery += ` WHERE name ILIKE $1 OR id::text ILIKE $1`;
+            queryParams.push(`%${search}%`);
+        }
+        
+        productsQuery += ` ORDER BY created_at DESC LIMIT $${queryParams.length + 1} OFFSET $${queryParams.length + 2}`;
+        queryParams.push(limit, offset);
+        
+        const products = await db.query(productsQuery, queryParams);
+        
+        res.render("admin/products.ejs", { 
+            products: products.rows,
+            page,
+            pages,
+            total,
+            limit,
+            search
+        });
+    } catch(err) {
+        console.error("GET error for admin-products:", err);
+        req.flash('error', 'Error loading products');
+        res.redirect("/admin/products.ejs");
+    }
 });
+
+// GET add-products page
+router.get("/add-product", authenticate, isAdmin, async(req, res) => {
+    return res.render("admin/add-products.ejs");
+})
 
 // GET modify-products page
 router.get("/modify-product/:id", authenticate, isAdmin, async(req, res) => {

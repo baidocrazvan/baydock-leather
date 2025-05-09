@@ -1,0 +1,118 @@
+<%- include("../partials/admin-header") %>
+
+<main class="admin-main">
+  <div class="admin-products-container">
+    <h1>Product Management</h1>
+    
+    <div class="admin-toolbar">
+      <form class="search-form" method="GET" action="/admin/products">
+        <input 
+          type="text" 
+          name="search" 
+          placeholder="Search by name or ID..."
+          value="<%= search %>"
+        >
+        <button type="submit">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+            <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
+          </svg>
+        </button>
+      </form>
+      
+      <a href="/admin/add-product" class="btn-primary">
+        Add New Product 
+      </a>
+    </div>
+    
+    <% if (products.length > 0) { %>
+      <div class="products-grid">
+        <% products.forEach(product => { %>
+          <div class="product-card">
+            <div class="product-card__image">
+              <img src="<%= product.thumbnail %>" alt="<%= product.name %>">
+            </div>
+            
+            <div class="product-card__content">
+              <h3><%= product.name %></h3>
+              <div class="product-meta">
+                <span class="product-id">ID: <%= product.id %></span>
+                <span class="product-category"><%= product.category %></span>
+              </div>
+              
+              <div class="product-stats">
+                <div class="stat-item">
+                  <span class="stat-label">Price:</span>
+                  <span class="stat-value">$<%= product.price %></span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-label">Stock:</span>
+                  <span class="stat-value <%= product.stock < 10 ? 'low-stock' : '' %>">
+                    <%= product.stock %>
+                  </span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-label">Added:</span>
+                  <span class="stat-value"><%= new Date(product.created_at).toLocaleDateString() %></span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="product-card__actions">
+              <a href="/admin/modify-product/<%= product.id %>" class="btn-edit">
+                <i> Edit</i>
+              </a>
+              <a href="/products/<%= product.id %>" class="btn-view">
+                <i> View</i> 
+              </a>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+      
+      <% if (pages > 1) { %>
+        <div class="pagination">
+          <% if (page > 1) { %>
+            <a href="/admin/dashboard?page=<%= page-1 %><%= search ? `&search=${search}` : '' %>" class="page-link">
+              <i>Previous</i> 
+            </a>
+          <% } %>
+          
+          <% for (let i = 1; i <= pages; i++) { %>
+            <a 
+              href="/admin/dashboard?page=<%= i %><%= search ? `&search=${search}` : '' %>" 
+              class="page-link <%= i === page ? 'active' : '' %>"
+            >
+              <%= i %>
+            </a>
+          <% } %>
+          
+          <% if (page < pages) { %>
+            <a href="/admin/dashboard?page=<%= page+1 %><%= search ? `&search=${search}` : '' %>" class="page-link">
+               <i>Next</i>
+            </a>
+          <% } %>
+        </div>
+      <% } %>
+      
+      <div class="total-count">
+        Showing <%= (page-1)*limit + 1 %>-<%= Math.min(page*limit, total) %> of <%= total %> products
+      </div>
+    <% } else { %>
+      <div class="no-products">
+        <i>
+          <h3>No products found</h3>
+        </i>
+        
+        <% if (search) { %>
+          <p>No products match your search "<%= search %>"</p>
+          <a href="/admin/dashboard" class="btn-primary">Clear Search</a>
+        <% } else { %>
+          <p>There are no products in the database yet.</p>
+          <a href="/admin/add-product" class="btn-primary">Add Your First Product</a>
+        <% } %>
+      </div>
+    <% } %>
+  </div>
+</main>
+
+<%- include("../partials/admin-footer") %>
