@@ -1,108 +1,118 @@
-<%- include("../partials/header.ejs"); %>
+<%- include("../partials/admin-header.ejs"); %>
 
-<main>
-    <h2>Order number #<%= order.id %></h2>
-    <p>Order placement date: <%= order.date %> / Order status: <%= order.status %></p>
-    <section class="addresses">
-        <div class="shipping-address">
-        <h3>Shipping Address</h3>
-            <address>
-                <%= order.shippingAddress.name %><br>
-                <%= order.shippingAddress.street %><br>
-                <%= order.shippingAddress.city %><br>
-                <%= order.shippingAddress.postalCode %><br>
-                <%= order.shippingAddress.country %>
-            </address>
+<main class="admin-main">
+    <div class="order-container">
+        <div class="order-header">
+            <h2>Order #<%= order.id %></h2>
+            <div class="order-meta">
+                <p>Order date: <%= order.date %></p>
+                <p>Status: <span class="badge badge-<%= order.status %>">
+                    <%= order.status %>
+                </span></p>
+            </div>
+        </div>
+        
+        <div class="products-section">
+            <h3>Products</h3>
+            <table class="products-table">
+                <thead>
+                    <tr>
+                        <th>Product ID</th>
+                        <th>Product Name</th>
+                        <th>Quantity</th>
+                        <th>Price</th>
+                        <th>Subtotal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% order.products.forEach( product => { %>
+                    <tr>
+                        <td><%= product.productId %></td>
+                        <td><%= product.name %></td>
+                        <td><%= product.quantity %></td>
+                        <td>$<%= product.price %></td>
+                        <td>$<%= product.subtotal %></td>
+                    </tr>
+                    <% }) %>
+                </tbody>
+            </table>
         </div>
 
-        <!-- If billing address is not the same as shipping address, show them both -->
-        <% if (!sameAddress) { %>
-        <div class="billing-address">
-            <h3>Billing Address</h3>
-            <address>
-            <%= order.billingAddress.name %><br>
-            <%= order.billingAddress.street %><br>
-            <%= order.billingAddress.city %><br>
-            <%= order.billingAddress.postalCode %><br>
-            <%= order.billingAddress.country %>
-            </address>
-        </div>
-        <% } %>
-    </section>
+        <div class="customer-info-and-summary">
+            <div class="customer-info">
+                <% if (!sameAddress) { %>
+                <div class="address-card">
+                    <h3>Billing Address</h3>
+                    <p><span>Name:</span><%= order.billingAddress.name %></p>
+                    <p><span>Address:</span><%= order.billingAddress.street %></p>
+                    <p><span>City:</span><%= order.billingAddress.city %></p>
+                    <p><span>Postal Code:</span><%= order.billingAddress.postalCode %></p>
+                    <p><span>Country:</span><%= order.billingAddress.country %></p>
+                </div>
+                <% } %>
 
-    <section class="products">
-        <h3>Products info:</h3>
-        <table>
-            <tr>
-                <td>Product id</td>
-                <td>Product name</td>
-                <td>Quantity</td>
-                <td>Price/item</td>
-                <td>Subtotal:</td>
-            </tr>
-            <% order.products.forEach( product => { %>
-                <tr>
-                    <td><%= product.productId %></td>
-                    <td><%= product.name %></td>
-                    <td><%= product.quantity %></td>
-                    <td><%= product.price %></td>
-                    <td><%= product.subtotal %></td>
-                </tr>
-            <% }) %>
-        </table>
-    </section>
-    
-    <section class="order">
-        <h3>Order summary</h3>
-        <table>
-            <tr>
-                <th>Payment method:</th>
-                <td><%= order.payment %></td>
-            </tr>
-            <tr>
-                <th>Total without VAT</th>
-                <td>
-                    <%  const withoutVAT = order.total * 0.81 %>
-                    <%= withoutVAT.toFixed(2) %>
-                </td>
-            </tr>
-            <tr>
-                <th>VAT:</th>
-                <td> 
-                    <% const VAT =  order.total * 0.19 %>
-                    <%= VAT.toFixed(2) %>
-                </td>
-            </tr>
-            <tr>
-                <th>Total</th>
-                <td><%= order.total %></td>
-            </tr>
-        </table>   
-    </section>
-    <form action="/admin/orders/<%= order.id %>?_method=PATCH" method="POST">
-        <label for="status">Change order status:</label>
-        <select name="status" id="status">
-            <% 
-              const statuses = [
-                'awaiting shipment', 
-                'shipped', 
-                'completed', 
-                'cancelled', 
-                'declined', 
-                'refunded'
-              ];
-              statuses.forEach(status => {
-            %>
-              <option 
-                value="<%= status %>" 
-                <%= order.status === status ? 'selected' : '' %>
-              >
-                <%= status.charAt(0).toUpperCase() + status.slice(1) %>
-              </option>
-            <% }) %>
-          </select>
-        <button type="submit">Update order status</button>
-    </form>
+                <div class="address-card">
+                    <h3>Shipping Address</h3>
+                    <p><span>Name:</span><%= order.shippingAddress.name %></p>
+                    <p><span>Address:</span><%= order.shippingAddress.street %></p>
+                    <p><span>City:</span><%= order.shippingAddress.city %></p>
+                    <p><span>Postal Code:</span><%= order.shippingAddress.postalCode %></p>
+                    <p><span>Country:</span><%= order.shippingAddress.country %></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="order-summary">
+            <h4>Order Summary</h4>
+            <div class="summary-row">
+                <span>Payment Method:</span>
+                <span><%= order.payment %></span>
+            </div>
+            <div class="summary-row">
+                <span>Total without VAT:</span>
+                <span>
+                    <% const withoutVAT = order.total * 0.81 %>
+                    $<%= withoutVAT.toFixed(2) %>
+                </span>
+            </div>
+            <div class="summary-row">
+                <span>VAT:</span>
+                <span>
+                    <% const VAT = order.total * 0.19 %>
+                    $<%= VAT.toFixed(2) %>
+                </span>
+            </div>
+            <div class="summary-row total">
+                <span>Total:</span>
+                <span>$<%= order.total %></span>
+            </div>
+        </div>
+
+        <form class="status-form" action="/admin/orders/<%= order.id %>?_method=PATCH" method="POST">
+            <label for="status">Change order status:</label>
+            <select name="status" id="status">
+                <% 
+                const statuses = [
+                    'awaiting shipment', 
+                    'shipped', 
+                    'completed', 
+                    'cancelled', 
+                    'declined', 
+                    'refunded'
+                ];
+                statuses.forEach(status => {
+                %>
+                <option 
+                    value="<%= status %>" 
+                    <%= order.status === status ? 'selected' : '' %>
+                >
+                    <%= status.charAt(0).toUpperCase() + status.slice(1) %>
+                </option>
+                <% }) %>
+            </select>
+            <button type="submit">Update Status</button>
+        </form>
+    </div>
 </main>
 
-<%- include("../partials/footer.ejs"); %>
+<%- include("../partials/admin-footer.ejs"); %>

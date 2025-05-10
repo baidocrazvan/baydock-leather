@@ -5,7 +5,9 @@
                 <h2>Order #<%= order.id %></h2>
                 <div class="order-meta">
                     <p>Order date: <%= order.date %></p>
-                    <p>Status: <%= order.status %></p>
+                    <p>Status: <span class="badge badge-<%= order.status %>">
+                    <%= order.status %>
+                </span></p>
                 </div>
             </div>
 
