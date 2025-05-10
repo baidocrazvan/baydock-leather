@@ -4,6 +4,7 @@ $success-color: #4bb543;
 $warning-color: #ffcc00;
 $error-color: #ff3333;
 
+// Shared styles with both user/account and admin/dashboard
 .account-dashboard {
   max-width: u.rem(1200);
   margin: 0 auto;
@@ -364,5 +365,15 @@ $error-color: #ff3333;
         }
       }
     }
+  }
+}
+
+.dashboard {
+  .account-dashboard {
+    .dashboard-grid {
+      display: flex;
+      justify-content: center;
+    }
+    
   }
 }

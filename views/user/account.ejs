@@ -1,176 +1,178 @@
 <%- include("../partials/header"); %>
 
-<main class="account-dashboard">
-    <div class="dashboard-header">
-      <h1 class="welcome-message">Welcome back, <%= user.first_name %></h1>
-      <p class="account-since">Member since <%= new Date(user.created_at).toLocaleDateString() %></p>
-    </div>
-  
-    <div class="dashboard-grid">
-      <!-- Account Info Section -->
-      <section class="dashboard-card account-info">
-        <div class="card-header">
-          <h2>Account Information</h2>
-        </div>
-        <div class="card-body">
-          <div class="info-item">
-            <span class="info-label">Full Name:</span>
-            <span class="info-value"><%= user.first_name %> <%= user.last_name %></span>
+<main>
+    <div class="account-dashboard">
+      <div class="dashboard-header">
+        <h1 class="welcome-message">Welcome back, <%= user.first_name %></h1>
+        <p class="account-since">Member since <%= new Date(user.created_at).toLocaleDateString() %></p>
+      </div>
+    
+      <div class="dashboard-grid">
+        <!-- Account Info Section -->
+        <section class="dashboard-card account-info">
+          <div class="card-header">
+            <h2>Account Information</h2>
           </div>
-          <div class="info-item">
-            <span class="info-label">Email:</span>
-            <span class="info-value"><%= user.email %></span>
-          </div>
+          <div class="card-body">
+            <div class="info-item">
+              <span class="info-label">Full Name:</span>
+              <span class="info-value"><%= user.first_name %> <%= user.last_name %></span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Email:</span>
+              <span class="info-value"><%= user.email %></span>
+            </div>
 
-          <div class="button-group">
-            <a href="/user/edit" class="edit-btn">Edit Profile</a>
-            <form action="/auth/logout" method="post" class="logout-form">
-              <button type="submit" class="logout-btn">Logout</a>
-            </form>
+            <div class="button-group">
+              <a href="/user/edit" class="edit-btn">Edit Profile</a>
+              <form action="/auth/logout" method="post" class="logout-form">
+                <button type="submit" class="logout-btn">Logout</a>
+              </form>
+            </div>
           </div>
-        </div>
-      </section>
-  
-      <!-- Addresses Section -->
-      <section class="dashboard-card addresses">
-        <div class="card-header">
-          <h2>Your Addresses</h2>
-          <a href="/user/addresses" class="manage-btn">Manage Addresses</a>
-        </div>
-        
-        <div class="address-grid">
-          <!-- Shipping Address -->
-          <div class="address-card <%= addresses.some(a => a.is_shipping) ? 'default' : '' %>">
-            <div class="address-content">
-              <div class="address-details">
-                <h3>
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-geo-alt" viewBox="0 0 16 16">
-                    <path d="M12.166 8.94c-.524 1.062-1.234 2.12-1.96 3.07A32 32 0 0 1 8 14.58a32 32 0 0 1-2.206-2.57c-.726-.95-1.436-2.008-1.96-3.07C3.304 7.867 3 6.862 3 6a5 5 0 0 1 10 0c0 .862-.305 1.867-.834 2.94M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10"/>
-                    <path d="M8 8a2 2 0 1 1 0-4 2 2 0 0 1 0 4m0 1a3 3 0 1 0 0-6 3 3 0 0 0 0 6"/>
-                  </svg>
-                  Shipping Address
-                </h3>
-                <% if (addresses.length > 0 && addresses.some(a => a.is_shipping)) { %>
-                  <% addresses.forEach(address => { %>
-                    <% if (address.is_shipping) { %>
-                      <p><%= address.first_name %> <%= address.last_name %></p>
-                      <p><%= address.address %></p>
-                      <p><%= address.city %>, <%= address.county %></p>
-                      <p><%= address.postal_code %></p>
-                      <p><%= address.country %></p>
-                      <p class="phone">Phone: <%= address.phone_number %></p>
-                    <% } %>
-                  <% }) %>
-                <% } else { %>
-                  <p class="no-address">No shipping address saved</p>
+        </section>
+    
+        <!-- Addresses Section -->
+        <section class="dashboard-card addresses">
+          <div class="card-header">
+            <h2>Your Addresses</h2>
+            <a href="/user/addresses" class="manage-btn">Manage Addresses</a>
+          </div>
+          
+          <div class="address-grid">
+            <!-- Shipping Address -->
+            <div class="address-card <%= addresses.some(a => a.is_shipping) ? 'default' : '' %>">
+              <div class="address-content">
+                <div class="address-details">
+                  <h3>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-geo-alt" viewBox="0 0 16 16">
+                      <path d="M12.166 8.94c-.524 1.062-1.234 2.12-1.96 3.07A32 32 0 0 1 8 14.58a32 32 0 0 1-2.206-2.57c-.726-.95-1.436-2.008-1.96-3.07C3.304 7.867 3 6.862 3 6a5 5 0 0 1 10 0c0 .862-.305 1.867-.834 2.94M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10"/>
+                      <path d="M8 8a2 2 0 1 1 0-4 2 2 0 0 1 0 4m0 1a3 3 0 1 0 0-6 3 3 0 0 0 0 6"/>
+                    </svg>
+                    Shipping Address
+                  </h3>
+                  <% if (addresses.length > 0 && addresses.some(a => a.is_shipping)) { %>
+                    <% addresses.forEach(address => { %>
+                      <% if (address.is_shipping) { %>
+                        <p><%= address.first_name %> <%= address.last_name %></p>
+                        <p><%= address.address %></p>
+                        <p><%= address.city %>, <%= address.county %></p>
+                        <p><%= address.postal_code %></p>
+                        <p><%= address.country %></p>
+                        <p class="phone">Phone: <%= address.phone_number %></p>
+                      <% } %>
+                    <% }) %>
+                  <% } else { %>
+                    <p class="no-address">No shipping address saved</p>
+                  <% } %>
+                </div>
+                <% if (addresses.some(a => a.is_shipping)) { %>
+                  <div class="default-badge">
+                    Default Shipping
+                  </div>
                 <% } %>
               </div>
-              <% if (addresses.some(a => a.is_shipping)) { %>
-                <div class="default-badge">
-                  Default Shipping
+              <% if (!addresses.some(a => a.is_shipping)) { %>
+                <div class="address-actions">
+                  <a href="/address/shipping-address" class="add-btn">Add Shipping Address</a>
                 </div>
               <% } %>
             </div>
-            <% if (!addresses.some(a => a.is_shipping)) { %>
-              <div class="address-actions">
-                <a href="/address/shipping-address" class="add-btn">Add Shipping Address</a>
-              </div>
-            <% } %>
-          </div>
-  
-          <!-- Billing Address -->
-          <div class="address-card <%= addresses.some(a => a.is_billing) ? 'default' : '' %>">
-            <div class="address-content">
-              <div class="address-details">
-                <h3>
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-credit-card" viewBox="0 0 16 16">
-                    <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v1h14V4a1 1 0 0 0-1-1zm13 4H1v5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1z"/>
-                    <path d="M2 10a1 1 0 0 1 1-1h1a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1z"/>
-                  </svg>
-                  Billing Address
-                </h3>
-                <% if (addresses.length > 0 && addresses.some(a => a.is_billing)) { %>
-                  <% addresses.forEach(address => { %>
-                    <% if (address.is_billing) { %>
-                      <p><%= address.first_name %> <%= address.last_name %></p>
-                      <p><%= address.address %></p>
-                      <p><%= address.city %>, <%= address.county %></p>
-                      <p><%= address.postal_code %></p>
-                      <p><%= address.country %></p>
-                      <p class="phone">Phone: <%= address.phone_number %></p>
-                    <% } %>
-                  <% }) %>
-                <% } else { %>
-                  <p class="no-address">No billing address saved</p>
+    
+            <!-- Billing Address -->
+            <div class="address-card <%= addresses.some(a => a.is_billing) ? 'default' : '' %>">
+              <div class="address-content">
+                <div class="address-details">
+                  <h3>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-credit-card" viewBox="0 0 16 16">
+                      <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v1h14V4a1 1 0 0 0-1-1zm13 4H1v5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1z"/>
+                      <path d="M2 10a1 1 0 0 1 1-1h1a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1z"/>
+                    </svg>
+                    Billing Address
+                  </h3>
+                  <% if (addresses.length > 0 && addresses.some(a => a.is_billing)) { %>
+                    <% addresses.forEach(address => { %>
+                      <% if (address.is_billing) { %>
+                        <p><%= address.first_name %> <%= address.last_name %></p>
+                        <p><%= address.address %></p>
+                        <p><%= address.city %>, <%= address.county %></p>
+                        <p><%= address.postal_code %></p>
+                        <p><%= address.country %></p>
+                        <p class="phone">Phone: <%= address.phone_number %></p>
+                      <% } %>
+                    <% }) %>
+                  <% } else { %>
+                    <p class="no-address">No billing address saved</p>
+                  <% } %>
+                </div>
+                <% if (addresses.some(a => a.is_billing)) { %>
+                  <div class="default-badge">
+                    Default Billing
+                  </div>
                 <% } %>
               </div>
-              <% if (addresses.some(a => a.is_billing)) { %>
-                <div class="default-badge">
-                  Default Billing
+              <% if (!addresses.some(a => a.is_billing)) { %>
+                <div class="address-actions">
+                  <a href="/address/shipping-address" class="add-btn">Add Billing Address</a>
                 </div>
               <% } %>
             </div>
-            <% if (!addresses.some(a => a.is_billing)) { %>
-              <div class="address-actions">
-                <a href="/address/shipping-address" class="add-btn">Add Billing Address</a>
-              </div>
-            <% } %>
           </div>
-        </div>
-      </section>
-  
-      <!-- Orders -->
-      <section class="dashboard-card recent-orders">
-        <div class="card-header">
-          <h2>Recent Orders</h2>
-        </div>
-        
-        <div class="card-body">
-          <% if (orders.length > 0) { %>
-            <div class="orders-table-container">
-              <table class="orders-table">
-                <thead>
-                  <tr>
-                    <th>Order #</th>
-                    <th>Date</th>
-                    <th>Total</th>
-                    <th>Status</th>
-                    <th>Details</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <% orders.forEach(order => { %>
+        </section>
+    
+        <!-- Orders -->
+        <section class="dashboard-card recent-orders">
+          <div class="card-header">
+            <h2>Recent Orders</h2>
+          </div>
+          
+          <div class="card-body">
+            <% if (orders.length > 0) { %>
+              <div class="orders-table-container">
+                <table class="orders-table">
+                  <thead>
                     <tr>
-                      <td><%= order.id %></td>
-                      <td><%= new Date(order.created_at).toLocaleDateString() %></td>
-                      <td>$<%= order.total_price %></td>
-                      <td>
-                        <span class="status-badge <%= order.status.toLowerCase() %>">
-                          <%= order.status %>
-                        </span>
-                      </td>
-                      <td>
-                        <a href="/orders/<%= order.id %>" class="view-order">
-                          View
-                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                            <path d="M5 12h14M12 5l7 7-7 7"/>
-                          </svg>
-                        </a>
-                      </td>
+                      <th>Order #</th>
+                      <th>Date</th>
+                      <th>Total</th>
+                      <th>Status</th>
+                      <th>Details</th>
                     </tr>
-                  <% }) %>
-                </tbody>
-              </table>
-            </div>
-            <a href="/user/orders" class="view-all">View All Orders</a>
-          <% } else { %>
-            <div class="no-orders">
-              <p>You haven't placed any orders yet</p>
-              <a href="/products" class="shop-btn">Start Shopping</a>
-            </div>
-          <% } %>
-        </div>
-      </section>
+                  </thead>
+                  <tbody>
+                    <% orders.forEach(order => { %>
+                      <tr>
+                        <td><%= order.id %></td>
+                        <td><%= new Date(order.created_at).toLocaleDateString() %></td>
+                        <td>$<%= order.total_price %></td>
+                        <td>
+                          <span class="status-badge <%= order.status.toLowerCase() %>">
+                            <%= order.status %>
+                          </span>
+                        </td>
+                        <td>
+                          <a href="/orders/<%= order.id %>" class="view-order">
+                            View
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                              <path d="M5 12h14M12 5l7 7-7 7"/>
+                            </svg>
+                          </a>
+                        </td>
+                      </tr>
+                    <% }) %>
+                  </tbody>
+                </table>
+              </div>
+              <a href="/user/orders" class="view-all">View All Orders</a>
+            <% } else { %>
+              <div class="no-orders">
+                <p>You haven't placed any orders yet</p>
+                <a href="/products" class="shop-btn">Start Shopping</a>
+              </div>
+            <% } %>
+          </div>
+        </section>
+      </div>
     </div>
   </main>
 

@@ -12,6 +12,13 @@ const saltRounds = 10;
 const router = express.Router();
 
 // GET admin dashboard
+router.get("/dashboard", authenticate, isAdmin, async (req, res) => {
+  return res.render("admin/dashboard.ejs", {
+      user: req.user,
+  });
+})
+
+// GET all products
 router.get("/products", authenticate, isAdmin, async (req, res) => {
     try {
         const page = parseInt(req.query.page) || 1;
