@@ -1,3 +1,5 @@
+@use "../util/" as u;
+
 .user-list-container {
     max-width: 1200px;
     margin: 0 auto;
@@ -135,8 +137,7 @@
     color: var(--text-light);
   }
   
-  // Responsive adjustments
-  @media (max-width: 768px) {
+  @media (max-width: u.rem(768)) {
     .user-table {
       thead {
         display: none;
