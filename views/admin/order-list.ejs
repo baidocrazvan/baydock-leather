@@ -1,46 +1,85 @@
-<%- include("../partials/header.ejs"); %>
+<%- include("../partials/admin-header.ejs"); %>
 
-<main>
-    <h2>User orders:</h2>
+<main class="admin-main">
+    <div class="order-list-container">
+      <h1>User orders:</h1>
 
-    <form action="/admin/orders" method="GET" class="search-form">
-        <input 
-          type="text" 
-          name="search" 
-          placeholder="Search by Order ID" 
-          value="<%= searchQuery || '' %>"
-        >
-        <button type="submit">Search</button>
-        <% if (searchQuery) { %>
-          <a href="/admin/orders" class="clear-search">Clear</a>
-        <% } %>
-      </form>
+      <div class="user-search">
+        <form action="/admin/orders" method="GET" class="search-form">
+            <input 
+              type="text" 
+              name="search" 
+              placeholder="Search by Order ID" 
+              value="<%= searchQuery || '' %>"
+            >
+            <button type="submit">Search</button>
+            <% if (searchQuery) { %>
+              <a href="/admin/orders" class="clear-search">Clear</a>
+            <% } %>
+         </form>
+      </div> 
 
-    <table>
-        <tr>
-            <th>Order ID</th>
-            <th>Order status</th>
-            <th>Customer</th>
-            <th>Address</th>
-            <th>Phone</th>
-            <th>Total (incl VAT)</th>
-            <th>Date placed</th>
-            <th>See order</th>
-        </tr>
-        <% orders.forEach(order => { %>
+      <div class="table-responsive">
+        <table class="user-table">
+          <thead>
             <tr>
-                <td><%= order.order_id %></td>
-                <td><%= order.order_status %></td>
-                <td><%= order.last_name %> <%= order.first_name %></td>
-                <td><%= order.city %>, <%= order.county %></td>
-                <td><%= order.phone_number %></td>
-                <td><%= order.order_total %></td>
-                <td><%= new Date(order.order_date).toLocaleDateString() %></td>
-                
-                <td><button><a href="/admin/orders/<%= order.order_id %>">View</a></button></td>
+                <th>Order ID</th>
+                <th>Order status</th>
+                <th>Customer</th>
+                <th>Address</th>
+                <th>Phone</th>
+                <th>Total (incl VAT)</th>
+                <th>Date placed</th>
+                <th>See order</th>
             </tr>
-        <% }) %>
-    </table>
+            </thead>
+            <tbody>
+            <% if (orders.length > 0) { %>
+              <% orders.forEach(order => { %>
+                <tr>
+                    <td data-label="ID"><%= order.order_id %></td>
+                    <td data-label="Status"><span class="badge badge-<%= order.order_status %>"><%= order.order_status %></span></td>
+                    <td data-label="Customer"><%= order.last_name %> <%= order.first_name %></td>
+                    <td data-label="Address"><%= order.city %>, <%= order.county %></td>
+                    <td data-label="Phone"><%= order.phone_number %></td>
+                    <td data-label="Total"><%= order.order_total %></td>
+                    <td data-label="Date"><%= new Date(order.order_date).toLocaleDateString() %></td>
+                    <td data-label="Actions">
+                        <a href="/admin/orders/<%= order.order_id %>" class="action-btn view-btn">View</a>
+                    </td>
+                </tr>
+              <% }) %>
+            <% } else { %>
+              <tr>
+                <td colspan="6" class="no-results">No orders found.</td>
+              </tr>
+            <% } %>
+            </tbody>
+        </table>
+      </div>
+
+
+      <% if (totalPages > 1) { %>
+      <div class="pagination">
+        <% if (currentPage > 1) { %>
+          <a href="/admin/orders?page=<%= currentPage - 1 %><%= searchQuery ? `&search=${searchQuery}` : '' %>" class="page-link">Previous</a>
+        <% } %>
+        
+        <% for (let i = 1; i <= totalPages; i++) { %>
+          <a 
+            href="/admin/orders?page=<%= i %><%= searchQuery ? `&search=${searchQuery}` : '' %>" 
+            class="page-link <%= currentPage === i ? 'active' : '' %>"
+          >
+            <%= i %>
+          </a>
+        <% } %>
+        
+        <% if (currentPage < totalPages) { %>
+          <a href="/admin/orders?page=<%= currentPage + 1 %><%= searchQuery ? `&search=${searchQuery}` : '' %>" class="page-link">Next</a>
+        <% } %>
+      </div>
+    <% } %>
+    </div>
 </main>
 
-<%- include("../partials/footer.ejs"); %>
+<%- include("../partials/admin-footer.ejs"); %>

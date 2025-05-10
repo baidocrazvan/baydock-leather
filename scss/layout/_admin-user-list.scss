@@ -1,6 +1,6 @@
 @use "../util/" as u;
 
-.user-list-container {
+.user-list-container, .order-list-container {
     max-width: 1200px;
     margin: 0 auto;
     padding: 1rem;

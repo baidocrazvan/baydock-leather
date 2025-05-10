@@ -71,19 +71,27 @@ router.get("/modify-product/:id", authenticate, isAdmin, async(req, res) => {
 
 // GET all orders
 router.get("/orders", authenticate, isAdmin, async(req, res) => {
-    try {
-        const searchTerm = req.query.search || '';
-        const orders = await getAllOrders(searchTerm);
-        return res.render("admin/order-list.ejs", { 
-            orders,
-            searchQuery: searchTerm 
-        })
+  try {
+    const { page = 1, limit = 10, search = '' } = req.query;
+    const offset = (page - 1) * limit;
+    
+    // Get paginated and filtered orders
+    const { orders, total } = await getAllOrders(search, limit, offset);
+    
+    const totalPages = Math.ceil(total / limit);
+    
+    return res.render("admin/order-list.ejs", { 
+      orders,
+      currentPage: parseInt(page),
+      totalPages,
+      searchQuery: search
+    });
 
-    } catch(err) {
-        console.error("GET error rendering all orders page (admin):" , err);
-        return res.redirect("/admin/dashboard");
-    }
-})
+  } catch(err) {
+    console.error("GET error rendering all orders page (admin):" , err);
+    return res.redirect("/admin/dashboard");
+  }
+});
 
 // GET a specific order
 router.get("/orders/:id", authenticate, isAdmin, async(req, res) => {
