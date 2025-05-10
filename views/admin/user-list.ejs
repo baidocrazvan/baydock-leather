@@ -1,33 +1,80 @@
-<%- include("../partials/header.ejs"); %>
+<%- include("../partials/admin-header.ejs"); %>
 
-<main>
-    <h1>User Management</h1>
-    <table class="table">
-    <thead>
-        <tr>
-        <th>ID</th>
-        <th>Name</th>
-        <th>Email</th>
-        <th>Role</th>
-        <th>Joined</th>
-        <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        <% users.forEach(user => { %>
-        <tr>
-            <td><%= user.id %></td>
-            <td><%= user.first_name %> <%= user.last_name %></td>
-            <td><%= user.email %></td>
-            <td><%= user.role %></td>
-            <td><%= new Date(user.created_at).toLocaleDateString() %></td>
-            <td>
-            <a href="/admin/users/<%= user.id %>" class="btn btn-sm btn-primary">View</a>
-            </td>
-        </tr>
-        <% }) %>
-    </tbody>
-    </table>
+<main class="admin-main">
+    <div class="user-list-container">
+      <h1>User Management</h1>
+      
+      
+      <div class="user-search">
+        <form action="/admin/users" method="GET">
+          <input 
+            type="text" 
+            name="search" 
+            placeholder="Search by ID, name or email..."
+            value="<%= searchQuery || '' %>"
+          >
+          <button type="submit">Search</button>
+        </form>
+      </div>
+      
+      
+      <div class="table-responsive">
+        <table class="user-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Role</th>
+              <th>Joined</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% if (users.length > 0) { %>
+              <% users.forEach(user => { %>
+                <tr>
+                  <td data-label="ID"><%= user.id %></td>
+                  <td data-label="Name"><%= user.first_name %> <%= user.last_name %></td>
+                  <td data-label="Email"><%= user.email %></td>
+                  <td data-label="Role"><span class="role-badge <%= user.role %>"><%= user.role %></span></td>
+                  <td data-label="Joined"><%= new Date(user.created_at).toLocaleDateString() %></td>
+                  <td data-label="Actions">
+                    <a href="/admin/users/<%= user.id %>" class="action-btn view-btn">View</a>
+                  </td>
+                </tr>
+              <% }) %>
+            <% } else { %>
+              <tr>
+                <td colspan="6" class="no-results">No users found</td>
+              </tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+      
+      
+      <% if (totalPages > 1) { %>
+        <div class="pagination">
+          <% if (currentPage > 1) { %>
+            <a href="/admin/users?page=<%= currentPage - 1 %><%= searchQuery ? `&search=${searchQuery}` : '' %>" class="page-link">Previous</a>
+          <% } %>
+          
+          <% for (let i = 1; i <= totalPages; i++) { %>
+            <a 
+              href="/admin/users?page=<%= i %><%= searchQuery ? `&search=${searchQuery}` : '' %>" 
+              class="page-link <%= currentPage === i ? 'active' : '' %>"
+            >
+              <%= i %>
+            </a>
+          <% } %>
+          
+          <% if (currentPage < totalPages) { %>
+            <a href="/admin/users?page=<%= currentPage + 1 %><%= searchQuery ? `&search=${searchQuery}` : '' %>" class="page-link">Next</a>
+          <% } %>
+        </div>
+      <% } %>
+    </div>
 </main>
 
-<%- include("../partials/footer.ejs"); %>
+<%- include("../partials/admin-footer.ejs"); %>

@@ -2,14 +2,44 @@ import db from '../db.js';
 import { getAllUserAddresses } from "./addressService.js";
 
 // Get all users from db
-export async function getAllUsers() {
-    const result = await db.query(`
+export async function getAllUsers(search = '', limit = 10, offset = 0) {
+    let query = `
       SELECT id, first_name, last_name, email, created_at, role
       FROM users
+    `;
+
+    let params = [];
+
+    if (search) {
+      query += `
+        WHERE id::TEXT LIKE $1 
+        OR LOWER(first_name) LIKE $1 
+        OR LOWER(last_name) LIKE $1 
+        OR LOWER(email) LIKE $1
+      `;
+      params.push(`%${search.toLowerCase()}%`);
+    }
+
+    query += `
       ORDER BY created_at DESC
-    `);
-    return result.rows;
-  }
+      LIMIT $${params.length + 1}
+      OFFSET $${params.length + 2}
+    `;
+
+    params.push(limit, offset);
+
+    // Get paginated results
+    const result = await db.query(query, params);
+
+    // Get total count
+    const countQuery = `SELECT COUNT(*) FROM users${search ? ` WHERE id::TEXT LIKE $1 OR LOWER(first_name) LIKE $1 OR LOWER(last_name) LIKE $1 OR LOWER(email) LIKE $1` : ''}`;
+    const countResult = await db.query(countQuery, search ? [`%${search.toLowerCase()}%`] : []);
+
+    return {
+      users: result.rows,
+      total: parseInt(countResult.rows[0].count)
+    };
+}
 
 // Get a specific user's information
 export async function getUserDetails(userId) {

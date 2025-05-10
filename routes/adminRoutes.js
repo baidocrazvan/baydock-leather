@@ -120,14 +120,26 @@ router.patch("/orders/:id", authenticate, isAdmin, async(req, res) => {
 
 // GET route for getting users list
 router.get("/users", authenticate, isAdmin, async (req, res) => {
-    try{
-        const users = await getAllUsers();
-        return res.render("admin/user-list.ejs", { users });
-
-    } catch(err) {
+    try {
+        const { page = 1, limit = 10, search = '' } = req.query;
+        const offset = (page - 1) * limit;
+        
+        // Get paginated and filtered users
+        const { users, total } = await getAllUsers(search, limit, offset);
+        
+        const totalPages = Math.ceil(total / limit);
+        
+        return res.render("admin/user-list.ejs", { 
+          users,
+          currentPage: parseInt(page),
+          totalPages,
+          searchQuery: search
+        });
+    
+      } catch(err) {
         console.error("Error fetching users:", err);
-        return res.redirect("/admin/dashboard.ejs");
-    }
+        return res.redirect("/admin/products");
+      }
 });
 
 // GET route for details of a specific user
