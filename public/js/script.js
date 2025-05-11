@@ -11,6 +11,7 @@ window.addEventListener("scroll", () => {
     const header = document.getElementById("header-background")
     const navbar = document.querySelector(".header__navbar");
 
+    if (header && navbar) {
     // Skip if menu is open
     if (navbar.classList.contains("active")) return;
 
@@ -28,6 +29,7 @@ window.addEventListener("scroll", () => {
     }
 
     lastScroll = currentScroll;
+    }
 })
 
 // Toggle mobile menu and overlay
