@@ -185,27 +185,17 @@
   text-transform: capitalize;
   margin-right: 0.5rem;
   
-  &-info { 
-    background: var(--text-color); 
-    color: var(--background-color); 
-  }
-  
-  &-active {
-    background: #2e7d32;
-    color: var(--background-color);
-  }
-
-  &-inactive { 
-    background: #dc3545; 
-    color: var(--background-color); 
-  }
+  &-info { background: var(--text-color); color: white; }
+  &-active { background: #2e7d32; color: white;}
+  &-inactive { background: #dc3545; color: white; }
 
   // Order status-specific colors
-  &-pending { background: #ffc107; color: #212529; }
-  &-processing { background: #17a2b8; color: white; }
-  &-shipped { background: #28a745; color: white; }
-  &-delivered { background: #6f42c1; color: white; }
-  &-cancelled { background: #dc3545; color: white; }
+  &-Pending { background: #ffc107; color: white; }
+  &-Processing { background: #17a2b8; color: white; }
+  &-Shipped { background: #1742b8; color: white; }
+  &-Delivered { background: #28a745; color: white; }
+  &-Cancelled { background: #dc3545; color: white; }
+  &-Refunded { background: #6f42c1; color: white;}
 }
 
 
