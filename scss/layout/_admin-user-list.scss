@@ -171,3 +171,44 @@
       flex-wrap: wrap;
     }
   }
+
+  @media (max-width: u.rem(384)) {
+  .table-responsive {
+    table {
+      tr { padding: 0.4rem; }
+    }
+  }
+
+  .user-search {
+    form {
+      flex-direction: column;
+      gap: 0.5rem;
+      
+      input {
+        width: 100%;
+        padding: 0.5rem;
+      }
+      
+      button {
+        width: 100%;
+        padding: 0.5rem; 
+        text-align: center;
+      }
+    }
+  }
+  
+  .user-list-container, 
+  .order-list-container {
+    padding: 0.5rem;
+    
+    h1 {
+      font-size: 1.3rem;
+    }
+  }
+  
+  .table-responsive {
+    margin-left: -0.5rem;
+    margin-right: -0.5rem;
+    width: calc(100% + 1rem);
+  }
+}
