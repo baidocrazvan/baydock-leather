@@ -19,12 +19,15 @@
 	justify-content: space-between;
 	height: 100%;
 	padding: 0 1.5rem;
+	position: relative;
 	
 	&__toggle {
 	  background: none;
 	  border: none;
 	  cursor: pointer;
 	  padding: 0.5rem;
+	  position: absolute;
+      left: 1.5rem;
 	  
 	  svg {
 		width: 1.5rem;
@@ -40,6 +43,9 @@
 	&__brand {
 	  font-weight: bold;
 	  color: var(--text-color);
+	  position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
 	  
 	  a {
 		color: inherit;
@@ -47,53 +53,52 @@
 	  }
 	}
 	
-	&__user {
-	  color: var(--text-color);
-	  font-size: 0.9rem;
-	}
+	
   }
   
   #admin-sidebar {
-	position: fixed;
-	top: var(--header-height);
-	left: 0;
-	bottom: 0;
-	width: 250px;
-	background-color: var(--background-color);
-	border-right: 1px solid var(--line-color);
-	transform: translateX(-100%);
-	transition: transform 0.3s ease;
-	z-index: 999;
-	
-	&__nav {
-	  padding: 1rem 0;
-	  
-	  ul {
-		list-style: none;
-		padding: 0;
-		margin: 0;
-	  }
-	  
-	  li a {
-		display: block;
-		padding: 0.75rem 1.5rem;
-		color: var(--grey-text-color);
-		text-decoration: none;
-		transition: all 0.2s;
-		
-		&:hover {
-		  background-color: var(--body-fill-color);
-		  color: var(--text-color);
-		}
-		
-		&.active {
-		  background-color: var(--body-fill-color);
-		  color: var(--text-color);
-		  border-left: 3px solid var(--text-color);
-		}
-	  }
-	}
+  position: fixed;
+  top: var(--header-height, 60px);
+  left: 0;
+  bottom: 0;
+  width: 250px;
+  background-color: var(--background-color, #fff);
+  border-right: 1px solid var(--line-color, #ddd);
+  transform: translateX(-100%);
+  transition: transform 0.3s ease;
+  z-index: 999;
+}
+
+.admin-sidebar__nav {
+  padding: 1rem 0;
+  
+  ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
   }
+  
+  li {
+    a {
+      display: block;
+      padding: 0.75rem 1.5rem;
+      color: var(--grey-text-color, #666);
+      text-decoration: none;
+      transition: all 0.2s;
+      
+      &:hover {
+        background-color: var(--body-fill-color, #f5f5f5);
+        color: var(--text-color, #333);
+      }
+      
+      &.active {
+        background-color: var(--body-fill-color, #f5f5f5);
+        color: var(--text-color, #333);
+        border-left: 3px solid var(--text-color, #333);
+      }
+    }
+  }
+}
   
   #admin-overlay {
 	position: fixed;
@@ -137,11 +142,18 @@
 	}
   }
   
-  // Responsive adjustments
   @media (min-width: 992px) {
 	#admin-sidebar {
 	  transform: translateX(0);
 	}
+
+	.admin-nav {
+		&__brand {
+			left: calc(50% + 125px); // 50% + half of sidebar width
+    		transform: translateX(-50%);
+			margin: 0;
+		}
+	  }
 	
 	#admin-overlay {
 	  display: none;
