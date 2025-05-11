@@ -5,7 +5,7 @@ import { getAllProducts, getProductById } from "../services/productService.js";
 import { getAllOrders } from "../services/adminService.js";
 import { getOrderDetails } from "../services/orderService.js";
 import { getAllUsers, getUserDetails } from "../services/userService.js";
-import { validateRegister } from "../middleware/validationMiddleware.js";
+import { validateAdminRegister } from "../middleware/validationMiddleware.js";
 import bcrypt from "bcryptjs";
 
 const saltRounds = 10;
@@ -174,7 +174,7 @@ router.get("/create", authenticate, isAdmin, async(req, res) => {
 })
 
 // POST protected register an admin account 
-router.post("/create", validateRegister, authenticate, isAdmin, async (req, res) => {
+router.post("/create", validateAdminRegister, authenticate, isAdmin, async (req, res) => {
     const { lastName, firstName, email, password, cpassword: confirmPassword } = req.body;
     const role = "admin";
   
@@ -203,7 +203,7 @@ router.post("/create", validateRegister, authenticate, isAdmin, async (req, res)
                   firstName, lastName, email, hash, role
               ]);
 
-              req.flash("success", "Registration successful.")
+                req.flash("success", "Registration successful.")
                 return res.redirect("/admin/dashboard");
             }
         })
@@ -213,7 +213,7 @@ router.post("/create", validateRegister, authenticate, isAdmin, async (req, res)
     } catch (err) {
       console.error("Registration error:", err);
       req.flash("error", "Registration failed.");
-      res.redirect("/auth/register");
+      res.redirect("/admin/dashboard");
     }
   });
 

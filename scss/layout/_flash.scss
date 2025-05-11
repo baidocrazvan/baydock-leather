@@ -21,3 +21,86 @@
     color: #2e7d32;
     border-left: 4px solid #2e7d32;
   }
+
+  .admin-flash {
+  padding: 1rem;
+  top: var(--header-height);
+  margin: 0 auto 1rem;
+  max-width: calc(100% - 2rem);
+  text-align: center;
+  position: relative;
+  border-radius: 4px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  animation: slideIn 0.3s ease-out;
+  z-index: 1000;
+
+  &__close {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0.25rem;
+    margin-left: 0.5rem;
+    display: flex;
+    align-items: center;
+    color: inherit;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+
+    &:hover {
+      opacity: 1;
+    }
+
+    svg {
+      width: 1rem;
+      height: 1rem;
+    }
+  }
+
+  &-error {
+    background: #ffebee;
+    color: #c62828;
+    border-left: 4px solid #c62828;
+  }
+
+  &-success {
+    background: #e8f5e9;
+    color: #2e7d32;
+    border-left: 4px solid #2e7d32;
+  }
+
+  @media (min-width: 992px) {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    width: auto;
+    max-width: 350px;
+    margin: 0;
+    text-align: left;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+// Animation for when flash is dismissed
+.admin-flash.hide {
+  animation: slideOut 0.3s ease-in forwards;
+}
+
+@keyframes slideOut {
+  to {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+}

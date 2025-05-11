@@ -37,6 +37,25 @@ export const validateRegister = (req, res, next) => {
   next();
 };
 
+export const validateAdminRegister = (req, res, next) => {
+  // Trim each input in case user added blankspace by mistake
+  Object.keys(req.body).forEach(key => {
+    if (typeof req.body[key] === 'string') {
+      req.body[key] = req.body[key].trim();
+      console.log(req.body[key]);
+    }
+  });
+  
+  const { error } = registerSchema.validate(req.body, { abortEarly: false });
+  
+  if (error) {
+    const errors = error.details.map(detail => detail.message);
+    req.flash("error", errors.join(", "));
+    return res.redirect("/admin/create");
+  }
+  next();
+};
+
 export const validateAddress = (req, res, next) => {
   // Trim each input in case user added blankspace by mistake
   Object.keys(req.body).forEach(key => {

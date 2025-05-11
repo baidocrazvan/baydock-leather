@@ -361,6 +361,26 @@ document.addEventListener("DOMContentLoaded", function() {
   }
 });
 
+// Desktop view admin flash-error message script for closing
+document.addEventListener("DOMContentLoaded", function() {
+  // Close button functionality
+  document.querySelectorAll(".admin-flash__close").forEach(button => {
+    button.addEventListener("click", function() {
+      const flash = this.closest(".admin-flash");
+      flash.classList.add("hide");
+      // Remove element after animation completes
+      flash.addEventListener("animationend", () => flash.remove());
+    });
+  });
+
+  // Auto-dismiss after 5 seconds
+  document.querySelectorAll(".admin-flash").forEach(flash => {
+    setTimeout(() => {
+      flash.classList.add("hide");
+      flash.addEventListener("animationend", () => flash.remove());
+    }, 5000);
+  });
+});
 
 // =====================
 // FORM VALIDATION
