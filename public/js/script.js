@@ -315,14 +315,16 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 
 // Product page size selector for belts
-document.querySelector("form").addEventListener("submit", function(e) {
-  const sizeSelect = document.getElementById("belt-size");
-  if (!sizeSelect.value) {
-    e.preventDefault();
-    sizeSelect.setCustomValidity("Please select a size");
-    sizeSelect.reportValidity();
-  }
-});
+if (document.getElementById("size-select")) {
+  document.getElementById("size-select").addEventListener("submit", function(e) {
+    const sizeSelect = document.getElementById("belt-size");
+    if (!sizeSelect.value) {
+      e.preventDefault();
+      sizeSelect.setCustomValidity("Please select a size");
+      sizeSelect.reportValidity();
+    }
+  });
+}
 
 // Checkout page script for showing address summary
 document.addEventListener("DOMContentLoaded", function() {
@@ -500,15 +502,12 @@ const validateRegisterInputs = () => {
   }
 
   if (passwordValue === "") {
-    console.log(passwordValue);
     setError(password, "Password is required");
     isValid = false;
   } else if (passwordValue.length < 8 ) {
-    console.log(passwordValue);
     setError(password, "Password must be atleast 8 characters long");
     isValid = false;
   } else if (!isValidPassword(passwordValue)) {
-    console.log(passwordValue);
     setError(password, "Password must contain at least one uppercase letter and atleast one number");
     isValid = false;
   } else {
