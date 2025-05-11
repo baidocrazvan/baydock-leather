@@ -93,12 +93,11 @@
             <select name="status" id="status">
                 <% 
                 const statuses = [
-                    'awaiting shipment', 
-                    'shipped', 
-                    'completed', 
-                    'cancelled', 
-                    'declined', 
-                    'refunded'
+                    'Processing', 
+                    'Shipped', 
+                    'Delivered', 
+                    'Cancelled',  
+                    'Refunded'
                 ];
                 statuses.forEach(status => {
                 %>
