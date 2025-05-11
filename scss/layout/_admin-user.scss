@@ -11,8 +11,6 @@
   h1 {
     color: var(--text-color);
     font-size: 1.8rem;
-    margin-bottom: 2rem;
-    padding-bottom: 1rem;
     border-bottom: 2px solid var(--line-color);
   }
 }
@@ -23,6 +21,11 @@
   padding: 1.5rem;
   border-radius: u.rem(8);
   margin-bottom: 2rem;
+
+  .role-badge {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+}
 
   h2 {
     color: var(--text-color);
@@ -46,6 +49,20 @@
 .addresses {
   margin-bottom: 3rem;
 
+  .address-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+
+    @media (min-width: u.rem(768)) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    @media (min-width: u.rem(1024)) {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
   h2 {
     font-size: 1.4rem;
     color: var(--text-color);
@@ -53,33 +70,56 @@
     padding-bottom: 0.5rem;
     border-bottom: 1px solid var(--line-color);
   }
+
+    .no-address {
+    background: var(--background-color);
+    padding: 2rem;
+    border-radius: u.rem(8);
+    text-align: center;
+    color: var(--grey-text-color);
+  }
 }
 
 .address-card {
-  background: white;
-  border: 1px solid var(--line-color);
-  padding: 1.5rem;
-  margin-bottom: 1.5rem;
-  border-radius: u.rem(8);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-  transition: transform 0.2s, box-shadow 0.2s;
+    background: var(--background-color);
+    border-radius: u.rem(8);
+    box-shadow: 0 u.rem(4) u.rem(12) rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--line-color);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  }
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 u.rem(6) u.rem(16) rgba(0, 0, 0, 0.1);
+    }
 
-  h3 {
-    color: var(--text-color);
-    font-size: 1.2rem;
-    margin-bottom: 0.75rem;
-  }
+    &.default {
+      border-left: u.rem(4) solid var(--text-color);
+    }
 
-  p {
-    margin-bottom: 0.5rem;
-    color: var(--text-light);
+    .address-content {
+      padding: 1.5rem;
+
+      .address-details {
+        h3 {
+          font-size: 1.1rem;
+          margin-bottom: 0.75rem;
+          color: var(--grey-text-color);
+        }
+
+        p {
+          margin: 0.25rem 0;
+          line-height: 1.5;
+          font-size: 0.9rem;
+
+          &.phone {
+            margin-top: 0.75rem;
+            padding-top: 0.75rem;
+            border-top: u.rem(1) solid var(--line-color);
+          }
+        }
+      }
+    }
   }
-}
 
 .address-flags {
   margin-top: 1rem;
@@ -150,6 +190,11 @@
     color: var(--background-color); 
   }
   
+  &-active {
+    background: #2e7d32;
+    color: var(--background-color);
+  }
+
   &-inactive { 
     background: #dc3545; 
     color: var(--background-color); 
