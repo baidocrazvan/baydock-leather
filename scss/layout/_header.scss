@@ -171,8 +171,15 @@
                 transform: scale(1.1);
             }
 
+            &--account {
+                svg {
+                    width: clamp(u.rem(28), 2vw, u.rem(36));
+                    height: clamp(u.rem(28), 2vw, u.rem(36)); 
+                }
+            }
             &--search {
                 display: none;
+                
             }
         }
     }
@@ -263,7 +270,12 @@
             height: 40px;
             width: 225px;
             border-radius: 20px;
-            padding: 0;
+            padding: 0 1rem;
+            border: 1px solid var(--icon-color);
+
+            &:focus {
+                border-color: #000;
+            }
         }
 
         &--search button {

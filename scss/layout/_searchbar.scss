@@ -50,7 +50,7 @@ width: 100%;
 padding: 1rem 3.5rem 1rem 1rem;
 font-size: 1.2rem;
 border: none;
-border-radius: 4px 0 0 4px; 
+border-radius: 8px; 
 }
 
 &__search-submit {
@@ -59,16 +59,17 @@ right: 0;
 top: 0;
 height: 100%;
 width: 3rem;
-background: var(--text-color);
+background: lighten(#121212, 20%);
 border: none;
-border-radius: 0 4px 4px 0;
+border-radius: 0 u.rem(8) u.rem(8) 0;
 cursor: pointer;
 display: flex;
 align-items: center;
 justify-content: center;
+transition: ease-in 0.3s;
 
 &:hover {
-    background: #e0e0e0;
+    background: var(--text-color);
 }
 
 svg {
