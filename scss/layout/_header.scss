@@ -39,37 +39,97 @@
         
       }
     
-      &__search {
+    &__search {
         display: none; // Hidden on mobile
-        grid-column: 1; 
+        grid-column: 1;
         align-self: center;
-    
+        position: relative;
+        
         form {
-          display: flex;
-          align-items: center;
+            display: flex;
+            align-items: center;
+            position: relative;
         }
-    
+
         input {
-          height: 37px;
-          width: clamp(200px, 200px + (100vw - 900px) * 1, 300px);
-          padding: 0 10px;
-          border-radius: 18.5px;
-          border: none;
-          background-color: var(--body-fill-color);
+            height: u.rem(36);
+            width: clamp(u.rem(110), u.rem(110) + (100vw - u.rem(900)) * 0.32, u.rem(250)); // Grow 0.32px for every 1px increase in viewport
+            padding: 0 u.rem(40) 0 u.rem(15);
+            border-radius: u.rem(20) 0 0 u.rem(20); // Only left rounded
+            border: 2px solid var(--icon-color);
+            border-right: none; // Remove right border
+            background: white;
+            font-size: 0.9rem;
+            transition: ease-in-out 0.3s;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            
+            &:focus {
+            outline: none;
+            border-color: var(--text-color);
+            box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+            width: clamp(u.rem(130), u.rem(130) + (100vw - u.rem(900)) * 0.32, u.rem(270)); // +20px when focused
+            }
+            
+            &::placeholder {
+            color: #aaa;
+            font-weight: 300;
+            }
         }
-    
+
         button {
-          background: none;
-          border: none;
-          margin-left: -30px;
-          cursor: pointer;
-          
-          svg {
-            width: 16px;
-            height: 16px;
-          }
+            background: var(--icon-color);
+            border: 2px solid var(--icon-color);
+            border-left: none;
+            height: u.rem(36);
+            width: u.rem(36);
+            padding: 0;
+            border-radius: 0 18px 18px 0; // Only right rounded
+            cursor: pointer;
+            transition: ease-in-out 0.3s;
+            
+            svg {
+            width: u.rem(16);
+            height: u.rem(16);
+            fill: white;
+            transition: all 0.2s ease;
+            }
+            
+            &:hover {
+            background: var(--text-color);
+            border-color: var(--text-color);
+            
+            svg {
+                transform: scale(1.1);
+            }
+            }
+            
+            &:active {
+            transform: scale(0.95);
+            }
         }
-      }
+        
+        // Combined focus states
+        &:focus-within {
+            input {
+            border-color: var(--text-color);
+            }
+            button {
+            background: var(--text-color);
+            border-color: var(--text-color);
+            }
+        }
+        
+        // Micro-interaction animations
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        &:focus-within button svg {
+            animation: pulse 1.5s infinite;
+        }
+    }
 
     &__hamburger {
         justify-self: start;
