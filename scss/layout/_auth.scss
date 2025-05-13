@@ -2,7 +2,6 @@
 
 .page-title-wrapper {
     border-top: 1px solid rgb(231, 231, 231);
-    background: var(--body-fill-color);
     padding: 3.75rem 0;
     text-align: center;
     h1 {
@@ -14,7 +13,7 @@
 
 .auth-container {
     max-width: 90%;
-    margin: u.rem(40) auto 0;
+    margin: 0 auto u.rem(40) auto;
     .block-title {
         font-size: u.rem(22);
         line-height: 1.2;
@@ -24,6 +23,7 @@
     .block-note {
         font-size: u.rem(12);
         margin: 0 0 u.rem(12);
+        color: var(--icon-color);
     }
 
     .form-fieldset {
@@ -50,6 +50,7 @@
     .form-actions {
         .forgot-password {
             font-size: u.rem(13);
+            font-weight: 500;
             line-height: 21px;
             text-decoration: none;
             color: var(--text-color)
@@ -125,7 +126,6 @@
         margin-top: u.rem(8);
         margin-bottom: u.rem(8);
         font-size: u.rem(10);
-        height: u.rem(20);
     }
 }
 
