@@ -7,12 +7,8 @@ export const loginSchema = Joi.object({
       "string.empty": "Email is required"
     }),
     password: Joi.string()
-      .min(8)
-      .pattern(/^(?=.*[A-Z])(?=.*[0-9]).*$/) // At least one uppercase letter and one number
       .required()
       .messages({
-        "string.min": "Password must be at least 8 characters",
-        "string.pattern.base": "Password must contain at least 1 uppercase letter and 1 number",
         'any.required': 'Password is required',
         "string.empty": "Password is required"
       })

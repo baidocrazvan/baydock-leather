@@ -492,12 +492,6 @@ const validateLoginInputs = () => {
   if (passwordValue === "") {
     setError(password, "Password is required");
     isValid = false;
-  } else if (passwordValue.length < 8 ) {
-    setError(password, "Password must be atleast 8 characters long");
-    isValid = false;
-  } else if (!isValidPassword(passwordValue)) {
-    setError(password, "Password must contain at least one uppercase letter and atleast one number");
-    isValid = false;
   } else {
     setSuccess(password);
   }
@@ -530,7 +524,7 @@ const validateRegisterInputs = () => {
     setError(password, "Password must be atleast 8 characters long");
     isValid = false;
   } else if (!isValidPassword(passwordValue)) {
-    setError(password, "Password must contain at least one uppercase letter and atleast one number");
+    setError(password, "Password must contain an uppercase and a number");
     isValid = false;
   } else {
     setSuccess(password);
