@@ -11,13 +11,19 @@ router.get("/", async (req, res) => {
     try {
       let cartItems = [];
       let cartTotal = 0;
+      let cartMessage = null;
 
       if (req.isAuthenticated()) {
         // Authenticated user: Fetch cart from database
         const userId = req.user.id;
-        const { items, total } = await getCartData(req.user.id);
-        cartItems = items;
-        cartTotal = total;
+        const result = await getCartData(userId);
+        cartItems = result.items;
+        cartTotal = result.total;
+
+        if (result.message) {
+          cartMessage = result.message;
+        } 
+
       } else {
         // Guest user: fetch cart from session
         req.session.cart = req.session.cart || [];
@@ -38,10 +44,12 @@ router.get("/", async (req, res) => {
         }
         cartTotal = cartTotal.toFixed(2);
       }
+
       return res.render("cart/cart.ejs", {
           user: req.user,
           cartItems,
-          cartTotal
+          cartTotal,
+          cartMessage
       })
 
         

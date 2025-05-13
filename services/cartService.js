@@ -8,6 +8,7 @@ export function validateQuantity(quantity) {
 
 // Fetch all products from user's cart in order of latest added
 export async function getCartData(userId) {
+    const client = await db.connect();
     const query = 
         `SELECT 
         p.id,
@@ -23,20 +24,73 @@ export async function getCartData(userId) {
         ORDER BY c.created_at DESC`
 
     try {
-        const cartItems = await db.query(query, [userId]);
-        const cartTotal = cartItems.rows.reduce(
-            (sum, item) => sum + parseFloat(item.total_price),
+        await client.query("BEGIN");
+        const cartItems = await client.query(query, [userId]);
+
+        let removedItems = 0;
+        let adjustedItems = 0;
+
+         // Process each item
+        for (const item of cartItems.rows) {
+            if (item.stock <= 0) {
+                // Remove items from cart if they are out of stock
+                await client.query(
+                    `DELETE FROM carts 
+                     WHERE user_id = $1 AND product_id = $2`,
+                    [userId, item.id]
+                );
+                removedItems++;
+            } 
+            else if (item.quantity > item.stock) {
+                // Adjust quantity if stock is insufficient but exists
+                await client.query(
+                    `UPDATE carts SET quantity = $1 
+                     WHERE user_id = $2 AND product_id = $3`,
+                    [item.stock, userId, item.id]
+                );
+                adjustedItems++;
+            }
+        }
+
+        await client.query("COMMIT");
+
+        // Filter out removed items 
+        const validatedItems = cartItems.rows
+            .filter(item => item.stock > 0)
+            .map(item => ({
+                ...item,
+                quantity: Math.min(item.quantity, item.stock),
+            }));
+
+        // Calculate cart total
+        const cartTotal = validatedItems.reduce(
+            (sum, item) => sum + (item.price * item.quantity),
             0
         ).toFixed(2);
+
+        // Generate message
+        let message = null;
+        if (removedItems > 0 && adjustedItems > 0) {
+            message = `${removedItems} items removed and ${adjustedItems} quantities adjusted due to stock changes`;
+        } else if (removedItems > 0) {
+            message = `${removedItems} items removed because they are out of stock`;
+        } else if (adjustedItems > 0) {
+            message = `${adjustedItems} item quantities adjusted because of stock unavailability`;
+        }
+
         
         return {
-            items: cartItems.rows,
-            total: cartTotal
+            items: validatedItems,
+            total: cartTotal,
+            message
         };
 
     } catch(err) {
-        console.error("Error getting cart products from database:", err);
-        throw new Error("Failed to fetch cart items");
+        await client.query('ROLLBACK');
+        console.error("Cart validation error:", err);
+        throw err; 
+    } finally {
+        client.release();
     }
     
 }
@@ -117,7 +171,7 @@ export async function updateCartQuantity(userId, productId, newQuantity) {
             throw new Error("Product not found in cart.");
             }
 
-            // Check stock (assuming `stock` is available in the cart query)
+            // Check stock 
         const stock = cartItem.rows[0].stock;
         if (newQuantity > stock) {
             throw new Error(`Only  ${stock} units available in stock.`);

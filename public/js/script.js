@@ -384,6 +384,26 @@ document.addEventListener("DOMContentLoaded", function() {
   });
 });
 
+// Cart notification  
+document.addEventListener("DOMContentLoaded", () => {
+  const notification = document.getElementById("cartNotification");
+  const closeBtn = notification?.querySelector(".cart-notification__close");
+  
+  // Manual dismiss
+  closeBtn?.addEventListener("click", () => {
+    notification.classList.add("hide");
+    setTimeout(() => notification.remove(), 300);
+  });
+  
+  // Auto-dismiss
+  if (notification) {
+    setTimeout(() => {
+      notification.classList.add("hide");
+      setTimeout(() => notification.remove(), 300);
+    }, 5000);
+  }
+});
+
 // =====================
 // FORM VALIDATION
 // =====================
