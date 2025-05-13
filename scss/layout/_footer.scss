@@ -1,13 +1,13 @@
 @use "../util/" as u;
 
 .footer {
-    border-top: 1px solid rgb(231, 231, 231);
     padding: u.rem(24) 0;
-    background-color: var(--body-fill-color);
+    background-color: var(--text-color);
 
     .container {
         max-width: 90%;
         margin: auto;
+        color: var(--background-color);
 
          .row {
             display: flex;
@@ -15,7 +15,7 @@
 
             .footer-col {
                 width: 50%;
-                padding: 0 15px;
+                padding: 0 u.rem(15);
                 margin-bottom: u.rem(30);
             
                 & h4 {
@@ -29,7 +29,7 @@
                     position: absolute;
                     left: 0;
                     bottom: - u.rem(10);
-                    background-color: var(--text-color);
+                    background-color: var(--background-color);
                     height: u.rem(2);
                     box-sizing: border-box;
                     width: u.rem(50);
@@ -50,6 +50,7 @@
                         text-decoration: none;
                         transition: all 0.3s ease;
                         display: inline-block;
+                        color: var(--background-color);
                     }
 
                     & li a:hover {
