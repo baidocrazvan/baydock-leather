@@ -27,8 +27,8 @@
 
           <div class="product-main__add-to-cart">
             <form action="/cart/<%=product.id%>" method="POST" id="size-select">
-                <input type="hidden" name="productId" value="<%= product.id %>">
 
+              <% if (['belts'].includes(product.category)) { %>
                 <div class="size-form">
                   <label for="belt-size">Size:</label>
                   <select id="belt-size" name="belt-size" class="size-control" required>
@@ -44,6 +44,20 @@
                     <option value="120">120cm</option>
                   </select>
                 </div>
+              <% } else if (['watchstraps'].includes(product.category)) { %>
+                <div class="size-form">
+                  <label for="watchstrap-size">Size:</label>
+                  <select id="watchstrap-size" name="watchstrap-size" class="size-control" required>
+                    <option value="" disabled selected>Choose a width</option>
+                    <option value="14">14mm</option>
+                    <option value="16">16mm</option>
+                    <option value="18">18mm</option>
+                    <option value="20">20mm</option>
+                    <option value="22">22mm</option>
+                  </select>
+                </div>
+              <% } %>
+
 
                 <div class="quantity-selector">
                     <button type="button" class="quantity-btn minus">-</button>
@@ -102,10 +116,21 @@
 
           <div class="panel" id="tab-sizes">
             <h2>Available sizes</h2>
+            <% if (['belts'].includes(product.category)) { %>
             <ul>
               <li>It is made to order, according to the actual size of your waist.</li>
               <li>Measure your pant's waist size and that's the size you need. If you are in between sizes, just round up.</li>
             </ul>
+            <% } else if (['watchstraps'].includes(product.category)) { %>
+              <ul>
+                <li>It is made to order, according to the width of your watch.</li>
+                <li>Measure your watch's strap width and select size accordingly.</li>
+              </ul>
+            <% } else { %>
+              <ul>
+                  <li>The product is made to order, but for this item there are no sizes.</li>
+              </ul>
+            <% } %>
           </div>
           
           <div class="panel" id="tab-delivery-return">
@@ -132,13 +157,19 @@
           
           <div class="panel" id="tab-leather">
             <h2>Leather</h2>
-            <p>Each belt is made from a single layer of leather being completely unique.</p>
+            <% if (['belts'].includes(product.category)) { %>
+              <p>Each belt is made from a single layer of leather being completely unique.</p>
+            <% } else { %>
+              <p> Each products is made with vegetable tanned full grain leather.</p>
+              <% } %>
             <p>Vegetable tanned leather is made through a special process that harnesses the power of natural tannins.</p>
+            <p>Full grain is the top layer of the hide, right beneath the hair. Full-grain leather gets its name because it contains the entire grain. This leather is of the most excellent grade. This type of leather looks incredibly authentic because it hasn't been finished or split.</p>
+            <p>As this leather ages, it acquires a unique patina. To put it another way, the more you use it, the more lovely it becomes. This quality is one of the reasons why full-grain leather is so well-liked. </p>
           </div>
           
           <div class="panel" id="tab-metal-accessories">
             <h2>Metal accessories</h2>
-            <p>The accessories are made Britania alloy, also known as "Lead Free Pewter" which is one of the best alloys according to European Norm no 1907/2000 regarding the content of Lead, Cadmium and Nickel in jewelry.</p>
+            <p>All metal accessories are made out of Britania alloy, also known as "Lead Free Pewter" which is one of the best alloys according to European Norm no 1907/2000 regarding the content of Lead, Cadmium and Nickel in jewelry.</p>
             <p>The metal accessories that come into direct contact with the skin are covered with a layer of varnish painted in an electrostatic field. They don't oxidize, rust or change color over time.</p>
           </div>
           
@@ -146,14 +177,5 @@
       </div>
 </main>
 
-    
-
-        
-
-        
-
-        
-
-    
 
 <%- include("../partials/footer"); %>
