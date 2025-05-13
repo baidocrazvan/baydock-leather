@@ -135,19 +135,35 @@
     .quantity-selector {
       display: inline-flex;
       align-items: center;
-      gap: 0.5rem;
       margin: 1rem 0;
     
       .quantity-btn {
         width: u.rem(32);
         height: u.rem(40);
         background: #f0f0f0;
-        border: 1px solid #ddd;
-        border-radius: 4px;
+        border: none;
+        
+        
         font-size: 1rem;
         cursor: pointer;
         transition: background 0.2s;
-    
+        
+        &.minus {
+          border-top-left-radius: 8px;
+          border-bottom-left-radius: 8px;
+          border-top: 1px solid #ddd;
+          border-bottom: 1px solid #ddd;
+          border-left: 1px solid #ddd;
+        }
+
+        &.plus {
+          border-top-right-radius: 8px;
+          border-bottom-right-radius: 8px;
+          border-top: 1px solid #ddd;
+          border-bottom: 1px solid #ddd;
+          border-right: 1px solid #ddd;
+        }
+
         &:hover {
           background: #e0e0e0;
         }
