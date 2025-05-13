@@ -83,6 +83,19 @@
       label {
         font-weight: 500;
       }
+      .out-of-stock-message {
+        padding: 1.25rem;
+        text-align: center;
+        background: #f8f8f8;
+        border: 1px solid #e0e0e0;
+        border-radius: 4px;
+        color: #666;
+        font-size: 1rem;
+        font-weight: 500;
+        position: relative;
+        margin-top: 1rem;
+      }
+
       .size-control {
         width: 100%;
         margin: u.rem(8) 0;

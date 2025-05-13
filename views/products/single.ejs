@@ -27,54 +27,60 @@
           </div>
 
           <div class="product-main__add-to-cart">
-            <form action="/cart/<%=product.id%>" method="POST" id="size-select">
+             <% if (product.stock <= 0) { %>
+                <div class="out-of-stock-message">
+                  <p>This item is temporarily out of stock</p>
+                </div>
+            <% } else { %>
+              <form action="/cart/<%=product.id%>" method="POST" id="size-select">
 
-              <% if (['belts'].includes(product.category)) { %>
-                <div class="size-form">
-                  <label for="belt-size">Size:</label>
-                  <select id="belt-size" name="belt-size" class="size-control" required>
-                    <option value="" disabled selected>Choose a size</option>
-                    <option value="80">80cm</option>
-                    <option value="85">85cm</option>
-                    <option value="90">90cm</option>
-                    <option value="95">95cm</option>
-                    <option value="100">100cm</option>
-                    <option value="105">105cm</option>
-                    <option value="110">110cm</option>
-                    <option value="115">115cm</option>
-                    <option value="120">120cm</option>
-                  </select>
-                </div>
-              <% } else if (['watchstraps'].includes(product.category)) { %>
-                <div class="size-form">
-                  <label for="watchstrap-size">Size:</label>
-                  <select id="watchstrap-size" name="watchstrap-size" class="size-control" required>
-                    <option value="" disabled selected>Choose a width</option>
-                    <option value="14">14mm</option>
-                    <option value="16">16mm</option>
-                    <option value="18">18mm</option>
-                    <option value="20">20mm</option>
-                    <option value="22">22mm</option>
-                  </select>
-                </div>
+                <% if (['belts'].includes(product.category)) { %>
+                  <div class="size-form">
+                    <label for="belt-size">Size:</label>
+                    <select id="belt-size" name="belt-size" class="size-control" required>
+                      <option value="" disabled selected>Choose a size</option>
+                      <option value="80">80cm</option>
+                      <option value="85">85cm</option>
+                      <option value="90">90cm</option>
+                      <option value="95">95cm</option>
+                      <option value="100">100cm</option>
+                      <option value="105">105cm</option>
+                      <option value="110">110cm</option>
+                      <option value="115">115cm</option>
+                      <option value="120">120cm</option>
+                    </select>
+                  </div>
+                <% } else if (['watchstraps'].includes(product.category)) { %>
+                  <div class="size-form">
+                    <label for="watchstrap-size">Size:</label>
+                    <select id="watchstrap-size" name="watchstrap-size" class="size-control" required>
+                      <option value="" disabled selected>Choose a width</option>
+                      <option value="14">14mm</option>
+                      <option value="16">16mm</option>
+                      <option value="18">18mm</option>
+                      <option value="20">20mm</option>
+                      <option value="22">22mm</option>
+                    </select>
+                  </div>
+                <% } %>
+
+                  
+                  <div class="quantity-selector">
+                      <button type="button" class="quantity-btn minus">-</button>
+                      <input 
+                      type="number"
+                      name="quantity"
+                      class="quantity-input"
+                      value="1"
+                      min="1"
+                      max="<%= product.stock || 10 %>" 
+                      >
+                      <button type="button" class="quantity-btn plus">+</button>
+                  </div>
+
+                  <button type="submit" class="add-to-cart-btn">ADD TO CART</button>
+              </form>
               <% } %>
-
-
-                <div class="quantity-selector">
-                    <button type="button" class="quantity-btn minus">-</button>
-                    <input 
-                    type="number"
-                    name="quantity"
-                    class="quantity-input"
-                    value="1"
-                    min="1"
-                    max="<%= product.stock || 10 %>" 
-                    >
-                    <button type="button" class="quantity-btn plus">+</button>
-                </div>
-
-                <button type="submit" class="add-to-cart-btn">ADD TO CART</button>
-            </form>
           </div>
 
           <div class="product-main__category">
