@@ -13,6 +13,7 @@ CREATE TABLE products (
   id SERIAL PRIMARY KEY,
   name VARCHAR(100) UNIQUE NOT NULL,
   description TEXT NOT NULL,
+  detailed_description TEXT,
   price NUMERIC(6,2) NOT NULL,
   category VARCHAR(50) NOT NULL,
   stock INTEGER CHECK (stock >= 0) NOT NULL, -- CHECK constraint because stock cannot be negative --

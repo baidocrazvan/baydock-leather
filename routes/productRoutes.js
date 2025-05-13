@@ -102,15 +102,15 @@ router.post("/", authenticate, isAdmin, upload.fields([
   ]), async (req, res) => {
     
     try {
-      const { name, description, price, category, stock } = req.body;
+      const { name, description, detailed_description, price, category, stock } = req.body;
       const thumbnail = `/images/products/${req.files.thumbnail[0].filename}`; // Thumbnail path
       const images = req.files.images.map(file => `/images/products/${file.filename}`); // Array of images paths
       
       // Save the product to db
       await db.query(`
-        INSERT INTO products (name, description, price, category, stock, images, thumbnail)
-        VALUES ($1, $2, $3, $4, $5, $6, $7)`,
-        [ name, description, price, category, stock, images, thumbnail]);
+        INSERT INTO products (name, description, detailed_description, price, category, stock, images, thumbnail)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
+        [ name, description, detailed_description, price, category, stock, images, thumbnail]);
 
       req.flash("success" , "Product added successfully");
       return res.redirect("/admin/dashboard");
@@ -130,7 +130,7 @@ router.patch("/:id", authenticate, isAdmin, upload.fields([
   ]), async (req, res) => {
   
     const id = req.params.id;
-    const { name, description, price, category, stock } = req.body;
+    const { name, description, detailed_description, price, category, stock } = req.body;
     const fields = Object.keys(req.body)
     
     // If photos were uploaded for a patch, add them to the query

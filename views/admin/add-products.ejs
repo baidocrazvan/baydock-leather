@@ -8,8 +8,10 @@
             <input type="text" name="name" required >
             <label for="description">Product description:</label>
             <input type="text" name="description" required >
+            <label for="detailed">Detailed Description:</label>
+            <textarea name="detailed_description" rows="5" required></textarea>
             <label for="price">Price:</label>
-            <input type="number" name="price" min="1" required >
+            <input type="number" name="price" min="0.01" step="0.01" required >
             <label for="category">Category:</label>
             <input type="text" name="category" required>
             <label for="stock">Stock number:</label>
