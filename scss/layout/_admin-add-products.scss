@@ -66,6 +66,10 @@
     }
   }
 
+  select {
+    height: u.rem(44);
+  }
+
   label {
     display: block;
     margin-bottom: 0.25rem;

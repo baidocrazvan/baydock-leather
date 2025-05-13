@@ -106,6 +106,12 @@ router.post("/", authenticate, isAdmin, upload.fields([
       const thumbnail = `/images/products/${req.files.thumbnail[0].filename}`; // Thumbnail path
       const images = req.files.images.map(file => `/images/products/${file.filename}`); // Array of images paths
       
+      // Check if category value is valid
+      const validCategories = ['belts', 'wallets', 'bags', 'watchstraps', 'minimalist', 'accessories'];
+      if (!validCategories.includes(category)) {
+        req.flash('error', 'Invalid product category');
+        return res.redirect("/admin/add-product");
+      }
       // Save the product to db
       await db.query(`
         INSERT INTO products (name, description, detailed_description, price, category, stock, images, thumbnail)
