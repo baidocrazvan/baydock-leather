@@ -245,7 +245,7 @@ document.addEventListener("DOMContentLoaded", function() {
   )};    
 });
 
-// Script for products price slider
+// Script for products price filter and slider
 document.addEventListener("DOMContentLoaded", function() {
   const filterForm = document.querySelector(".price-filter");
   const minThumb = document.querySelector(".min-thumb");
@@ -262,14 +262,14 @@ document.addEventListener("DOMContentLoaded", function() {
       const maxVal = parseInt(maxThumb.value);
       
       // Prevent sliders crossing
-      if (minVal > maxVal - 10) {
-        minThumb.value = maxVal - 10;
+      if (minVal > maxVal - 5) {
+        minThumb.value = maxVal - 5;
         return;
       }
       
       // Update track position
-      track.style.left = `${(minVal / 1000) * 100}%`;
-      track.style.right = `${100 - (maxVal / 1000) * 100}%`;
+      track.style.left = `${(minVal / 500) * 100}%`;
+      track.style.right = `${100 - (maxVal / 500) * 100}%`;
       
       // Update price displays
       minPriceDisplay.textContent = `$${minVal}`;
