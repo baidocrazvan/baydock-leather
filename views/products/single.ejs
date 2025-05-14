@@ -26,7 +26,7 @@
               <p><%= product.description %></p>    
           </div>
 
-          <% if (adminPreview) { %>
+          <% if (locals.adminPreview) { %>
             <div class="admin-alert">
               This product is inactive (only visible to admins)
             </div>
