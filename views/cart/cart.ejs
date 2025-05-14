@@ -17,52 +17,52 @@
         <% } %>
 
         <div class="cart-contents">
-            <div class="main-display-wrapper">
-                <div class="cart-columns">
-                    <p class="title-column">PRODUCT</p>
-                    <p class="quantity-column">QUANTITY</p>
-                </div>
-                
+            
                 <% if (!cartItems.length) { %>
                     <p>Your cart is currently empty.</p>
                 <% } else { %>
-                    <% cartItems.forEach(item => { %>
-                        
-                        <div class="cart-item">
-                            <div class="cart-item__thumbnail">
-                                <img src="<%= item.thumbnail %>">
-                            </div>
-                            <div class="cart-item__content">
-                                <a class="item-title" href="/products/<%= item.id %>"><%= item.name %></a>
-                                <p class="item-price"><%= item.quantity %> x <span><%= item.price %>€</span></p>
-
-                                <form action="/cart/delete/<%= item.id %>?_method=DELETE" method="POST" class="item-delete">
-                                    <input type="hidden" name="productId" value="<%= item.id %>">
-                                    <button type="submit" class="delete-from-cart-btn">Delete item from cart</button>
-                                </form>
-                            </div>
-                            <div class="cart-item__quantity">
-                                <form action="/cart?_method=PATCH" method="POST" class="item-update">
-                                    <input type="hidden" name="productId" value="<%= item.id %>">
-                        
-                                    <div class="quantity-selector">
-                                        <button type="button" class="quantity-btn minus">-</button>
-                                        <input 
-                                        type="number"
-                                        name="quantity"
-                                        class="quantity-input"
-                                        value="<%= item.quantity %>"
-                                        min="1"
-                                        max="<%= item.stock || 10 %>" 
-                                        >
-                                        <button type="button" class="quantity-btn plus">+</button>
-                                    </div>
-                                    
-                                    <button type="submit" class="add-to-cart-btn">Update cart</button>
-                                </form>
-                            </div>
+                    <div class="main-display-wrapper">
+                        <div class="cart-columns">
+                            <p class="title-column">PRODUCT</p>
+                            <p class="quantity-column">QUANTITY</p>
                         </div>
-                <% }) %>
+                        <% cartItems.forEach(item => { %>
+                            
+                            <div class="cart-item">
+                                <div class="cart-item__thumbnail">
+                                    <img src="<%= item.thumbnail %>">
+                                </div>
+                                <div class="cart-item__content">
+                                    <a class="item-title" href="/products/<%= item.id %>"><%= item.name %></a>
+                                    <p class="item-price"><%= item.quantity %> x <span><%= item.price %>€</span></p>
+
+                                    <form action="/cart/delete/<%= item.id %>?_method=DELETE" method="POST" class="item-delete">
+                                        <input type="hidden" name="productId" value="<%= item.id %>">
+                                        <button type="submit" class="delete-from-cart-btn">Delete item from cart</button>
+                                    </form>
+                                </div>
+                                <div class="cart-item__quantity">
+                                    <form action="/cart?_method=PATCH" method="POST" class="item-update">
+                                        <input type="hidden" name="productId" value="<%= item.id %>">
+                            
+                                        <div class="quantity-selector">
+                                            <button type="button" class="quantity-btn minus">-</button>
+                                            <input 
+                                            type="number"
+                                            name="quantity"
+                                            class="quantity-input"
+                                            value="<%= item.quantity %>"
+                                            min="1"
+                                            max="<%= item.stock || 10 %>" 
+                                            >
+                                            <button type="button" class="quantity-btn plus">+</button>
+                                        </div>
+                                        
+                                        <button type="submit" class="add-to-cart-btn">Update cart</button>
+                                    </form>
+                                </div>
+                            </div>
+                        <% }) %>
                         <div class="cart-actions">
                             <button class="continue-shopping-btn"><a href="/products/">← CONTINUE SHOPPING</a></button>
                             <form action="/cart/delete?_method=DELETE" method="POST" class="clear-cart">
@@ -70,7 +70,7 @@
                             </form>
                         </div>
                     
-            </div>
+                    </div>
 
             <div class="secondary-display-wrapper">
                 <div class="cart-totals">
