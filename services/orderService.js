@@ -12,13 +12,15 @@ export async function calculateTotalPrice(userId) {
     return result.rows[0].total_price;
 }
 
-// Get a user's last 5 orders
-export async function getOrdersForUser(userId) {
+// Get a user's lastest 5 orders
+export async function getRecentUserOrders(userId) {
     const result = await db.query(
         `SELECT o.id, o.total_price, o.status, o.created_at, sa.first_name, sa.last_name 
         FROM orders o
         JOIN shipping_addresses sa ON o.billing_address_id = sa.id
-        WHERE o.user_id = $1`,
+        WHERE o.user_id = $1
+        ORDER BY o.created_at DESC
+        LIMIT 5`,
         [userId]
     );
     return result.rows;

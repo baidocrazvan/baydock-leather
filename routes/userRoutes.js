@@ -2,7 +2,7 @@ import express from "express";
 import db from "../db.js";
 import { authenticate, isAdmin } from "../middleware/middleware.js";
 import { getActiveUserAddresses } from "../services/addressService.js";
-import { getOrdersForUser } from "../services/orderService.js";
+import { getRecentUserOrders } from "../services/orderService.js";
 
 const router = express.Router();
 
@@ -10,7 +10,7 @@ router.get("/account", authenticate, async (req, res) => {
     try {
         const userId = req.user.id
         const addresses = await getActiveUserAddresses(userId);
-        const orders = await getOrdersForUser(userId);
+        const orders = await getRecentUserOrders(userId);
 
         return res.render("user/account.ejs", {
             user: req.user,
