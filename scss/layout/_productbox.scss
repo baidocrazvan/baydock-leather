@@ -146,7 +146,7 @@
                 transition: background 0.2s;
           
                 &:hover {
-                  background: darken(#666666, 10%);
+                  background: var(--text-color);
                 }
               }
             }
