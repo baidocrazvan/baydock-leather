@@ -5,33 +5,43 @@
         <h1>Partially or fully update a product:</h2>
     <form action="/products/<%= productId %>?_method=PATCH" method="post" enctype="multipart/form-data">
         <label for="name">Product name:</label>
-        <input type="text" name="name" placeholder="Product Name" value="<%= product.name %>" required >
+        <input id="name" type="text" name="name" placeholder="Product Name" value="<%= product.name %>" required >
         <label for="description">Product description:</label>
-        <input type="text" name="description" value="<%= product.description %>" required >
+        <input id="description" type="text" name="description" value="<%= product.description %>" required >
         <label for="price">Price:</label>
-        <input type="number" name="price" value="<%= product.price %>" required >
+        <input id="price" type="number" name="price" value="<%= product.price %>" min="0.01" step="0.01" required >
         <label for="category">Category:</label>
-        <input type="text" name="category" value="<%= product.category %>" required>
+        <select id="category" name="category" required>
+            <option value="" disabled selected>Choose a product category</option>
+            <option value="belts">Belts</option>
+            <option value="wallets">Wallets</option>
+            <option value="bags">Bags</option>
+            <option value="watchstraps">Watchstraps</option>
+            <option value="minimalist">Minimalist</option>
+            <option value="accessories">Accessories</option>
+        </select>
         <label for="stock">Stock number:</label>
-        <input type="number" name="stock" value="<%= product.stock %>" required >
+        <input id="stock" type="number" name="stock" value="<%= product.stock %>" required >
         <label for="thumbnail">Thumbnail:</label>
-        <input type="file" name="thumbnail" accept="image/*" >
+        <input id="thumbnail" type="file" name="thumbnail" accept="image/*" >
         <label for="images">Product Images: (Multiple Images, up to 10)</label>
-        <input type="file" name="images" accept="image/*" >
+        <input id="images" type="file" name="images" accept="image/*" >
         <button type="submit">Modify product</button>
     </form>
 
     </div>
-    <% if (product.is_active) { %> 
-        <form action="/products/<%= productId %>?_method=DELETE" method="post">
-            <button type="submit">Deactivate products</button>
-        </form>
-    <% } else { %>
-        <form action="/products/<%= productId %>/reactivate" method="post">
-            <button type="submit">Activate products</button>
-        </form>
-    <% } %>
-    
+
+    <div class="product-activation">
+        <% if (product.is_active) { %> 
+            <form action="/products/<%= productId %>?_method=DELETE" method="post">
+                <button type="submit">Deactivate product</button>
+            </form>
+        <% } else { %>
+            <form action="/products/<%= productId %>/reactivate" method="post">
+                <button type="submit">Activate product</button>
+            </form>
+        <% } %>
+    </div>
 </main>
 
 <%- include("../partials/admin-footer.ejs"); %>
