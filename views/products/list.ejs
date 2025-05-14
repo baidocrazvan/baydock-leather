@@ -101,6 +101,9 @@
                 <div class="product__image">
                     <a href="/products/<%= product.id %>">
                     <img src="<%= product.thumbnail %>">
+                        <% if (product.stock <= 0) { %>
+                            <div class="product__stock-badge">Out of Stock</div>
+                        <% } %>
                     </a>
                 </div>
 
