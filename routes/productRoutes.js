@@ -48,12 +48,13 @@ router.get("/", async (req, res) => {
             : "Oops. Seems like there are no items to display yet. Please come back later."
       });
     }
-
+     console.log("Received query params:", req.query);
     res.render("products/list.ejs", {
       products: products,
       currentCategory: category,
       currentSort: sort,
       currentOrder: order,
+      search: search,
       min_price: min_price || 0,
       max_price: max_price || 1000
     });

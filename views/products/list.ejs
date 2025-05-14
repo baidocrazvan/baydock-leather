@@ -74,6 +74,20 @@
             </nav>
 
             <form method="get" action="" class="price-filter">
+                <!-- Preserve existing search term -->
+                <% if (typeof search !== 'undefined') { %>
+                    <input type="hidden" name="search" value="<%= search %>">
+                <% } %>
+
+                 <!-- Preserve existing sort parameters -->
+                <% if (typeof currentSort !== 'undefined') { %>
+                    <input type="hidden" name="sort" value="<%= currentSort %>">
+                <% } %>
+                <% if (typeof currentOrder !== 'undefined') { %>
+                    <input type="hidden" name="order" value="<%= currentOrder %>">
+                <% } %>
+
+                
                 <h3 class="filter-title">Filter by price</h3>
                 <div class="price-slider">
                     <div class="slider-track" 

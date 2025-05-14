@@ -73,10 +73,10 @@ export async function getProductsBySearch(search, sort, order = 'asc', minPrice,
     try {
         const searchTerm = `%${search}%`;
         let query = `SELECT * FROM products 
-        WHERE name ILIKE $1 OR description ILIKE $1 OR category ILIKE $1
+        WHERE (name ILIKE $1 OR description ILIKE $1 OR category ILIKE $1)
         AND is_active = TRUE`;
         let params = [searchTerm];
-        let paramCount = 1;
+        let paramCount = 2;
 
         if (minPrice && maxPrice) {
             query += ` AND price >= $${paramCount++} AND price <= $${paramCount++}`;
@@ -90,7 +90,7 @@ export async function getProductsBySearch(search, sort, order = 'asc', minPrice,
             query += ` ORDER BY ${sort} ${order === 'desc' ? 'DESC' : 'ASC'}`;
         }
 
-        const result = await db.query(query, [params])
+        const result = await db.query(query, params)
         console.log("search query: ", query);
         console.log("params: ", params);
         console.log("paramcount: ", paramCount);
