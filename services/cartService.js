@@ -29,17 +29,19 @@ export async function getCartData(userId) {
 
         let removedItems = 0;
         let adjustedItems = 0;
+        let deactivatedItems = 0;
 
          // Process each item
         for (const item of cartItems.rows) {
-            if (item.stock <= 0) {
-                // Remove items from cart if they are out of stock
+            if (!item.is_active || item.stock <= 0) {
+                // Remove items from cart if they are deactivated or out of stock
                 await client.query(
                     `DELETE FROM carts 
                      WHERE user_id = $1 AND product_id = $2`,
                     [userId, item.id]
                 );
-                removedItems++;
+                removedItems++;;
+                if (!item.is_active) deactivatedItems++;
             } 
             else if (item.quantity > item.stock) {
                 // Adjust quantity if stock is insufficient but exists
@@ -56,7 +58,7 @@ export async function getCartData(userId) {
 
         // Filter out removed items 
         const validatedItems = cartItems.rows
-            .filter(item => item.stock > 0)
+            .filter(item => item.is_active && item.stock > 0)
             .map(item => ({
                 ...item,
                 quantity: Math.min(item.quantity, item.stock),
@@ -70,15 +72,21 @@ export async function getCartData(userId) {
 
         // Generate message
         let message = null;
-        if (removedItems > 0 && adjustedItems > 0) {
-            message = `${removedItems} items removed and ${adjustedItems} quantities adjusted due to stock changes`;
-        } else if (removedItems > 0) {
-            message = `${removedItems} items removed because they are out of stock`;
-        } else if (adjustedItems > 0) {
-            message = `${adjustedItems} item quantities adjusted because of stock unavailability`;
+        let messages = [];
+        if (removedItems > 0 || adjustedItems > 0) {
+            if (deactivatedItems > 0) {
+                messages.push(`${deactivatedItems} ${deactivatedItems === 1 ? 'item' : 'items'} removed because they were deactivated`);
+            }
+            if (removedItems - deactivatedItems > 0) {
+                messages.push(`${removedItems - deactivatedItems} ${removedItems - deactivatedItems === 1 ? 'item' : 'items'} removed because they are out of stock`);
+            }
+            if (adjustedItems > 0) {
+                messages.push(`${adjustedItems} ${adjustedItems === 1 ? 'item quantity' : 'item quantities'} adjusted because of limited stock`);
+            }
+            message = messages.join(' and ');
         }
 
-        
+        message = messages.join(" and ");
         return {
             items: validatedItems,
             total: cartTotal,
