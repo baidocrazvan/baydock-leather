@@ -27,9 +27,17 @@
     <% if (products.length > 0) { %>
       <div class="products-grid">
         <% products.forEach(product => { %>
-          <div class="product-card">
+          <div class="product-card <%= !product.is_active ? 'inactive-product' : '' %>">
+
+            <% if (!product.is_active) { %>
+              <div class="inactive-badge">INACTIVE</div>
+            <% } %>
+
             <div class="product-card__image">
               <img src="<%= product.thumbnail %>" alt="<%= product.name %>">
+              <% if (!product.is_active) { %>
+                <div class="image-overlay"></div>
+              <% } %>
             </div>
             
             <div class="product-card__content">
@@ -40,6 +48,12 @@
               </div>
               
               <div class="product-stats">
+                <div class="stat-item">
+                  <span class="stat-label">Status:</span>
+                  <span class="stat-value <%= product.is_active ? 'active-status' : 'inactive-status' %>">
+                    <%= product.is_active ? 'Active' : 'Inactive' %>
+                  </span>
+                </div>
                 <div class="stat-item">
                   <span class="stat-label">Price:</span>
                   <span class="stat-value">$<%= product.price %></span>

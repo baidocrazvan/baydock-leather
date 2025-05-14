@@ -26,6 +26,12 @@
               <p><%= product.description %></p>    
           </div>
 
+          <% if (adminPreview) { %>
+            <div class="admin-alert">
+              This product is inactive (only visible to admins)
+            </div>
+          <% } %>
+          
           <div class="product-main__add-to-cart">
              <% if (product.stock <= 0) { %>
                 <div class="out-of-stock-message">

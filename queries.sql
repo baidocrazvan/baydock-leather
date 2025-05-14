@@ -19,6 +19,7 @@ CREATE TABLE products (
   stock INTEGER CHECK (stock >= 0) NOT NULL, -- CHECK constraint because stock cannot be negative --
   images TEXT[] NOT NULL,
   thumbnail TEXT NOT NULL,
+  is_active BOOLEAN NOT NULL DEFAULT TRUE
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 

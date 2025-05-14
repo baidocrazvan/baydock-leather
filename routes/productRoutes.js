@@ -73,11 +73,18 @@ router.get("/:id", async (req, res) => {
     const id = req.params.id;
     const product = await getProductById(id);
 
-    if (!product) {
-      return res.status(404).render("error.ejs", {
-        error: "404",
-        message: "Product not found. It may have been removed or moved."
+    // If user is admin show the product page
+    if (req.user?.role === 'admin') {
+      return res.render("products/single.ejs", {
+        product: product,
+        adminPreview: !product.is_active
       });
+    }
+
+    // If product doesn't exist or is deactivated by admin
+    if (!product || !product.is_active) {
+      req.flash('error', 'This product is no longer available');
+      return res.redirect('/products');
     }
 
     res.render("products/single.ejs", {
@@ -191,15 +198,34 @@ router.patch("/:id", authenticate, isAdmin, upload.fields([
 router.delete("/:id", authenticate, isAdmin, async (req, res) => {
     const id = parseInt(req.params.id);
     try{
-        await db.query(`DELETE FROM products WHERE id = $1`, [id]);
-        req.flash("success", "Product deleted successfully");
-        return res.redirect('/admin/dashboard');
+        await db.query(
+            `UPDATE products SET is_active = FALSE WHERE id = $1`,
+            [id]
+        );
+        req.flash("success", "Product deactivated successfully");
+        return res.redirect('/admin/products');
     } catch(err) {
-        console.error("DELETE error deleting product:" , err);
-        req.flash("error", "Error deleting product");
-        res.redirect("/admin/dashboard");
+        console.error("Product deactivation error:" , err);
+        req.flash("error", "Error deactivating product");
+        res.redirect("/admin/products");
     }
-
 }); 
+
+// Re-activate a product
+router.post("/:id/reactivate", authenticate, isAdmin, async (req, res) => {
+    const id = parseInt(req.params.id);
+    try{
+      await db.query(
+          `UPDATE products SET is_active = TRUE WHERE id = $1`,
+          [id]
+      );
+      req.flash("success", "Product reactivated successfully");
+      res.redirect("/admin/products");
+    } catch(err) {
+        console.error("Product reactivation error:" , err);
+        req.flash("error", "Error reactivating product");
+        res.redirect("/admin/products");
+    }
+});
 
 export default router;

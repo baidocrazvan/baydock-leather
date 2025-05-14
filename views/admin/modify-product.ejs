@@ -20,7 +20,17 @@
         <input type="file" name="images" accept="image/*" >
         <button type="submit">Modify product</button>
     </form>
+
     </div>
+    <% if (product.is_active) { %> 
+        <form action="/products/<%= productId %>?_method=DELETE" method="post">
+            <button type="submit">Deactivate products</button>
+        </form>
+    <% } else { %>
+        <form action="/products/<%= productId %>/reactivate" method="post">
+            <button type="submit">Activate products</button>
+        </form>
+    <% } %>
     
 </main>
 

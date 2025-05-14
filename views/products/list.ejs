@@ -96,29 +96,31 @@
         <div class="products-box">
             
             <% products.forEach( product => { %>
-            <div class="product">
+                <% if (product.is_active) { %>
+                    <div class="product">
 
-                <div class="product__image">
-                    <a href="/products/<%= product.id %>">
-                    <img src="<%= product.thumbnail %>">
-                        <% if (product.stock <= 0) { %>
-                            <div class="product__stock-badge">Out of Stock</div>
-                        <% } %>
-                    </a>
-                </div>
+                        <div class="product__image">
+                            <a href="/products/<%= product.id %>">
+                            <img src="<%= product.thumbnail %>">
+                                <% if (product.stock <= 0) { %>
+                                    <div class="product__stock-badge">Out of Stock</div>
+                                <% } %>
+                            </a>
+                        </div>
 
-                <div class="product__text-box">
+                        <div class="product__text-box">
 
-                    <div class="product__title">
-                    <a href="/products/<%=product.id%>"><%= product.name %></a>
+                            <div class="product__title">
+                            <a href="/products/<%=product.id%>"><%= product.name %></a>
+                            </div>
+
+                            <div class="product__price">
+                                <%= product.price %>$
+                            </div>
+
+                        </div>
                     </div>
-
-                    <div class="product__price">
-                        <%= product.price %>$
-                    </div>
-
-                </div>
-            </div>
+                <% } %>
             <% }) %>
 
         </div>
