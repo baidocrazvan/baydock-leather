@@ -34,7 +34,7 @@
                             </div>
                             <div class="cart-item__content">
                                 <a class="item-title" href="/products/<%= item.id %>"><%= item.name %></a>
-                                <p class="item-price"><%= item.quantity %> x <span><%= item.price %>$</span></p>
+                                <p class="item-price"><%= item.quantity %> x <span><%= item.price %>€</span></p>
 
                                 <form action="/cart/delete/<%= item.id %>?_method=DELETE" method="POST" class="item-delete">
                                     <input type="hidden" name="productId" value="<%= item.id %>">
@@ -88,13 +88,13 @@
                             <tr class="order-total">
                                 <th>Subtotal</th>
                                 <td>
-                                    <strong>$<%= cartTotal %></strong>
+                                    <strong>€<%= cartTotal %></strong>
                                 </td>
                             </tr>
                             <tr>
                                 <th>Total</th>
                                 <td>
-                                    <strong>$<%= cartTotal %></strong>(includes <strong>$<%= (parseFloat(cartTotal) / 100 * 20).toFixed(2)%></strong> VAT)
+                                    <strong>€<%= cartTotal %></strong>(includes <strong>€<%= (parseFloat(cartTotal) / 100 * 20).toFixed(2)%></strong> VAT)
                                 </td>
                             </tr>
                         </tbody>

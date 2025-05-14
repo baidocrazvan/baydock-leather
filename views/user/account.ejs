@@ -144,7 +144,7 @@
                       <tr>
                         <td><%= order.id %></td>
                         <td><%= new Date(order.created_at).toLocaleDateString() %></td>
-                        <td>$<%= order.total_price %></td>
+                        <td>€<%= order.total_price %></td>
                         <td>
                           <span class="status-badge <%= order.status.toLowerCase() %>">
                             <%= order.status %>

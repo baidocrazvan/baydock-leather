@@ -272,8 +272,8 @@ document.addEventListener("DOMContentLoaded", function() {
       track.style.right = `${100 - (maxVal / 500) * 100}%`;
       
       // Update price displays
-      minPriceDisplay.textContent = `$${minVal}`;
-      maxPriceDisplay.textContent = `$${maxVal}`;
+      minPriceDisplay.textContent = `€${minVal}`;
+      maxPriceDisplay.textContent = `€${maxVal}`;
       minPriceInput.value = minVal;
       maxPriceInput.value = maxVal;
     }

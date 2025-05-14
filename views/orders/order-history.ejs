@@ -19,8 +19,8 @@
                 <td><%= order.orderId %></td>
                 <td><%= order.shippingAddress.lastName %> <%= order.shippingAddress.firstName %></td>
                 <td><%= order.orderDate %></td>
-                <td><%= order.orderTotal %></td>
-                <td><%= order.orderStatus %></td>
+                <td>€<%= order.orderTotal %></td>
+                <td>€<%= order.orderStatus %></td>
                 <td><button><a href="/orders/<%= order.orderId%>">View</a></button></td>
             </tr>
         <% }) %>

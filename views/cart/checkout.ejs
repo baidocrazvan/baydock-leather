@@ -122,7 +122,7 @@
                             <strong>×&nbsp;<%= item.quantity %></strong>
                           </td>
                           <td>
-                            $<%= item.total_price %>
+                            €<%= item.total_price %>
                           </td>
                         </tr>
                       <% }); %>
@@ -130,11 +130,11 @@
                     <tfoot>
                       <tr>
                         <th>Sub-total</th>
-                        <td>$<%= cartTotal %></td>
+                        <td>€<%= cartTotal %></td>
                       </tr>
                       <tr>
                         <th>Total</th>
-                        <td><strong>$<%= cartTotal %></strong></td>
+                        <td><strong>€<%= cartTotal %></strong></td>
                       </tr>
                     </tfoot>
                   </table>

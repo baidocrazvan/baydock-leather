@@ -30,8 +30,8 @@
                         <td><%= product.productId %></td>
                         <td><%= product.name %></td>
                         <td><%= product.quantity %></td>
-                        <td>$<%= product.price %></td>
-                        <td>$<%= product.subtotal %></td>
+                        <td>€<%= product.price %></td>
+                        <td>€<%= product.subtotal %></td>
                     </tr>
                     <% }) %>
                 </tbody>
@@ -72,19 +72,19 @@
                 <span>Total without VAT:</span>
                 <span>
                     <% const withoutVAT = order.total * 0.81 %>
-                    $<%= withoutVAT.toFixed(2) %>
+                    €<%= withoutVAT.toFixed(2) %>
                 </span>
             </div>
             <div class="summary-row">
                 <span>VAT:</span>
                 <span>
                     <% const VAT = order.total * 0.19 %>
-                    $<%= VAT.toFixed(2) %>
+                    €<%= VAT.toFixed(2) %>
                 </span>
             </div>
             <div class="summary-row total">
                 <span>Total:</span>
-                <span>$<%= order.total %></span>
+                <span>€<%= order.total %></span>
             </div>
         </div>
 
