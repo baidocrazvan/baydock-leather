@@ -16,6 +16,7 @@ export async function getCartData(userId) {
         p.price,
         p.stock,
         p.thumbnail,
+        p.is_active,
         c.quantity,
         (p.price * c.quantity) AS total_price
         FROM carts c 
