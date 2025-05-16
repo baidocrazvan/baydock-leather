@@ -24,17 +24,17 @@
       align-items: center;
       gap: 0.5rem;
       padding: 0.75rem 1.5rem;
-      background-color: var(--text-color);
+      background: var(--text-color);
       color: var(--background-color);
-      border: u.rem(1) solid var(--text-color);
-      border-radius: u.rem(8);
-      text-decoration: none;
-      font-weight: 500;
-      transition: 0.3s ease-in;
+      border: none;
+      border-radius: u.rem(6);
+      font-family: inherit;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: background 0.3s ease;
 
       &:hover {
-        background-color: var(--background-color);
-        color: var(--text-color);
+        background: lighten(#121212, 10%);
       }
     }
   }
