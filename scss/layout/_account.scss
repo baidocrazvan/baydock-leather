@@ -42,17 +42,11 @@ $error-color: #ff3333;
   .dashboard-card {
     background: var(--background-color);
     border-radius: u.rem(12);
-    box-shadow: 0 u.rem(4) u.rem(12) rgba(0, 0, 0, 0.05);
     overflow: hidden;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
 
-    &:hover {
-      box-shadow: 0 u.rem(6) u.rem(16) rgba(0, 0, 0, 0.1);
-    }
 
     .card-header {
       padding: 1.5rem;
-      border-bottom: u.rem(1) solid var(--line-color);
       display: flex;
       justify-content: space-between;
       align-items: center;
