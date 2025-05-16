@@ -7,7 +7,8 @@ import {
     addOrderItems,
     clearCart,
     updateProductStock,
-    getOrderDetails
+    getOrderDetails,
+    getUserOrders
  } from "../services/orderService.js";
 
 const router = express.Router();
@@ -15,55 +16,28 @@ const router = express.Router();
 // Get a user's order history, after join group result by order and shipping details, order by creation date
 router.get("/history", authenticate, async (req, res) => {
     
-  try {
-      const userId = req.user.id;
-      const result = await db.query(
-          `SELECT
-             o.id AS order_id,
-             o.status AS order_status,
-             o.created_at AS order_date,
-             o.total_price AS order_total,
-             sa.first_name,
-             sa.last_name
-           FROM
-             orders o
-           JOIN
-             shipping_addresses sa ON o.shipping_address_id = sa.id
-           JOIN
-             order_items oi ON o.id = oi.order_id
-           JOIN
-             products p ON oi.product_id = p.id
-           WHERE
-             o.user_id = $1
-           GROUP BY
-             o.id, sa.first_name, sa.last_name, sa.address, sa.city, sa.county, sa.postal_code, sa.phone_number
-           ORDER BY
-             o.created_at DESC`,
-          [userId]
-        );
-
-        if (result.rows.length === 0) {
-          return res.render("orders/order-history.ejs", { orders: result.rows } );
-        }
-
-        // Format the response
-      const orders = result.rows.map(row => ({
-      orderId: row.order_id,
-      orderStatus: row.order_status,
-      orderDate: new Date(row.order_date).toLocaleDateString(),
-      orderTotal: row.order_total,
-      shippingAddress: {
-        firstName: row.first_name,
-        lastName: row.last_name,
-      }
-    }));
-    
-    return res.render("orders/order-history.ejs", { orders } );
+    try {
+        const userId = req.user.id;
+        const { page = 1, limit = 10 } = req.query;
+        const offset = (page - 1) * limit;
         
-  } catch(err) {
-      console.error("Error getting order history: ", err);
-      return res.redirect("/user/account");
-  }
+        const { orders, total } = await getUserOrders(userId, {
+          limit,
+          offset
+        });
+        
+        const totalPages = Math.ceil(total / limit);
+      
+        return res.render("orders/order-history.ejs", {
+            orders,
+            currentPage: parseInt(page),
+            totalPages
+        });
+
+    } catch(err) {
+        console.error("Error getting order history:", err);
+        return res.redirect("/user/account");
+    }
 }); 
 
 // GET page containing all the details of a specific order for authenticated user with ownership validation

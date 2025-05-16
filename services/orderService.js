@@ -26,6 +26,42 @@ export async function getRecentUserOrders(userId) {
     return result.rows;
 }
 
+export async function getUserOrders(userId, { limit = 10, offset = 0 } = {}) {
+  try {
+    const query = `
+      SELECT
+        o.id AS order_id,
+        o.status AS order_status,
+        o.created_at AS order_date,
+        o.total_price AS order_total,
+        sa.first_name,
+        sa.last_name,
+        sa.city,
+        sa.county
+      FROM orders o
+      JOIN shipping_addresses sa ON o.shipping_address_id = sa.id
+      WHERE o.user_id = $1
+      ORDER BY o.created_at DESC
+      LIMIT $2 OFFSET $3
+    `;
+    
+    const result = await db.query(query, [userId, limit, offset]);
+    
+    // Get total count
+    const countResult = await db.query(
+      'SELECT COUNT(*) FROM orders WHERE user_id = $1', 
+      [userId]
+    );
+    
+    return {
+      orders: result.rows,
+      total: parseInt(countResult.rows[0].count)
+    };
+  } catch(err) {
+    throw new Error(err);
+  }
+}
+
 // Create entry inside orders table
 export async function createOrder(userId, totalPrice, shippingAddressId, billingAddressId, paymentMethod) {
     const result = await db.query(

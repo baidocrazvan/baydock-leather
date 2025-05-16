@@ -1,30 +1,68 @@
 <%- include("../partials/header"); %>
 
 <main>
-    <% if (orders.length === 0) { %>
-        <h2>Sorry, there is no order history to display.</h2>
-    <% } else { %>
-    <h2>My orders</h2>
-    <table>
-        <tr>
-            <th>Order ID</th>
-            <th>Customer</th>
-            <th>Date</th>
-            <th>Total (incl VAT)</th>
-            <th>Status</th>
-            <th>See order</th>
-        </tr>
-        <% orders.forEach(order => { %>
-            <tr>
-                <td><%= order.orderId %></td>
-                <td><%= order.shippingAddress.lastName %> <%= order.shippingAddress.firstName %></td>
-                <td><%= order.orderDate %></td>
-                <td>€<%= order.orderTotal %></td>
-                <td>€<%= order.orderStatus %></td>
-                <td><button><a href="/orders/<%= order.orderId%>">View</a></button></td>
-            </tr>
-        <% }) %>
-    </table>
+    <div class="order-list-container">
+        <h1>My Orders</h1>
+
+        <div class="table-responsive">
+            <table class="user-table">
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Order status</th>
+                        <th>Customer</th>
+                        <th>Total (incl VAT)</th>
+                        <th>Date placed</th>
+                        <th>See order</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% if (orders.length > 0) { %>
+                        <% orders.forEach(order => { %>
+                            <tr>
+                                <td data-label="ID"><%= order.order_id %></td>
+                                <td data-label="Status">
+                                    <span class="badge badge-<%= order.order_status %>">
+                                        <%= order.order_status %>
+                                    </span>
+                                </td>
+                                <td data-label="Customer"><%= order.last_name %> <%= order.first_name %></td>
+                                <td data-label="Total">€<%= order.order_total %></td>
+                                <td data-label="Date"><%= new Date(order.order_date).toLocaleDateString() %></td>
+                                <td data-label="Actions">
+                                    <a href="/orders/<%= order.order_id %>" class="action-btn view-btn">View</a>
+                                </td>
+                            </tr>
+                        <% }) %>
+                    <% } else { %>
+                        <tr>
+                            <td colspan="6" class="no-results">No orders found.</td>
+                        </tr>
+                    <% } %>
+                </tbody>
+            </table>
+        </div>
+
+        <% if (totalPages > 1) { %>
+            <div class="pagination">
+                <% if (currentPage > 1) { %>
+                    <a href="?page=<%= currentPage - 1 %>" class="page-link">Previous</a>
+                <% } %>
+                
+                <% for (let i = 1; i <= totalPages; i++) { %>
+                    <a 
+                        href="?page=<%= i %>" 
+                        class="page-link <%= currentPage === i ? 'active' : '' %>"
+                    >
+                        <%= i %>
+                    </a>
+                <% } %>
+                
+                <% if (currentPage < totalPages) { %>
+                    <a href="?page=<%= currentPage + 1 %>" class="page-link">Next</a>
+                <% } %>
+            </div>
+        <% } %>
+    </div>
 </main>
-<% } %>
 <%- include("../partials/footer"); %>
