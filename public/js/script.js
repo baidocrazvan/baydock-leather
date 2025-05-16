@@ -95,30 +95,26 @@ if (searchModal) {
   });
 }
 
-// Axios call for address delete
-async function deleteAddress(event, id) {
-  event.preventDefault(); // Critical - prevents page jump
-  
-  if (!confirm("Are you sure you want to delete this address?")) {
-    return false;
-  }
+// Confirmation for forms and links
+document.addEventListener('DOMContentLoaded', () => {
+  // Handle forms
+  document.querySelectorAll('form[data-confirm]').forEach(form => {
+    form.addEventListener('submit', (e) => { // Listen for submit event
+      if (!confirm(form.dataset.confirm)) {
+        e.preventDefault(); 
+      }
+    });
+  });
 
-  try {
-    const response = await axios.post(`/address/shipping-addresses/delete/${id}`);
-    
-    if (response.status === 200) {
-      window.location.reload();
-    }
-  } catch (error) {
-    console.error("Delete failed:", error);
-    alert("Delete failed: " + 
-      (error.response?.data?.message || 
-       error.message || 
-       "Server error"));
-  }
-  
-  return false;
-}
+  // Handle confirmable links
+  document.querySelectorAll('a[data-confirm]').forEach(link => {
+    link.addEventListener('click', (e) => {
+      if (!confirm(link.dataset.confirm)) {
+        e.preventDefault();
+      }
+    });
+  });
+});
 
 // Image switching for product page, swap main image src with clicked image src
 document.addEventListener("DOMContentLoaded", () => {
