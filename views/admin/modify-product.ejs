@@ -37,11 +37,17 @@
 
     <div class="product-activation">
         <% if (product.is_active) { %> 
-            <form action="/products/<%= productId %>?_method=DELETE" method="post">
+            <form 
+            action="/products/<%= productId %>?_method=DELETE"
+            method="post"
+            data-confirm="Are you sure you want to deactivate this product?. It will no longer be visible on the website.">
                 <button type="submit">Deactivate product</button>
             </form>
         <% } else { %>
-            <form action="/products/<%= productId %>/reactivate" method="post">
+            <form 
+            action="/products/<%= productId %>/reactivate"
+            method="post"
+            data-confirm="Are you sure you want to activate this product?">
                 <button type="submit">Activate product</button>
             </form>
         <% } %>
