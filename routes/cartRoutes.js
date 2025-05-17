@@ -62,7 +62,7 @@ router.get("/", async (req, res) => {
 });
 
 
-router.get("/checkout", async (req, res) => {
+router.get("/checkout", authenticate, async (req, res) => {
     try {
         const userId = req.user.id;
         const addresses = await getActiveUserAddresses(userId)
