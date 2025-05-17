@@ -150,55 +150,68 @@ function productSort() {
   window.location.href = url.toString();
 }
 
-// Manage value inside quantity field on product page
+// Quantity selector logic
 document.addEventListener("DOMContentLoaded", () => {
-// Product quantity button
-const minusBtn = document.querySelector(".quantity-btn.minus");
-const plusBtn = document.querySelector(".quantity-btn.plus");
-const quantityInput = document.querySelector(".quantity-input");
+  // Handle both product page and cart page selectors
+  const quantitySelectors = document.querySelectorAll(`
+    .item-update .quantity-selector,
+    #size-select .quantity-selector
+  `);
 
-if (!minusBtn && !plusBtn && !quantityInput) return;
+  quantitySelectors.forEach(selector => {
+    const minusBtn = selector.querySelector(".quantity-btn.minus");
+    const plusBtn = selector.querySelector(".quantity-btn.plus");
+    const quantityInput = selector.querySelector(".quantity-input");
+    const form = selector.closest('form');
+    const updateIconBtn = form?.querySelector(".update-icon-btn");
 
-const max = parseInt(quantityInput.max) || 10;
+    if (!minusBtn || !plusBtn || !quantityInput) return;
 
-// Minus button
-minusBtn.addEventListener("click", () => {
-  let value = parseInt(quantityInput.value);
-  if (value > 1) {
-    quantityInput.value = value - 1;
-  }
-  toggleButtons();
-});
+    const max = parseInt(quantityInput.max) || 10;
+    const initialValue = parseInt(quantityInput.value);
+    
+    // Store initial value
+    quantityInput.dataset.initialValue = initialValue;
 
-// Plus button
-plusBtn.addEventListener("click", () => {
-  let value = parseInt(quantityInput.value);
-  if (value < max) {
-    quantityInput.value = value + 1;
-  }
-  toggleButtons();
-});
+    function checkForChanges() {
+      const currentValue = parseInt(quantityInput.value);
+      if (updateIconBtn) {
+        updateIconBtn.hidden = currentValue === initialValue;
+      }
+      toggleButtons();
+    }
 
-// Change quantity value if it exceeds upper and lower limits
-quantityInput.addEventListener("change", () => {
-  let value = parseInt(quantityInput.value);
-  if (isNaN(value) || value < 1) {
-    quantityInput.value = 1;
-  }
-  if (value > max) {
-    quantityInput.value = max;
-  }
-  toggleButtons();
-})
+    minusBtn.addEventListener("click", () => {
+      let value = parseInt(quantityInput.value);
+      if (value > 1) {
+        quantityInput.value = value - 1;
+        checkForChanges();
+      }
+    });
 
-// Disable buttons for min and max values
-function toggleButtons() {
-  minusBtn.disabled = parseInt(quantityInput.value) <= 1;
-  plusBtn.disabled = parseInt(quantityInput.value) >= max;
-}
+    plusBtn.addEventListener("click", () => {
+      let value = parseInt(quantityInput.value);
+      if (value < max) {
+        quantityInput.value = value + 1;
+        checkForChanges();
+      }
+    });
 
-toggleButtons();
+    quantityInput.addEventListener("change", () => {
+      let value = parseInt(quantityInput.value);
+      if (isNaN(value) || value < 1) value = 1;
+      if (value > max) value = max;
+      quantityInput.value = value;
+      checkForChanges();
+    });
 
+    function toggleButtons() {
+      minusBtn.disabled = parseInt(quantityInput.value) <= 1;
+      plusBtn.disabled = parseInt(quantityInput.value) >= max;
+    }
+
+    toggleButtons();
+  });
 });
 
 
