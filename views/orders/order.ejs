@@ -26,11 +26,11 @@
                     <tbody>
                         <% order.products.forEach( product => { %>
                         <tr>
-                            <td><%= product.productId %></td>
-                            <td><%= product.name %></td>
-                            <td><%= product.quantity %></td>
-                            <td>€<%= product.price %></td>
-                            <td>€<%= product.subtotal %></td>
+                            <td data-label="Product Code"><%= product.productId %></td>
+                            <td data-label="Product Name"><%= product.name %></td>
+                            <td data-label="Quantity"><%= product.quantity %></td>
+                            <td data-label="Price">€<%= product.price %></td>
+                            <td data-label="Subtotal">€<%= product.subtotal %></td>
                         </tr>
                         <% }) %>
                     </tbody>
