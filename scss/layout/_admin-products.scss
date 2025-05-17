@@ -21,17 +21,11 @@
     flex-wrap: wrap;
 
     button, .btn-primary {
-      background: lighten(#121212, 20%);
-      color: var(--background-color);
       border: none;
       padding: 0 1rem;
       border-radius: 0 u.rem(4) u.rem(4) 0;
       cursor: pointer;
       transition: 0.3s ease-in;
-      
-      &:hover {
-        background: var(--text-color);
-      }
     }
 
     .btn-primary {

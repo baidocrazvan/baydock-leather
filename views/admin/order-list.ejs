@@ -12,10 +12,7 @@
               placeholder="Search by Order ID" 
               value="<%= searchQuery || '' %>"
             >
-            <button type="submit">Search</button>
-            <% if (searchQuery) { %>
-              <a href="/admin/orders" class="clear-search">Clear</a>
-            <% } %>
+            <button type="submit" class="btn-primary">Search</button>
          </form>
       </div> 
 
@@ -23,7 +20,7 @@
         <table class="user-table">
           <thead>
             <tr>
-                <th>Order ID</th>
+                <th>ID</th>
                 <th>Order status</th>
                 <th>Customer</th>
                 <th>Address</th>

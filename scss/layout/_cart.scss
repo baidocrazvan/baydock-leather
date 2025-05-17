@@ -86,12 +86,39 @@
             form {
                 text-align: right;
             }
-            padding: u.rem(14) 0 u.rem(14) u.rem(6);
+            padding: u.rem(14) 0;
             display: flex;
             align-items: center;
+            justify-content: flex-end; // Push everything to right
+
+            .quantity-control-group {
+                display: flex;
+                align-items: center;
+                gap: u.rem(8); // Space between icon and quantity
+            }
+
+            .update-icon-btn {
+                background: none;
+                border: none;
+                cursor: pointer;
+                padding: u.rem(8);
+                color: var(--icon-color);
+                transition: color 0.2s;
+                
+                &:hover {
+                    color: var(--text-color);
+                }
+                
+                svg {
+                    display: block;
+                    width: 16px;
+                    height: 16px;
+                }
+            }
             .quantity-selector {
                 display: inline-flex;
                 align-items: center;
+                margin-left: auto;
               
                 .quantity-btn {
                   width: u.rem(32);
@@ -138,26 +165,6 @@
                   }
                 }
             }
-            
-            .add-to-cart-btn {
-                margin-top: u.rem(6);
-                padding: u.rem(6);
-                border: none;
-                background: lighten(#121212, 20%);
-                color: var(--background-color);
-                font-family: "Poppins", sans-serif;
-                font-size: u.rem(11);
-                font-weight: 500;
-                height: u.rem(32);
-                width: u.rem(96);
-                border-radius: 7px;
-                transition: ease-in 0.2s;
-                cursor: pointer;
-
-                &:hover {
-                    background: darken(#121212, 20%);
-                }
-            }
         }
     }
 
@@ -168,36 +175,34 @@
         margin: u.rem(15) 0;
 
         .continue-shopping-btn {
-            // Your existing button styles
             width: u.rem(180);
             height: u.rem(32);
-            border: 2px solid var(--text-color);
-            background: var(--background-color);
+            // border: 2px solid var(--text-color);
+            // background: var(--background-color);
             font-family: "Poppins", sans-serif;
             font-weight: 500;
             border-radius: 7px;
             transition: ease-in 0.2s;
             cursor: pointer;
             
-            // Style the anchor tag inside
-            a {
-              color: var(--text-color);
-              text-decoration: none;
-              display: block;
-              width: 100%;
-              height: 100%;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-            }
+            // a {
+            //   color: var(--text-color);
+            //   text-decoration: none;
+            //   display: block;
+            //   width: 100%;
+            //   height: 100%;
+            //   display: flex;
+            //   align-items: center;
+            //   justify-content: center;
+            // }
           
-            &:hover {
-              background: var(--text-color);
+            // &:hover {
+            //   background: var(--text-color);
               
-              a {
-                color: white;
-              }
-            }
+            //   a {
+            //     color: white;
+            //   }
+            // }
           }
 
 
@@ -205,17 +210,11 @@
         width: u.rem(120);
         height: u.rem(32);
         border: none;
-        background: lighten(#121212, 20%);
-        color: var(--background-color);
         font-family: "Poppins", sans-serif;
         font-weight: 500;
         border-radius: 7px;
         transition: ease-in 0.2s;
         cursor: pointer;
-
-        &:hover {
-            background: darken(#121212, 20%);
-        }
         }
     
     
@@ -265,8 +264,7 @@
             letter-spacing: 0.35px;
             cursor: pointer;
             margin: u.rem(22) 0;
-            background-color: var(--text-color);
-            color: var(--background-color);
+            transition: all 0.3s ease;
         }
        
     }

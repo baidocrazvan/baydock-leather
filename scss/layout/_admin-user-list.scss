@@ -34,16 +34,10 @@
       
       button {
         padding: 0 1.5rem;
-        background: var(--text-color);
-        color: white;
         border: none;
         border-radius: 4px;
         cursor: pointer;
-        transition: background 0.2s;
-        
-        &:hover {
-          background: darken(#121212, 20%);
-        }
+        transition: background 0.3s;
       }
     }
   }
@@ -120,15 +114,6 @@
     font-weight: 500;
     font-size: 0.9rem;
     transition: all 0.2s;
-    
-    &.view-btn {
-      background: var(--text-color);
-      color: white;
-      
-      &:hover {
-        background: darken(#121212, 20%);
-      }
-    }
   }
   
   .no-results {

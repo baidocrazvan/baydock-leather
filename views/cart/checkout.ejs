@@ -63,7 +63,7 @@
                 </div>
                 
                 <!-- Hidden update button -->
-                <button type="submit" id="updateDefaultBtn" style="display: none;" class="btn btn-primary">
+                <button type="submit" id="updateDefaultBtn" style="display: none;" class="btn-primary">
                   Update Default Addresses
                 </button>
               </form>
@@ -76,27 +76,27 @@
                 <!-- Add fromCheckout input so that /address/ POST route knows the redirect user to checkout if the form came from here -->
                 <input type="hidden" name="fromCheckout" value="true">
                 
-                <label>First Name:</label>
-                <input type="text" name="firstName" value="<%= user.first_name %>" required>
+                <label for="firstName">First Name:</label>
+                <input type="text" id="firstName" name="firstName" value="<%= user.first_name %>" required>
                 
-                <label>Last Name:</label>
-                <input type="text" name="lastName" value="<%= user.last_name %>" required>
+                <labe for="lastName">Last Name:</label>
+                <input type="text" id="lastName" name="lastName" value="<%= user.last_name %>" required>
             
                 <label for="address">Address</label>
-                <input type="text" name="address">
+                <input type="text" id="address" name="address">
             
                 <label for="city">City</label>
-                <input type="text" name="city">
+                <input type="text" id="city" name="city">
             
                 <label for="county">County</label>
-                <input type="text" name="county">
+                <input type="text" id="county" name="county">
             
                 <label for="phoneNumber">Phone:</label>
-                <input type="text"  name="phoneNumber">
+                <input type="text"  id="phoneNumber" name="phoneNumber">
             
                 <label for="postalCode">Postal code:</label>
-                <input type="text" name="postalCode">
-                <button type="submit">Save Address & Continue</button>
+                <input type="text" id="postalCode" name="postalCode">
+                <button type="submit" class="btn-primary">Save Address & Continue</button>
               </div>
             <% } %>
           </form>
@@ -176,7 +176,7 @@
               </div>
 
               <!-- Order submission button -->
-              <button type="submit" class="btn btn-primary btn-place-order">
+              <button type="submit" class="btn-primary btn-place-order">
                 Place Order
               </button>
 

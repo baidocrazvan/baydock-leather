@@ -51,8 +51,6 @@ $transition: all 0.3s ease;
   }
 
   button {
-    background-color: lighten(#121212, 20%);
-    color: var(--background-color);
     border: none;
     padding: 0.75rem 1.5rem;
     border-radius: $border-radius;
@@ -62,10 +60,6 @@ $transition: all 0.3s ease;
     transition: $transition;
     width: 100%;
     margin-top: 1rem;
-
-    &:hover {
-      background-color: darken(#121212, 20%);
-    }
 
     &:disabled {
       background-color: $medium-gray;
@@ -203,14 +197,25 @@ $transition: all 0.3s ease;
         }
       }
 
-    button {
-      margin-top: 0;
-      background-color: var(--text-color);
+    .add-to-cart-btn {
+        margin-top: u.rem(6);
+        padding: u.rem(6);
+        border: none;
+        background: lighten(#121212, 20%);
+        color: var(--background-color);
+        font-family: "Poppins", sans-serif;
+        font-size: u.rem(11);
+        font-weight: 500;
+        height: u.rem(32);
+        width: u.rem(96);
+        border-radius: 7px;
+        transition: ease-in 0.2s;
+        cursor: pointer;
 
-      &:hover {
-        background-color: var(--text-color);
+        &:hover {
+            background: darken(#121212, 20%);
+        }
       }
-    }
   }
 }
 

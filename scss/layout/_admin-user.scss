@@ -146,7 +146,7 @@
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 
   thead {
-    background: var(--primary-color);
+    background: var(--text-color);
     color: white;
 
     th {
@@ -214,18 +214,6 @@
     font-size: 0.875rem;
   }
 
-  &-info {
-    background: var(--text-color);
-    color: white;
-
-    &:hover {
-      background: darken(#121212, 10%);
-    }
-
-    &:visited {
-      color: var(--background-color);
-    }
-  }
 }
 
 

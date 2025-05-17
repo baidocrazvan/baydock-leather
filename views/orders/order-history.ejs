@@ -13,7 +13,7 @@
                         <th>Customer</th>
                         <th>Total (incl VAT)</th>
                         <th>Date placed</th>
-                        <th>See order</th>
+                        <th>See more</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -30,7 +30,7 @@
                                 <td data-label="Total">€<%= order.order_total %></td>
                                 <td data-label="Date"><%= new Date(order.order_date).toLocaleDateString() %></td>
                                 <td data-label="Actions">
-                                    <a href="/orders/<%= order.order_id %>" class="action-btn view-btn">View</a>
+                                    <a href="/orders/<%= order.order_id %>" class="action-btn btn-tertiary">View</a>
                                 </td>
                             </tr>
                         <% }) %>

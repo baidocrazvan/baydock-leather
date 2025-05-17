@@ -58,7 +58,7 @@ $error-color: #ff3333;
         color: var(--text-color);
       }
 
-      .manage-btn, .edit-btn {
+      .manage-btn {
         background: none;
         border: none;
         color: var(--text-color);
@@ -66,6 +66,7 @@ $error-color: #ff3333;
         cursor: pointer;
         text-decoration: none;
         font-size: 0.9rem;
+        transition: background 0.3s ease;
 
         &:hover {
           text-decoration: underline;
@@ -114,16 +115,12 @@ $error-color: #ff3333;
       display: inline-block;
       margin-top: 1rem;
       padding: 0.5rem 1rem;
-      background: lighten(#121212, 20%);
-      color: var(--background-color);
-      
       border-radius: u.rem(6);
       text-decoration: none;
       font-size: 0.9rem;
-      transition: 0.3s ease;
+      transition: background 0.3s ease;
 
       &:hover {
-        background: var(--text-color);
         text-decoration: none;
       }
     }
@@ -325,10 +322,11 @@ $error-color: #ff3333;
 
     .view-all {
       display: inline-block;
-      margin-top: 0.5rem;
+      margin-top: 1rem;
       color: var(--text-color);
       text-decoration: none;
       font-weight: 500;
+      transition: background 0.3s ease;
 
       &:hover {
         text-decoration: underline;

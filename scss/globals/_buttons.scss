@@ -1,0 +1,31 @@
+.btn-primary {
+  background: #121212;
+  color: white;
+}
+.btn-primary:hover {
+  background: #2a2a2a; /* 10% lighter */
+}
+
+.btn-secondary {
+  background: #4a4a4a;
+  color: white;
+} 
+
+.btn-secondary:hover {
+  background: #121212;
+}
+
+.btn-tertiary {
+  color: var(--text-color);
+  border: 1px solid var(--line-color);
+}
+.btn-tertiary:hover {
+  border-color: var(--text-color);
+  background: rgba(#121212, 0.05);
+}
+
+
+.btn-sm {
+  padding: 0.35rem 0.75rem;
+  font-size: 0.875rem;
+}

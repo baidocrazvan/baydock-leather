@@ -5,7 +5,7 @@ a {
     color: var(--text-color)
 }
 
-a:visited {
+a:visited:not(.btn-primary):not(.btn-secondary):not(.page-link.active):not(.btn-info) {
     text-decoration: none;
     color: var(--text-color);
 }
