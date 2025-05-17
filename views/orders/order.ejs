@@ -36,27 +36,36 @@
                     </tbody>
                 </table>
             </div>
-            <div class="customer-info-and-summary">
+            <div class="address-grid  customer-info-and-summary">
                 <div class="customer-info">
                     <% if (!sameAddress) { %>
-                    <div class="address-card">
-                        <h3>Billing Address</h3>
-                        <p><span>Name:</span><%= order.billingAddress.name %></p>
-                        <p><span>Address:</span> <%= order.billingAddress.street %></p>
-                        <p><span>City:</span><%= order.billingAddress.city %></p>
-                        <p><span>Postal Code:</span><%= order.billingAddress.postalCode %></p>
-                        <p><span>Phone:</span><%= order.billingAddress.phoneNumber %></p>
+                    <div class="address-card default">
+                        <div class="address-content">
+                            <div class="address-details">
+                                <h3>Billing Address</h3>
+                                <p><span>Name:</span><%= order.billingAddress.name %></p>
+                                <p><span>Address:</span> <%= order.billingAddress.street %></p>
+                                <p><span>City:</span><%= order.billingAddress.city %></p>
+                                <p><span>Postal Code:</span><%= order.billingAddress.postalCode %></p>
+                                <p><span>Phone:</span><%= order.billingAddress.phoneNumber %></p>
+                            </div>
+                        </div>
                     </div>
                     <% } %>
 
-                    <div class="address-card">
-                        <h3>Shipping Address</h3>
-                        <p><span>Name:</span><%= order.shippingAddress.name %></p>
-                        <p><span>Address:</span> <%= order.shippingAddress.street %></p>
-                        <p><span>City:</span><%= order.shippingAddress.city %></p>
-                        <p><span>Postal Code:</span><%= order.shippingAddress.postalCode %></p>
-                        <p><span>Phone:</span><%= order.shippingAddress.phoneNumber %></p>
+                    <div class="address-card default">
+                        <div class="address-content">
+                            <div class="address-details">
+                            <h3>Shipping Address</h3>
+                                <p><span>Name:</span><%= order.shippingAddress.name %></p>
+                                <p><span>Address:</span> <%= order.shippingAddress.street %></p>
+                                <p><span>City:</span><%= order.shippingAddress.city %></p>
+                                <p><span>Postal Code:</span><%= order.shippingAddress.postalCode %></p>
+                                <p><span>Phone:</span><%= order.shippingAddress.phoneNumber %></p>
+                            </div>
+                        </div>
                     </div>
+
                 </div>
 
                 <div class="order-summary">
