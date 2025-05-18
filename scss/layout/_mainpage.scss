@@ -65,6 +65,10 @@
       p {
         font-size: u.rem(18);
       }
+
+      a:visited {
+        color: white;
+      }
       
       @include u.breakpoint(medium) {
         h1 {

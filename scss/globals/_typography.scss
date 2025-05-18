@@ -5,7 +5,7 @@ a {
     color: var(--text-color)
 }
 
-a:visited:not(.btn-primary):not(.btn-secondary):not(.page-link.active):not(.btn-info) {
+a:visited {
     text-decoration: none;
     color: var(--text-color);
 }
@@ -15,4 +15,11 @@ body {
     font-optical-sizing: auto;
     font-weight: 400;
     font-style: normal;
+}
+
+.btn-primary:visited,
+.btn-secondary:visited,
+.page-link.active:visited,
+.btn-info:visited {
+    color: var(--background-color);
 }
