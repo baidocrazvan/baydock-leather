@@ -175,6 +175,10 @@
                     width: clamp(u.rem(28), 2vw, u.rem(36));
                     height: clamp(u.rem(28), 2vw, u.rem(36)); 
                 }
+
+                @media (max-width: u.rem(330)) {
+                    display: none;
+                }
             }
             &--search {
                 display: none;
