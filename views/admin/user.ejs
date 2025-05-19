@@ -10,7 +10,6 @@
         </h1>
 
         <div class="user-info">
-        <h2>Basic Information</h2>
         <p><strong>Name:</strong> <%= user.first_name %> <%= user.last_name %></p>
         <p><strong>Email:</strong> <%= user.email %></p>
         <p><strong>Role:</strong> <span class="role-badge <%= user.role %>"><%= user.role %></span></p>
@@ -82,7 +81,7 @@
                 <th>Order ID</th>
                 <th>Date</th>
                 <th>Status</th>
-                <th>Shipping to:</th>
+                <th>Shipped to:</th>
                 <th>Total</th>
                 <th>Actions</th>
             </tr>
@@ -90,14 +89,14 @@
             <tbody>
             <% orders.forEach(order => { %>
                 <tr>
-                <td><%= order.id %></td>
-                <td><%= new Date(order.created_at).toLocaleDateString() %></td>
-                <td><span class="badge badge-<%= order.status %>">
+                <td data-label="ID:"><%= order.id %></td>
+                <td data-label="Date:"><%= new Date(order.created_at).toLocaleDateString() %></td>
+                <td data-label="Status:"><span class="badge badge-<%= order.status %>">
                     <%= order.status %>
                 </span></td>
-                <td><%= order.city %>, <%= order.county %></td>
-                <td><%= order.total_price %>€</td>
-                <td>
+                <td data-label="Shipped to:"><%= order.city %>, <%= order.county %></td>
+                <td data-label="Total:"><%= order.total_price %>€</td>
+                <td data-label="Link:">
                     <a href="/admin/orders/<%= order.id %>" class="btn btn-sm btn-info">View</a>
                 </td>
                 </tr>

@@ -10,15 +10,21 @@
 
   h1 {
     color: var(--text-color);
-    font-size: 1.8rem;
+    font-size: 1.6rem;
     border-bottom: 2px solid var(--line-color);
+  }
+
+  svg {
+    height: 18px;
+    width: 18px;
+    margin-right: 0.2rem;
   }
 }
 
 // User information section
 .user-info {
   background: var(--light-bg);
-  padding: 1.5rem;
+  padding: 1rem;
   border-radius: u.rem(8);
   margin-bottom: 2rem;
 
@@ -29,7 +35,7 @@
 
   h2 {
     color: var(--text-color);
-    font-size: 1.4rem;
+    font-size: 1.3rem;
     margin-bottom: 1rem;
   }
 
@@ -41,6 +47,7 @@
       color: var(--text-color);
       min-width: u.rem(120);
       display: inline-block;
+      font-weight:500
     }
   }
 }
@@ -218,15 +225,66 @@
 
 @media (max-width: u.rem(768)) {
   .user-view-container {
-    padding: 1rem;
-    margin: 1rem;
+    padding: 0;
+    margin: 0;
+    box-shadow: none;
   }
 
   .table {
     display: block;
     overflow-x: auto;
     white-space: nowrap;
-  }
+    display: block;
+
+      td {
+        padding: 0.75rem 0;
+        font-size: 0.85rem;
+
+        &::before {
+          font-size: 0.85rem;
+        }
+      }
+      
+      thead {
+        display: none;
+      }
+      
+      tbody, tr, td {
+        display: block;
+        width: 100%;
+      }
+      
+      tr {
+        margin-bottom: 1.5rem;
+        border: u.rem(1) solid var(--line-color);
+        border-radius: u.rem(8);
+        padding: 1rem;
+        position: relative;
+        
+        &:last-child {
+          margin-bottom: 0;
+        }
+      }
+      
+      td {
+        padding: 0.5rem 0;
+        border-bottom: none;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        
+        &::before {
+          content: attr(data-label);
+          font-weight: 600;
+          color: var(--text-color);
+          margin-right: 1rem;
+        }
+        
+        &:last-child {
+          border-bottom: none;
+        }
+      }
+    }
 
   .address-card {
     padding: 1rem;
@@ -237,7 +295,6 @@
 
     strong {
       display: block;
-      margin-bottom: 0.25rem;
     }
   }
 }
