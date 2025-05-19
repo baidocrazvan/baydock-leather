@@ -28,7 +28,16 @@
         justify-self: center;
         grid-column: 2;
 
-        h1 a {
+        h1 {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+        }
+        
+        a {
+            display: flex;
+            align-items: center;
             font-size: clamp(u.rem(25), u.rem(25) + 2vw, u.rem(60));
             font-family: "Julius Sans One", sans-serif;
             font-weight: 400;
@@ -83,7 +92,7 @@
             height: u.rem(36);
             width: u.rem(36);
             padding: 0;
-            border-radius: 0 18px 18px 0; // Only right rounded
+            border-radius: 0 18px 18px 0;
             cursor: pointer;
             transition: ease-in-out 0.3s;
             
@@ -154,11 +163,23 @@
         justify-self: end;
         grid-column: 3;
         display: flex;
+        align-items: center;
+        height: 100%; 
         gap: clamp(u.rem(8), 2vw, u.rem(16));
 
        .header__icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
             transition: transform 0.3s ease;
-
+            height: 100%;
+            
+            a {
+                display: flex;
+                align-items: center;
+                height: 100%;
+                padding: 0 u.rem(4);
+            }
             svg {
                 width: clamp(u.rem(24), 2vw, u.rem(32));
                 height: clamp(u.rem(24), 2vw, u.rem(32)); 
@@ -176,13 +197,15 @@
                     height: clamp(u.rem(28), 2vw, u.rem(36)); 
                 }
 
-                @media (max-width: u.rem(330)) {
+                @media (max-width: u.rem(380)) {
                     display: none;
                 }
             }
             &--search {
                 display: none;
-                
+                width: clamp(u.rem(20), 2vw, u.rem(28));
+                height: clamp(u.rem(20), 2vw, u.rem(28));
+                cursor: pointer; 
             }
         }
     }
@@ -344,7 +367,7 @@
     .header__icons {
         .header__icon {
             &--search {
-                display: block;
+                display: flex;
             }
         }
     }
