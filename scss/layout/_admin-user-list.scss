@@ -47,6 +47,10 @@
     margin-bottom: 2rem;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     border-radius: 8px;
+
+    @media (max-width: u.rem(768)){
+      box-shadow: none;
+    }
   }
   
   .user-table {
