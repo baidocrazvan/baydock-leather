@@ -161,7 +161,7 @@
     }
   }
 
-  @media (max-width: u.rem(384)) {
+  @media (max-width: u.rem(400)) {
   .table-responsive {
     table {
       tr { padding: 0.4rem; }
@@ -180,7 +180,7 @@
       
       button {
         width: 100%;
-        padding: 0.5rem; 
+        padding: 1rem; 
         text-align: center;
       }
     }
