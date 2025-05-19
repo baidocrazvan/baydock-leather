@@ -247,6 +247,10 @@ $error-color: #ff3333;
 
     .orders-table-container {
       overflow-x: auto;
+
+      @media (max-width: u.rem(502)) {
+      overflow-x: visible;
+      }
     }
 
     .orders-table {
@@ -269,6 +273,61 @@ $error-color: #ff3333;
       tr:hover {
         background: rgba(var(--text-color), 0.03);
       }
+
+      // Mobile styles
+    @media (max-width: u.rem(502)) {
+      display: block;
+
+      td {
+        padding: 0.75rem 0;
+        font-size: 0.85rem;
+
+        &::before {
+          font-size: 0.85rem;
+        }
+      }
+      
+      thead {
+        display: none;
+      }
+      
+      tbody, tr, td {
+        display: block;
+        width: 100%;
+      }
+      
+      tr {
+        margin-bottom: 1.5rem;
+        border: u.rem(1) solid var(--line-color);
+        border-radius: u.rem(8);
+        padding: 1rem;
+        position: relative;
+        
+        &:last-child {
+          margin-bottom: 0;
+        }
+      }
+      
+      td {
+        padding: 0.5rem 0;
+        border-bottom: none;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        
+        &::before {
+          content: attr(data-label);
+          font-weight: 600;
+          color: var(--text-color);
+          margin-right: 1rem;
+        }
+        
+        &:last-child {
+          border-bottom: none;
+        }
+      }
+    }
+
 
       .status-badge {
         display: inline-block;

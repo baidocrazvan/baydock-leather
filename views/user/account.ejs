@@ -142,15 +142,15 @@
                   <tbody>
                     <% orders.forEach(order => { %>
                       <tr>
-                        <td><%= order.id %></td>
-                        <td><%= new Date(order.created_at).toLocaleDateString() %></td>
-                        <td>€<%= order.total_price %></td>
-                        <td>
+                        <td data-label="Order ID:"><%= order.id %></td>
+                        <td data-label="Order Date:"><%= new Date(order.created_at).toLocaleDateString() %></td>
+                        <td data-label="Total price:">€<%= order.total_price %></td>
+                        <td data-label="Order status:">
                           <span class="badge badge-<%= order.status %>">
                             <%= order.status %>
                           </span>
                         </td>
-                        <td>
+                        <td data-label="See more">
                           <a href="/orders/<%= order.id %>" class="view-order">
                             View
                             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor">
