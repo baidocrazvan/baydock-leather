@@ -2,7 +2,7 @@ import express from "express";
 import db from "../db.js";
 import { authenticate, isAdmin } from "../middleware/middleware.js";
 import {
-    calculateTotalPrice,
+    calculateOrderPrice,
     createOrder,
     addOrderItems,
     clearCart,
@@ -67,7 +67,19 @@ router.post("/new-order", authenticate, async (req, res) => {
     try {
         await client.query('BEGIN');
         const userId = req.user.id;
-        const { shippingAddressId, billingAddressId, paymentMethod } = req.body;
+        const { shippingAddressId, billingAddressId, paymentMethod, shippingMethodId } = req.body;
+
+        // Validate shipping method
+        const shippingMethod = await client.query(
+            `SELECT * FROM shipping_methods WHERE id = $1 AND is_active = true`,
+            [shippingMethodId]
+        );
+        if (shippingMethod.rows.length === 0) {
+            await client.query("ROLLBACK");
+            req.flash("error", "Invalid shipping method");
+            return res.redirect("/cart/checkout");
+        }
+        const shippingCost = parseFloat(shippingMethod.rows[0].base_price);
         
         // Validate shipping and billing address
         const shippingAddress = await client.query(
@@ -119,11 +131,21 @@ router.post("/new-order", authenticate, async (req, res) => {
             return res.redirect('/cart');
           }
 
-        // Calculate the total price
-        const totalPrice = await calculateTotalPrice(userId);
+        // Calculate total price including shipping
+        const subtotal = parseFloat(await calculateOrderPrice(userId));
+        const totalPrice = subtotal + shippingCost;
 
         // Create order
-        const orderId = await createOrder(userId, totalPrice, shippingAddressId, billingAddressId, paymentMethod);
+        const orderId = await createOrder(
+            userId,
+            subtotal,
+            shippingCost,
+            totalPrice,
+            shippingAddressId,
+            billingAddressId,
+            paymentMethod,
+            shippingMethodId
+        );
 
         // Move items from carts table to order_items table
         await addOrderItems(orderId, userId);

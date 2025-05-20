@@ -10,7 +10,7 @@ const router = express.Router();
 router.get("/", async (req, res) => {
     try {
       let cartItems = [];
-      let cartTotal = 0;
+      let cartSubtotal = 0;
       let cartMessage = null;
 
       if (req.isAuthenticated()) {
@@ -18,7 +18,7 @@ router.get("/", async (req, res) => {
         const userId = req.user.id;
         const result = await getCartData(userId);
         cartItems = result.items;
-        cartTotal = result.total;
+        cartSubtotal = result.total;
 
         if (result.message) {
           cartMessage = result.message;
@@ -39,16 +39,16 @@ router.get("/", async (req, res) => {
               quantity: item.quantity,
               total_price: (productData.price * item.quantity).toFixed(2),
             });
-            cartTotal += productData.price * item.quantity;
+            cartSubtotal += productData.price * item.quantity;
           }
         }
-        cartTotal = cartTotal.toFixed(2);
+        cartSubtotal = cartSubtotal.toFixed(2);
       }
 
       return res.render("cart/cart.ejs", {
           user: req.user,
           cartItems,
-          cartTotal,
+          cartSubtotal,
           cartMessage
       })
 
@@ -67,16 +67,23 @@ router.get("/checkout", authenticate, async (req, res) => {
         const userId = req.user.id;
         const addresses = await getActiveUserAddresses(userId)
         const { items, total } = await getCartData(userId);
-        console.log("User: ", req.user);
-        console.log("Addresses: ", addresses);
-        console.log("Addresses.length: ", addresses.length);
-        console.log(items);
-        console.log(total);
+        const shippingMethods = await db.query(
+          `SELECT * FROM shipping_methods WHERE is_active = true`
+        );
+        
+        // Set default shipping method (cheapest/first one)
+        const defaultShipping = shippingMethods.rows[0] || { base_price: 0 };
+        const shippingCost = defaultShipping.base_price;
+        const orderTotal = parseFloat(total) + parseFloat(shippingCost);
+
         return res.render("cart/checkout.ejs", {
             user: req.user,
             addresses: addresses,
             cartItems: items,
-            cartTotal: total
+            cartSubtotal: total,
+            shippingCost: shippingCost,
+            orderTotal: orderTotal,
+            shippingMethods: shippingMethods.rows
         })
     } catch (err) {
         console.error("Cart checkout GET error:", err.message);

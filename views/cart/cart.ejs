@@ -95,13 +95,17 @@
                             <tr class="order-total">
                                 <th>Subtotal</th>
                                 <td>
-                                    <strong>€<%= cartTotal %></strong>
+                                    <strong>€<%= cartSubtotal %></strong>
                                 </td>
+                            </tr>
+                            <tr>
+                                <th>Shipping</th>
+                                <td id="shipping-cost">Calculated at checkout</td>
                             </tr>
                             <tr>
                                 <th>Total</th>
                                 <td>
-                                    <strong>€<%= cartTotal %></strong>(includes <strong>€<%= (parseFloat(cartTotal) / 100 * 20).toFixed(2)%></strong> VAT)
+                                    <strong>€<%= cartSubtotal %></strong>(includes <strong>€<%= (parseFloat(cartSubtotal) / 100 * 20).toFixed(2)%></strong> VAT)
                                 </td>
                             </tr>
                         </tbody>

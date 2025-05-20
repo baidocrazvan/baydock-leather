@@ -92,52 +92,51 @@
     }
 
     @media (max-width: u.rem(500)) {
-    display: block;
-    
-    thead {
-      display: none; // Hide headers on mobile
-    }
-    
-    tbody, tr {
       display: block;
-      width: 100%;
-    }
-    
-    tr {
-      margin-bottom: 1rem;
-      border: 1px solid #e0e0e0;
-      border-radius: u.rem(4);
-      padding: u.rem(12);
       
-      &:last-child {
-        margin-bottom: 0;
-        border-bottom: 1px solid #e0e0e0;
-      }
-    }
-    
-    td {
-      display: flex; // Use flex for better label-value alignment
-      padding: u.rem(8) 0;
-      border: none;
-      
-      // Add labels using data-attributes
-      &::before {
-        content: attr(data-label);
-        font-weight: 600;
-        display: inline-block;
-        width: 40%; // Adjust width as needed
-        padding-right: u.rem(8);
-        color: var(--text-color); // Match your color scheme
+      thead {
+        display: none; // Hide headers on mobile
       }
       
-      // Value styling
-      &:not(:empty)::after {
-        content: '';
-        flex: 1;
+      tbody, tr {
+        display: block;
+        width: 100%;
       }
-    }
-  }
-    
+      
+      tr {
+        margin-bottom: 1rem;
+        border: 1px solid #e0e0e0;
+        border-radius: u.rem(4);
+        padding: u.rem(12);
+        
+        &:last-child {
+          margin-bottom: 0;
+          border-bottom: 1px solid #e0e0e0;
+        }
+      }
+      
+      td {
+        display: flex; 
+        padding: u.rem(8) 0;
+        border: none;
+        
+        // Add labels using data-attributes
+        &::before {
+          content: attr(data-label);
+          font-weight: 600;
+          display: inline-block;
+          width: 40%; 
+          padding-right: u.rem(8);
+          color: var(--text-color);
+        }
+        
+        
+        &:not(:empty)::after {
+          content: '';
+          flex: 1;
+        }
+      }
+    } 
   }
 
   
@@ -151,16 +150,18 @@
       display: flex;
       justify-content: space-between;
       padding: 0.75rem 0;
-      &:not(:nth-last-child(odd)) {
       border-bottom: 1px solid #f0f0f0;
-      }
+      &:nth-last-of-type(2) {
+        border-bottom: none;
+      } 
+    }
 
-      &.total {
+      .total {
         font-weight: bold;
         font-size: 1.1rem;
         border-top: 2px solid #e0e0e0;
         border-bottom: none;
-        margin-top: 0.5rem;
+        margin-bottom: 0.5rem;
         padding-top: 1rem;
       }
     }
@@ -211,7 +212,7 @@
     transition: background 0.3s;
   }
 }
-}
+
 
 
 @include u.breakpoint(large) {

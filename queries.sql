@@ -1,4 +1,3 @@
--- User table --
 CREATE TABLE users (
   id SERIAL PRIMARY KEY,
   first_name NOT NULL,
@@ -34,11 +33,14 @@ CREATE TABLE carts (
 CREATE TABLE orders (
   id SERIAL PRIMARY KEY,
   user_id INTEGER REFERENCES users(id),
+  subtotal NUMERIC(6,2),
   total_price NUMERIC(6,2),
   shipping_address_id INTEGER REFERENCES shipping_addresses(id),
   billing_address_id INTEGER REFERENCES shipping_addresses(id),
   status VARCHAR(20) NOT NULL DEFAULT 'Pending',
   payment_method VARCHAR(10) NOT NULL DEFAULT 'cash' CHECK (payment_method IN ('cash', 'card'),
+  shipping_method_id INTEGER REFERENCES shipping_methods(id),
+  shipping_cost NUMERIC(6,2) NOT NULL DEFAULT 0;
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -67,6 +69,17 @@ CREATE TABLE shipping_addresses (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   deleted_at TIMESTAMP -- For soft delete --
+);
+
+CREATE TABLE shipping_methods (
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(50) NOT NULL,
+  description TEXT,
+  base_price NUMERIC(6,2) NOT NULL DEFAULT 0,
+  is_active BOOLEAN NOT NULL DEFAULT TRUE,
+  min_days INTEGER,
+  max_days INTEGER,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Session table from connect-pg-simple docs --

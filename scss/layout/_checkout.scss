@@ -94,11 +94,51 @@ $transition: all 0.3s ease;
       }
     }
   }
+  .shipping-methods {
+    .shipping-method {
+      margin-bottom: 1rem;
+      padding: 1rem;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .shipping-method input[type="radio"] {
+      margin-right: 1rem;
+      width: auto;
+      position: absolute;
+      right: 1rem;
+      top: 45%;
+      cursor: pointer;
+    }
+
+    .shipping-method label {
+      display: flex;
+      flex-direction: column;
+      cursor: pointer;
+    }
+
+    .method-name {
+      font-weight: bold;
+    }
+
+    .method-price {
+      font-weight: bold;
+      color: var(--text-color);
+      margin: 0.5rem 0;
+    }
+
+    .method-description {
+      font-size: 0.9rem;
+      color: var(--grey-text-color);
+    }
+  }
 
   // Form sections
-  .payment-options, .checkout {
+  .payment-options, .checkout, .shipping-methods {
     background: var(--background-color);
-    padding: 0 0 1.5rem 1.5rem;
+    padding: 0 1.5rem 1.5rem 1.5rem;
     border-radius: $border-radius;
     box-shadow: $box-shadow;
   }
@@ -134,6 +174,7 @@ $transition: all 0.3s ease;
         th, td {
           font-size: 1.1rem;
           color: var(--text-color);
+          border-bottom: none;
         }
       }
     }
@@ -240,8 +281,9 @@ $transition: all 0.3s ease;
           
           .checkout, 
           .payment-options, 
-          .order-submission {
-            margin: 0; 
+          .order-submission,
+          .shipping-methods {
+            margin: 0 0 1rem 0; 
           }
           
           .order-submission {

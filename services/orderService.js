@@ -1,7 +1,7 @@
 import db from '../db.js'
 
 // Calculate order total price
-export async function calculateTotalPrice(userId) {
+export async function calculateOrderPrice(userId) {
     const result = await db.query(
         `SELECT SUM(p.price * c.quantity) AS total_price
         FROM carts c
@@ -63,12 +63,13 @@ export async function getUserOrders(userId, { limit = 10, offset = 0 } = {}) {
 }
 
 // Create entry inside orders table
-export async function createOrder(userId, totalPrice, shippingAddressId, billingAddressId, paymentMethod) {
+export async function createOrder(userId, subtotal, shippingCost, totalPrice, shippingAddressId, billingAddressId, paymentMethod, shippingMethodId) {
+    console.log(typeof(subtotal));
     const result = await db.query(
-        `INSERT INTO orders (user_id, total_price, shipping_address_id, billing_address_id, payment_method)
-         VALUES($1, $2, $3, $4, $5)
+        `INSERT INTO orders (user_id, subtotal, shipping_cost, total_price, shipping_address_id, billing_address_id, payment_method, shipping_method_id)
+         VALUES($1, $2, $3, $4, $5, $6, $7, $8)
          RETURNING id`,
-        [userId, totalPrice, shippingAddressId, billingAddressId, paymentMethod]
+        [userId, subtotal, shippingCost, totalPrice, shippingAddressId, billingAddressId, paymentMethod, shippingMethodId]
     );
     // Return order id
     return result.rows[0].id;
@@ -130,14 +131,16 @@ export async function getOrderDetails(orderId, userId = null) {
     throw new Error("Order not found or access denied");
     }
 
-    // Get order id, date, status and price, then shipping address details, billing address details, and product details
+    // Get order id, date, status, subtotal and total price, then shipping address details, billing address details, and product details
     // Use left join in case shipping address is the same as billing address
       const result = await db.query(
         `SELECT
             o.id AS order_id,
             o.status AS order_status,
+            o.subtotal,
             o.total_price,
             o.payment_method,
+            o.shipping_cost,
             o.created_at,
             sa.first_name AS shipping_first_name,
             sa.last_name AS shipping_last_name,
@@ -155,6 +158,12 @@ export async function getOrderDetails(orderId, userId = null) {
             ba.country AS billing_country,
             ba.postal_code AS billing_postal_code,
             ba.phone_number AS billing_phone,
+            sm.id AS shipping_method_id,
+            sm.name AS shipping_method_name,
+            sm.base_price AS shipping_method_price,
+            sm.description AS shipping_method_description,
+            sm.min_days AS shipping_min_days,
+            sm.max_days AS shipping_max_days,
             p.id AS product_id,
             p.name AS product_name,
             p.thumbnail,
@@ -166,6 +175,8 @@ export async function getOrderDetails(orderId, userId = null) {
             shipping_addresses sa ON o.shipping_address_id = sa.id
         LEFT JOIN
             shipping_addresses ba ON o.billing_address_id = ba.id
+        JOIN
+            shipping_methods sm ON o.shipping_method_id = sm.id
         JOIN
             order_items oi ON o.id = oi.order_id
         JOIN
@@ -183,9 +194,21 @@ export async function getOrderDetails(orderId, userId = null) {
     return {
         id: result.rows[0].order_id,
         status: result.rows[0].order_status,
+        subtotal: result.rows[0].subtotal,
         total: result.rows[0].total_price,
+        shippingCost: result.rows[0].shipping_cost,
         payment: result.rows[0].payment_method,
         date: new Date(result.rows[0].created_at).toLocaleDateString(),
+        shippingMethod: {
+            id: result.rows[0].shipping_method_id,
+            name: result.rows[0].shipping_method_name,
+            price: result.rows[0].shipping_method_price,
+            description: result.rows[0].shipping_method_description,
+            deliveryDays: {
+                min: result.rows[0].shipping_min_days,
+                max: result.rows[0].shipping_max_days
+            }
+        },
         shippingAddress: {
             name: `${result.rows[0].shipping_first_name} ${result.rows[0].shipping_last_name}`,
             street: result.rows[0].shipping_address,

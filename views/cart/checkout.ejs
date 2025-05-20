@@ -129,12 +129,16 @@
                     </tbody>
                     <tfoot>
                       <tr>
-                        <th>Sub-total</th>
-                        <td>€<%= cartTotal %></td>
+                        <th>Sub-total:</th>
+                        <td>€<%= cartSubtotal %></td>
+                      </tr>
+                      <tr>
+                        <th>Shipping:</th>
+                        <td id="shipping-cost">€<%= shippingCost %></td>
                       </tr>
                       <tr>
                         <th>Total</th>
-                        <td><strong>€<%= cartTotal %></strong></td>
+                        <td><span id="order-total">€<%= orderTotal %></span></td>
                       </tr>
                     </tfoot>
                   </table>
@@ -142,6 +146,32 @@
               <p> There are no products in your cart. </p>
           <% } %>      
         </div>
+          <!-- Shipping Method Selection -->
+           <div class="shipping-methods">
+                <h3>Shipping Options</h3>
+                <% shippingMethods.forEach(method => { %>
+                    <div class="shipping-method">
+                        <input 
+                            type="radio" 
+                            id="method-<%= method.id %>" 
+                            name="shippingMethodId" 
+                            value="<%= method.id %>"
+                            <%= method.id === shippingMethods[0].id ? 'checked' : '' %>
+                            required
+                        >
+                        <label for="method-<%= method.id %>">
+                            <span class="method-name"><%= method.name %></span>
+                            <span class="method-price">€<%= method.base_price %></span>
+                            <% if (method.description) { %>
+                                <span class="method-description"><%= method.description %></span>
+                            <% } %>
+                            <% if (method.min_days && method.max_days) { %>
+                                <span class="method-delivery">Delivery: <%= method.min_days %>-<%= method.max_days %> business days</span>
+                            <% } %>
+                        </label>
+                    </div>
+                <% }) %>
+            </div>
 
           <!-- Payment Method Selection -->
           <div class="payment-options">
@@ -168,6 +198,7 @@
               <input type="hidden" name="shippingAddressId" id="hiddenShippingAddressId">
               <input type="hidden" name="billingAddressId" id="hiddenBillingAddressId">
               <input type="hidden" name="paymentMethod" value="cash"> <!-- Default to cash -->
+              <input type="hidden" name="shippingMethodId" id="hiddenShippingMethodId" value="<%= shippingMethods[0].id %>">
               
               <!-- Terms checkbox -->
               <div class="terms-checkbox">
@@ -189,6 +220,11 @@
         </div>
 </main>
 
+<script>
+  // Pass data from template to script.js
+  window.shippingMethods =  <%- JSON.stringify(shippingMethods) %>;
+  window.cartSubtotal = <%- cartSubtotal %>;
+</script>
 
 
 <%- include("../partials/footer"); %>
