@@ -110,6 +110,15 @@
                             </tr>
                         </tbody>
                     </table>
+                    <% if (cartSubtotal >= 100) { %>
+                    <div class="free-shipping-banner">
+                      🎉 You've qualified for free shipping!
+                    </div>
+                  <% } else { %>
+                    <div class="shipping-notice">
+                      Spend €<%= (100 - cartSubtotal).toFixed(2) %> more for free shipping
+                    </div>
+                  <% } %>
                 </div>
                 <div class="checkout">
                     <% if (user) { %>

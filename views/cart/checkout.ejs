@@ -142,6 +142,16 @@
                       </tr>
                     </tfoot>
                   </table>
+
+                  <% if (cartSubtotal >= 100) { %>
+                    <div class="free-shipping-banner">
+                      🎉 You've qualified for free shipping!
+                    </div>
+                  <% } else { %>
+                    <div class="shipping-notice">
+                      Spend €<%= (100 - cartSubtotal).toFixed(2) %> more for free shipping
+                    </div>
+                  <% } %>
             <% } else { %>
               <p> There are no products in your cart. </p>
           <% } %>      
@@ -161,7 +171,13 @@
                         >
                         <label for="method-<%= method.id %>">
                             <span class="method-name"><%= method.name %></span>
-                            <span class="method-price">€<%= method.base_price %></span>
+                            <span class="method-price">
+                              <% if (cartSubtotal >= 100) { %>
+                                FREE
+                              <% } else { %>
+                                €<%= method.base_price %>
+                              <% } %>
+                            </span>
                             <% if (method.description) { %>
                                 <span class="method-description"><%= method.description %></span>
                             <% } %>

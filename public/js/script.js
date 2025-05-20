@@ -442,11 +442,15 @@ document.addEventListener('DOMContentLoaded', function() {
     const selectedMethod = document.querySelector('input[name="shippingMethodId"]:checked');
     if (!selectedMethod || !methodsData[selectedMethod.value]) return;
     
-    const shippingCost = parseFloat(methodsData[selectedMethod.value]);
+    let shippingCost = 0;
+    if (subtotal < 100) {
+      shippingCost = parseFloat(methodsData[selectedMethod.value]);
+    }
+
     const total = subtotal + shippingCost;
 
     // Update displayed prices
-    shippingCostEl.textContent = formatPrice(shippingCost);
+    shippingCostEl.textContent = subtotal >= 100 ? "FREE" : formatPrice(shippingCost);
     orderTotalEl.textContent = formatPrice(total);
     // Update hidden form field
     const hiddenShippingInput = document.getElementById('hiddenShippingMethodId');

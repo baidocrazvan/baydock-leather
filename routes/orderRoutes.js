@@ -79,7 +79,7 @@ router.post("/new-order", authenticate, async (req, res) => {
             req.flash("error", "Invalid shipping method");
             return res.redirect("/cart/checkout");
         }
-        const shippingCost = parseFloat(shippingMethod.rows[0].base_price);
+        let shippingCost = parseFloat(shippingMethod.rows[0].base_price);
         
         // Validate shipping and billing address
         const shippingAddress = await client.query(
@@ -133,6 +133,9 @@ router.post("/new-order", authenticate, async (req, res) => {
 
         // Calculate total price including shipping
         const subtotal = parseFloat(await calculateOrderPrice(userId));
+        if (subtotal >= 100) {
+            shippingCost = 0;
+        }
         const totalPrice = subtotal + shippingCost;
 
         // Create order
