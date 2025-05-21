@@ -84,6 +84,40 @@
                     <table>
                         <thead>
                             <tr>
+                            <th colspan="2">
+                                <span class="title-th">ORDER SUMMARY</span>
+                            </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Product Breakdown (collapsible) -->
+                            <tr class="product-breakdown-toggle">
+                            <td colspan="2">
+                                <button class="breakdown-toggle-btn">
+                                <span>Show item details</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="currentColor" class="bi bi-caret-down-fill" viewBox="0 0 16 16">
+                                    <path d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z"/>
+                                </svg>
+                                </button>
+                            </td>
+                            </tr>
+                            
+                            <tr class="product-breakdown" style="display:none;">
+                            <td colspan="2" class="product-breakdown-td">
+                                <% cartItems.forEach(item => { %>
+                                <div class="breakdown-item">
+                                    <span><%= item.name %></span>
+                                    <span><%= item.quantity %> × €<%= item.price %></span>
+                                </div>
+                                <% }) %>
+                            </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <table>
+                        <thead>
+                            <tr>
                                 <th>
                                     <span class="title-th">CART TOTALS</span>
                                 </th>
@@ -91,7 +125,6 @@
                         </thead>
                     </table>
                     <table>
-                        <tbody>
                             <tr class="order-total">
                                 <th>Subtotal</th>
                                 <td>
@@ -100,12 +133,12 @@
                             </tr>
                             <tr>
                                 <th>Shipping</th>
-                                <td id="shipping-cost">Calculated at checkout</td>
+                                <td id="shipping-cost"><%= cartSubtotal <= 100 ? "Calculated at checkout" : "FREE" %></td>
                             </tr>
                             <tr>
                                 <th>Total</th>
                                 <td>
-                                    <strong>€<%= cartSubtotal %></strong>(includes <strong>€<%= (parseFloat(cartSubtotal) / 100 * 20).toFixed(2)%></strong> VAT)
+                                    <strong>€<%= cartSubtotal %></strong>(incl VAT)
                                 </td>
                             </tr>
                         </tbody>
