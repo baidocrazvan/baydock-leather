@@ -27,86 +27,96 @@
                 <tbody>
                     <% order.products.forEach( product => { %>
                     <tr>
-                        <td><%= product.productId %></td>
-                        <td><%= product.name %></td>
-                        <td><%= product.quantity %></td>
-                        <td>€<%= product.price %></td>
-                        <td>€<%= product.subtotal %></td>
+                        <td data-label="Product Code"><%= product.productId %></td>
+                        <td data-label="Product Name"><%= product.name %></td>
+                        <td data-label="Quantity"><%= product.quantity %></td>
+                        <td data-label="Price">€<%= product.price %></td>
+                        <td data-label="Subtotal">€<%= product.subtotal %></td>
                     </tr>
                     <% }) %>
                 </tbody>
             </table>
         </div>
 
-        <div class="customer-info-and-summary">
+        <div class="address-grid customer-info-and-summary">
             <div class="customer-info">
                 <% if (!sameAddress) { %>
-                <div class="address-card">
-                    <h3>Billing Address</h3>
-                    <p><span>Name:</span><%= order.billingAddress.name %></p>
-                    <p><span>Address:</span><%= order.billingAddress.street %></p>
-                    <p><span>City:</span><%= order.billingAddress.city %></p>
-                    <p><span>Postal Code:</span><%= order.billingAddress.postalCode %></p>
-                    <p><span>Country:</span><%= order.billingAddress.country %></p>
+                <div class="address-card default">
+                    <div class="address-content">
+                        <div class="address-details">
+                            <h3>Billing Address</h3>
+                            <p><span>Name:</span><%= order.billingAddress.name %></p>
+                            <p><span>Address:</span><%= order.billingAddress.street %></p>
+                            <p><span>City:</span><%= order.billingAddress.city %></p>
+                            <p><span>Postal Code:</span><%= order.billingAddress.postalCode %></p>
+                            <p><span>Country:</span><%= order.billingAddress.country %></p>
+                        </div>
+                    </div>
                 </div>
                 <% } %>
 
-                <div class="address-card">
-                    <h3>Shipping Address</h3>
-                    <p><span>Name:</span><%= order.shippingAddress.name %></p>
-                    <p><span>Address:</span><%= order.shippingAddress.street %></p>
-                    <p><span>City:</span><%= order.shippingAddress.city %></p>
-                    <p><span>Postal Code:</span><%= order.shippingAddress.postalCode %></p>
-                    <p><span>Country:</span><%= order.shippingAddress.country %></p>
+                <div class="address-card default">
+                    <div class="address-content">
+                        <div class="address-details">
+                            <h3>Shipping Address</h3>
+                            <p><span>Name:</span><%= order.shippingAddress.name %></p>
+                            <p><span>Address:</span><%= order.shippingAddress.street %></p>
+                            <p><span>City:</span><%= order.shippingAddress.city %></p>
+                            <p><span>Postal Code:</span><%= order.shippingAddress.postalCode %></p>
+                            <p><span>Country:</span><%= order.shippingAddress.country %></p>
+                        </div>
+                    </div>
                 </div>
             </div>
+            
+            <div class="order-summary">
+                <h4>Order Summary</h4>
+                <div class="summary-row">
+                    <span>Payment Method:</span>
+                    <span><%= order.payment %></span>
+                </div>
+                <div class="summary-row">
+                    <span>Subtotal:</span>
+                    <span>
+                        €<%= order.subtotal %>
+                    </span>
+                </div>
+                <div class="summary-row">
+                    <span><%= order.shippingMethod.name %> <%= order.shippingMethod.description %>:</span>
+                    <span>€<%= order.shippingCost %></span>
+                </div>
+                <div class="summary-row total">
+                    <span>Total:</span>
+                    <span>€<%= order.total %></span>
+                </div>
+                <form class="status-form" action="/admin/orders/<%= order.id %>?_method=PATCH" method="POST">
+                    <label for="status">Change order status:</label>
+                    <select name="status" id="status">
+                        <% 
+                        const statuses = [
+                            'Processing', 
+                            'Shipped', 
+                            'Delivered', 
+                            'Cancelled',  
+                            'Refunded'
+                        ];
+                        statuses.forEach(status => {
+                        %>
+                        <option 
+                            value="<%= status %>" 
+                            <%= order.status === status ? 'selected' : '' %>
+                        >
+                            <%= status.charAt(0).toUpperCase() + status.slice(1) %>
+                        </option>
+                        <% }) %>
+                    </select>
+                    <button type="submit" class="btn-primary">Update Status</button>
+                </form>
+            </div>
         </div>
 
-        <div class="order-summary">
-            <h4>Order Summary</h4>
-            <div class="summary-row">
-                <span>Payment Method:</span>
-                <span><%= order.payment %></span>
-            </div>
-            <div class="summary-row">
-                <span>Subtotal:</span>
-                <span>
-                    €<%= order.subtotal %>
-                </span>
-            </div>
-            <div class="summary-row">
-                <span><%= order.shippingMethod.name %> <%= order.shippingMethod.description %>:</span>
-                <span>€<%= order.shippingCost %></span>
-            </div>
-            <div class="summary-row total">
-                <span>Total:</span>
-                <span>€<%= order.total %></span>
-            </div>
-        </div>
 
-        <form class="status-form" action="/admin/orders/<%= order.id %>?_method=PATCH" method="POST">
-            <label for="status">Change order status:</label>
-            <select name="status" id="status">
-                <% 
-                const statuses = [
-                    'Processing', 
-                    'Shipped', 
-                    'Delivered', 
-                    'Cancelled',  
-                    'Refunded'
-                ];
-                statuses.forEach(status => {
-                %>
-                <option 
-                    value="<%= status %>" 
-                    <%= order.status === status ? 'selected' : '' %>
-                >
-                    <%= status.charAt(0).toUpperCase() + status.slice(1) %>
-                </option>
-                <% }) %>
-            </select>
-            <button type="submit" class="btn-primary">Update Status</button>
-        </form>
+        
     </div>
 </main>
 
