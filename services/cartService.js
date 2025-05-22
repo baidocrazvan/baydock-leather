@@ -76,13 +76,13 @@ export async function getCartData(userId) {
         let messages = [];
         if (removedItems > 0 || adjustedItems > 0) {
             if (deactivatedItems > 0) {
-                messages.push(`${deactivatedItems} ${deactivatedItems === 1 ? 'item' : 'items'} removed because they were deactivated`);
+                messages.push(`${deactivatedItems} ${deactivatedItems === 1 ? 'item' : 'items'} removed because they were discontinued.`);
             }
             if (removedItems - deactivatedItems > 0) {
-                messages.push(`${removedItems - deactivatedItems} ${removedItems - deactivatedItems === 1 ? 'item' : 'items'} removed because they are out of stock`);
+                messages.push(`${removedItems - deactivatedItems} ${removedItems - deactivatedItems === 1 ? 'item' : 'items'} removed because they are out of stock.`);
             }
             if (adjustedItems > 0) {
-                messages.push(`${adjustedItems} ${adjustedItems === 1 ? 'item quantity' : 'item quantities'} adjusted because of limited stock`);
+                messages.push(`${adjustedItems} ${adjustedItems === 1 ? 'item quantity' : 'item quantities'} adjusted because of limited stock.`);
             }
             message = messages.join(' and ');
         }

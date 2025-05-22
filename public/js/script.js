@@ -372,46 +372,52 @@ document.addEventListener("DOMContentLoaded", function() {
   }
 });
 
-// Desktop view admin flash-error message script for closing
-document.addEventListener("DOMContentLoaded", function() {
-  // Close button functionality
-  document.querySelectorAll(".admin-flash__close").forEach(button => {
-    button.addEventListener("click", function() {
-      const flash = this.closest(".admin-flash");
-      flash.classList.add("hide");
-      // Remove element after animation completes
-      flash.addEventListener("animationend", () => flash.remove());
+// Flash message handler 
+  document.addEventListener("DOMContentLoaded", function() {
+    // Handle all flash messages (user, admin, cart)
+    const handleFlashMessages = (selector) => {
+    document.querySelectorAll(selector).forEach(flash => {
+      // Close button functionality
+      const closeBtn = flash.querySelector(`${selector}__close`);
+      if (closeBtn) {
+        closeBtn.addEventListener("click", () => dismissFlash(flash));
+      }
+
+      // Auto-dismiss after 5 seconds
+      const autoDismiss = setTimeout(() => dismissFlash(flash), 5000);
     });
-  });
+  };
 
-  // Auto-dismiss after 5 seconds
-  document.querySelectorAll(".admin-flash").forEach(flash => {
-    setTimeout(() => {
-      flash.classList.add("hide");
-      flash.addEventListener("animationend", () => flash.remove());
-    }, 5000);
-  });
+  // Initialize all flash message types
+  handleFlashMessages(".flash");
+  handleFlashMessages(".admin-flash");
+  handleFlashMessages(".cart-notification");
 });
 
-// Cart notification  
-document.addEventListener("DOMContentLoaded", () => {
-  const notification = document.getElementById("cartNotification");
-  const closeBtn = notification?.querySelector(".cart-notification__close");
+// Dismiss function
+function dismissFlash(flashElement) {
+  if (!flashElement || flashElement.classList.contains("hide")) return;
   
-  // Manual dismiss
-  closeBtn?.addEventListener("click", () => {
-    notification.classList.add("hide");
-    setTimeout(() => notification.remove(), 300);
-  });
+  flashElement.classList.add("hide");
   
-  // Auto-dismiss
-  if (notification) {
-    setTimeout(() => {
-      notification.classList.add("hide");
-      setTimeout(() => notification.remove(), 300);
-    }, 5000);
-  }
-});
+  // Remove element after "slideOut" animation completes
+  const handleSlideOutEnd = (e) => {
+    // Only remove flash element after the slideOut animation ends
+    if (e.animationName === "slideOut") {
+      flashElement.removeEventListener("animationend", handleSlideOutEnd);
+      flashElement.remove();
+    }
+  };
+  
+  flashElement.addEventListener("animationend", handleSlideOutEnd);
+  
+  // Fallback removal 
+  setTimeout(() => {
+    if (document.body.contains(flashElement)) {
+      flashElement.remove();
+    }
+  }, 500); // slideOut duration + extra buffer
+}
 
 // Shipping methods script
 
