@@ -71,11 +71,20 @@
     border-collapse: collapse;
     margin: 1rem 0;
     
+    @media (min-width: u.rem(551)) {
+      th, td {
+        text-align: center;
+        &:nth-child(1) { width: 10%; }  /* Product-ID column */
+        &:nth-child(2) { width: 45%; } /* Product name column */
+        &:nth-child(3) { width: 15%; } /* Quantity column */ 
+        &:nth-child(4) { width: 15%; } /* Price column */
+        &:nth-child(5) { width: 15%; } /* Subtotal column */ 
+      }
+    }
 
     th, td {
       font-size: u.rem(13);
       padding: 0.75rem;
-      text-align: left;
       border-bottom: 1px solid #e0e0e0;
     }
 

@@ -108,18 +108,13 @@
                 <li class="header__nav-item"><a href="/products?category=accesories">Accesories</a></li>
                 <% if (locals.currentUser) { %>
                     <li class="header__nav-item">
-                        <a href="/user/account">My account</a>
+                        <a href="/user/account">Account</a>
                     </li> 
+                <% } else { %>
+                    <li class="header__nav-item">
+                        <a href="/auth/login">Login/Register</a>
+                    </li>
                 <% } %>
-                <li class="header__nav-item">
-                    <% if (locals.currentUser) { %>
-                        <form action="/auth/logout" method="post" class="logout-form">
-                            <button type="submit" class="logout-button">Logout</a>
-                        </form>
-                    <% } else { %>
-                    <a href="/auth/login">Login/Register</a>
-                    <% } %>
-                </li>
             </ul>
         </div>   
         

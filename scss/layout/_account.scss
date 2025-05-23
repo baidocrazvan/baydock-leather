@@ -258,9 +258,19 @@ $error-color: #ff3333;
       border-collapse: collapse;
       font-size: 0.9rem;
 
+      @media (min-width: u.rem(503)) {
+        th, td {
+          text-align: center;
+          &:nth-child(1) { width: 15%; }  /* Order-ID column */
+          &:nth-child(2) { width: 25%; } /* Date column */
+          &:nth-child(3) { width: 20%; } /* Status column */ 
+          &:nth-child(4) { width: 20%; } /* Total column */
+          &:nth-child(5) { width: 15%; } /* Actions column */ 
+        }
+      }
+
       th, td {
         padding: 1rem;
-        text-align: left;
         border-bottom: u.rem(1) solid var(--line-color);
       }
 

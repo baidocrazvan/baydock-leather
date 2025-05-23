@@ -152,13 +152,24 @@
   margin-bottom: 2rem;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 
+  @media (min-width: u.rem(768)) {
+    th, td {
+        text-align: center;
+        &:nth-child(1) { width: 10%; }  /* ID column */
+        &:nth-child(2) { width: 15%; } /* Status column */
+        &:nth-child(3) { width: 30%; } /* Address column */
+        &:nth-child(4) { width: 20%; }/* Date column */ 
+        &:nth-child(5) { width: 15%; }/* Total column */ 
+        &:nth-child(6) { width: 10%; }/* Actions column */ 
+    }
+  }
+
   thead {
     background: var(--text-color);
     color: white;
 
     th {
       padding: 1rem;
-      text-align: left;
       font-weight: 500;
     }
   }
@@ -236,55 +247,55 @@
     white-space: nowrap;
     display: block;
 
-      td {
-        padding: 0.75rem 0;
-        font-size: 0.85rem;
+    td {
+      padding: 0.75rem 0;
+      font-size: 0.85rem;
 
-        &::before {
-          font-size: 0.85rem;
-        }
-      }
-      
-      thead {
-        display: none;
-      }
-      
-      tbody, tr, td {
-        display: block;
-        width: 100%;
-      }
-      
-      tr {
-        margin-bottom: 1.5rem;
-        border: u.rem(1) solid var(--line-color);
-        border-radius: u.rem(8);
-        padding: 1rem;
-        position: relative;
-        
-        &:last-child {
-          margin-bottom: 0;
-        }
-      }
-      
-      td {
-        padding: 0.5rem 0;
-        border-bottom: none;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        
-        &::before {
-          content: attr(data-label);
-          font-weight: 600;
-          color: var(--text-color);
-          margin-right: 1rem;
-        }
-        
-        &:last-child {
-          border-bottom: none;
-        }
+      &::before {
+        font-size: 0.85rem;
       }
     }
+    
+    thead {
+      display: none;
+    }
+    
+    tbody, tr, td {
+      display: block;
+      width: 100%;
+    }
+    
+    tr {
+      margin-bottom: 1.5rem;
+      border: u.rem(1) solid var(--line-color);
+      border-radius: u.rem(8);
+      padding: 1rem;
+      position: relative;
+      
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+    
+    td {
+      padding: 0.5rem 0;
+      border-bottom: none;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      
+      &::before {
+        content: attr(data-label);
+        font-weight: 600;
+        color: var(--text-color);
+        margin-right: 1rem;
+      }
+      
+      &:last-child {
+        border-bottom: none;
+      }
+    }
+  }
 
   .address-card {
     padding: 1rem;

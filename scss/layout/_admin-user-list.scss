@@ -57,6 +57,19 @@
     width: 100%;
     border-collapse: collapse;
     background: white;
+
+    // Table layout and alignment
+    @media (min-width: u.rem(768)) {
+      th, td {
+        text-align: center;
+        &:nth-child(1) { width: 5%; }  /* ID column */
+        &:nth-child(2) { width: 30%; } /* Name column */
+        &:nth-child(3) { width: 30%; } /* Email column */
+        &:nth-child(4) { width: 10%; } /* Role column */
+        &:nth-child(5) { width: 15%; } /* Joined column */
+        &:nth-child(6) { width: 10%; } /* Actions column */
+      }
+    }
     
     thead {
       background: var(--text-color);
@@ -64,7 +77,6 @@
       
       th {
         padding: 1rem;
-        text-align: left;
       }
     }
     
@@ -88,6 +100,23 @@
         &[data-label="Actions"] {
           white-space: nowrap;
         }
+      }
+    }
+  }
+
+  .order-table {
+    // Table layout and alignment
+    @media (min-width: u.rem(768)) {
+      th, td {
+        text-align: center;
+        &:nth-child(1) { width: 5%; }  /* ID column */
+        &:nth-child(2) { width: 10%; } /* Status column */
+        &:nth-child(3) { width: 18%; } /* Customer column */
+        &:nth-child(4) { width: 25%; }/* Address column */ 
+        &:nth-child(5) { width: 15%; }/* Phone column */ 
+        &:nth-child(6) { width: 7%; }/* Total column */ 
+        &:nth-child(7) { width: 10%; }/* Date column */ 
+        &:nth-child(8) { width: 10%; }/* Actions column */ 
       }
     }
   }

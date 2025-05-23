@@ -17,8 +17,8 @@
             <table class="products-table">
                 <thead>
                     <tr>
-                        <th>Product ID</th>
-                        <th>Product Name</th>
+                        <th>ID</th>
+                        <th>Product</th>
                         <th>Quantity</th>
                         <th>Price</th>
                         <th>Subtotal</th>
@@ -27,11 +27,11 @@
                 <tbody>
                     <% order.products.forEach( product => { %>
                     <tr>
-                        <td data-label="Product Code"><%= product.productId %></td>
-                        <td data-label="Product Name"><%= product.name %></td>
-                        <td data-label="Quantity"><%= product.quantity %></td>
-                        <td data-label="Price">€<%= product.price %></td>
-                        <td data-label="Subtotal">€<%= product.subtotal %></td>
+                        <td data-label="ID:"><%= product.productId %></td>
+                        <td data-label="Product:"><%= product.name %></td>
+                        <td data-label="Quantity:"><%= product.quantity %></td>
+                        <td data-label="Price:">€<%= product.price %></td>
+                        <td data-label="Subtotal:">€<%= product.subtotal %></td>
                     </tr>
                     <% }) %>
                 </tbody>
