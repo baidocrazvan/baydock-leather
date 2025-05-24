@@ -2,8 +2,7 @@ import express from "express";
 import db from '../db.js'
 import { authenticate, isAdmin } from "../middleware/middleware.js";
 import { getAllProducts, getProductById } from "../services/productService.js";
-import { getAllOrders } from "../services/adminService.js";
-import { getOrderDetails } from "../services/orderService.js";
+import { getOrderDetails, getAllOrders } from "../services/orderService.js";
 import { getAllUsers, getUserDetails } from "../services/userService.js";
 import { validateAdminRegister } from "../middleware/validationMiddleware.js";
 import bcrypt from "bcryptjs";

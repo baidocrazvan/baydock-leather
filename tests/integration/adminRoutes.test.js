@@ -3,8 +3,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import app from "../../app.js";
 import db from "../../db.js";
 import { getAllProducts, getProductById } from "../../services/productService.js";
-import { getAllOrders } from "../../services/adminService.js";
-import { getOrderDetails } from "../../services/orderService.js";
+import { getOrderDetails, getAllOrders } from "../../services/orderService.js";
 import { getAllUsers, getUserDetails } from "../../services/userService.js";
 
 // Mock dependencies
