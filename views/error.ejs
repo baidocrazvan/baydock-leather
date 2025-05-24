@@ -1,9 +1,19 @@
 <%- include("./partials/header"); %>
 
-    <main>
-        <h1> Error <%= error %></h1>
-        <p><%= locals.error.message || locals.message %></p>
-
+    <main class="error-page">
+        <div class="error-page__container">
+            <div class="error-page__code"><%= error %></div>
+            <div class="error-page__message">
+            <%= locals.error.message || locals.message || 'Something went wrong' %>
+            </div>
+            <div class="error-page__actions">
+            <a href="/" class="error-page__button btn-secondary">
+                Return Home
+            </a>
+            </div>
+        </div>
     </main>
+
+<%- include("./partials/footer"); %>
 
 <%- include("./partials/footer"); %>
