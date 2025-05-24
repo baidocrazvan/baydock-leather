@@ -237,38 +237,7 @@ describe("Admin Routes", () => {
         });
     });
 
-    describe("PATCH /orders/:id", () => {
-        it("should update order status", async () => {
-          db.query.mockResolvedValue({ rowCount: 1 });
     
-          const res = await request(app)
-            .patch("/admin/orders/1")
-            .send({ status: "completed" })
-            .expect(302)
-            .expect("Location", "/admin/orders/1");
-    
-          expect(db.query).toHaveBeenCalledWith(
-            expect.stringContaining("UPDATE orders SET status = $1"),
-            ["completed", "1"]
-          );
-        });
-    
-        it("should handle update error", async () => {
-          db.query.mockRejectedValue(new Error("DB error"));
-    
-          const res = await request(app)
-            .patch("/admin/orders/1")
-            .send({ status: "completed" })
-            .expect(302)
-            .expect("Location", "/admin/orders");
-
-            // Verify that the database query was called with the correct arguments
-            expect(db.query).toHaveBeenCalledWith(
-            expect.stringContaining("UPDATE orders SET status = $1"),
-            ["completed", "1"]
-            );
-        });
-    });
 
     describe("GET /users", () => {
         it("should render users list", async () => {

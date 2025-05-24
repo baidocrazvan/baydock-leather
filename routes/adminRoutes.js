@@ -120,24 +120,6 @@ router.get("/orders/:id", authenticate, isAdmin, async(req, res) => {
     }
 })
 
-// PATCH route for changind order status
-router.patch("/orders/:id", authenticate, isAdmin, async(req, res) => {
-    try{
-        const orderId = req.params.id;
-        const newStatus = req.body.status;
-        await db.query(`UPDATE orders SET status = $1 WHERE id = $2`,
-        [newStatus, orderId]
-        );
-
-        req.flash("success", "Order status updated successfully")
-        return res.redirect(`/admin/orders/${orderId}`);
-    } catch(err) {
-        console.error("PATCH error updating order status", err);
-        req.flash("error", "Failed to update order status");
-        return res.redirect("/admin/orders");
-    }
-})
-
 // GET route for getting users list
 router.get("/users", authenticate, isAdmin, async (req, res) => {
     try {

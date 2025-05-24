@@ -1,5 +1,5 @@
 import request from "supertest";
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import app from "../../app.js";
 import db from "../../db.js";
 import {
@@ -9,13 +9,15 @@ import {
   clearCart,
   updateProductStock,
   getOrderDetails,
-  getUserOrders
+  getUserOrders,
+  getAllOrders
 } from "../../services/orderService.js";
 
 // Mock dependencies
 vi.mock("../../db.js");
 vi.mock("../../services/orderService.js", () => ({
   calculateOrderPrice: vi.fn(),
+  getAllOrders: vi.fn(),
   createOrder: vi.fn(),
   addOrderItems: vi.fn(),
   clearCart: vi.fn(),
@@ -219,6 +221,112 @@ describe("Order Routes with authentication", () => {
           expect(addOrderItems).toHaveBeenCalledWith(1, 1);
           expect(updateProductStock).toHaveBeenCalledWith(1);
           expect(clearCart).toHaveBeenCalledWith(1);
+      });
+    });
+
+    describe("PATCH /orders/:id", () => {
+      beforeEach(() => {
+        vi.clearAllMocks();
+
+        // Supress console.error
+        vi.spyOn(console, "error").mockImplementation(() => {});
+
+        const mockOrder = {
+          order_id: 1,
+          order_status: "pending",
+          order_date: new Date(),
+          order_total: 199.98,
+          first_name: "Johnny",
+          last_name: "Test"
+        };
+
+        const mockOrderDetails = {
+        id: 1,
+        status: "pending",
+        subtotal: 199.98,
+        total: 199.98,
+        shippingCost: 0,
+        payment: "cash",
+        date: "1/1/2025",
+        shippingMethod: {
+          id: 1,
+          name: "Cargus",
+          price: 0,
+          description: "Courier delivery",
+          deliveryDays: {
+            min: 1,
+            max: 3
+          }
+        },
+        shippingAddress: {
+          name: "Johnny Test",
+          street: "Str Lunga 23A",
+          city: "Oradea",
+          country: "Romania",
+          postalCode: "123456",
+          phoneNumber: "+40771711988"
+        },
+        billingAddress: {
+          name: "Johnny Test",
+          street: "Str Lunga 23A",
+          city: "Oradea",
+          country: "Romania",
+          postalCode: "123456",
+          phoneNumber: "+40771711988"
+          },
+        products: [
+          {
+            productId: 1,
+            name: "Test Product",
+            thumbnail: "test.jpg",
+            quantity: 2,
+            price: 99.99,
+            subtotal: "199.98"
+          }
+        ]
+    };
+
+        getAllOrders.mockResolvedValue({
+          orders: [mockOrder],
+          total: 1
+        });
+        getOrderDetails.mockResolvedValue(mockOrderDetails);
+      });
+
+      afterEach(() => {
+        // Restore console.error 
+        vi.restoreAllMocks();
+      })
+
+      it("should update order status", async () => {
+        db.query.mockResolvedValue({ rowCount: 1 });
+  
+        const res = await request(app)
+          .patch("/orders/1")
+          .send({ status: "processing" })
+          .expect(302)
+          .expect("Location", "/admin/orders/1");
+  
+        expect(db.query).toHaveBeenCalledWith(
+          expect.stringContaining("UPDATE orders SET status = $1"),
+          ["processing", "1"]
+        );
+      });
+  
+      it("should handle update error", async () => {
+        db.query.mockRejectedValue(new Error("DB error"));
+  
+        const res = await request(app)
+          .patch("/orders/1")
+          .send({ status: "processing" })
+          .expect(302)
+          .expect("Location", "/admin/orders");
+
+          // Verify that the database query was called with the correct arguments
+          expect(db.query).toHaveBeenCalledWith(
+          expect.stringContaining("UPDATE orders SET status = $1"),
+          ["processing", "1"]
+          );
       });
     });
 });

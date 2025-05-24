@@ -173,9 +173,27 @@ router.post("/new-order", authenticate, async (req, res) => {
         } finally {
             // Release client back to the pool
             client.release();
-        }
-        
+        } 
+});
+
+// PATCH route for changing order status
+router.patch("/:id", authenticate, isAdmin, async(req, res) => {
+    try{
+        const orderId = req.params.id;
+        const newStatus = req.body.status;
+        await db.query(`UPDATE orders SET status = $1 WHERE id = $2`,
+        [newStatus, orderId]
+        );
+
+        req.flash("success", "Order status updated successfully")
+        return res.redirect(`/admin/orders/${orderId}`);
+    } catch(err) {
+        console.error("PATCH error updating order status", err);
+        req.flash("error", "Failed to update order status");
+        return res.redirect("/admin/orders");
+    }
 })
+
 
 
 export default router;
