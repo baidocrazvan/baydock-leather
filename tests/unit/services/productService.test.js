@@ -28,7 +28,9 @@ describe("Product Service", () => {
             const result = await getAllProducts();
             
             expect(result).toEqual(mockProducts);
-            expect(db.query).toHaveBeenCalledWith("SELECT * FROM products");
+            expect(db.query).toHaveBeenCalledWith("SELECT * FROM products WHERE is_active = TRUE",
+                []
+            );
         });
 
         it("should sort by price ascending", async () => {
@@ -38,7 +40,8 @@ describe("Product Service", () => {
             
             expect(result).toEqual(mockProducts);
             expect(db.query).toHaveBeenCalledWith(
-              "SELECT * FROM products ORDER BY price ASC"
+              "SELECT * FROM products WHERE is_active = TRUE ORDER BY price ASC",
+              []
             );
           });
       
@@ -49,7 +52,8 @@ describe("Product Service", () => {
             
             expect(result).toEqual(mockProducts);
             expect(db.query).toHaveBeenCalledWith(
-                "SELECT * FROM products ORDER BY price DESC"
+                "SELECT * FROM products WHERE is_active = TRUE ORDER BY price DESC",
+                []
             );
         });
     
@@ -60,7 +64,8 @@ describe("Product Service", () => {
             
             expect(result).toEqual(mockProducts);
             expect(db.query).toHaveBeenCalledWith(
-                "SELECT * FROM products ORDER BY created_at ASC"
+                "SELECT * FROM products WHERE is_active = TRUE ORDER BY created_at ASC",
+                []
             );
         });
     
@@ -70,7 +75,9 @@ describe("Product Service", () => {
             const result = await getAllProducts("invalid_column", "asc");
             
             expect(result).toEqual(mockProducts);
-            expect(db.query).toHaveBeenCalledWith("SELECT * FROM products");
+            expect(db.query).toHaveBeenCalledWith("SELECT * FROM products WHERE is_active = TRUE",
+                []
+            );
         });
     
         it("should handle database errors", async () => {
@@ -136,7 +143,7 @@ describe("Product Service", () => {
             
             expect(result).toEqual(mockProducts);
             expect(db.query).toHaveBeenCalledWith(
-                "SELECT * FROM products WHERE CATEGORY = $1",
+                "SELECT * FROM products WHERE CATEGORY = $1 AND is_active = TRUE",
                 ["category_a"]
             );
         });
@@ -148,7 +155,7 @@ describe("Product Service", () => {
             
             expect(result).toEqual(mockProducts);
             expect(db.query).toHaveBeenCalledWith(
-                "SELECT * FROM products WHERE CATEGORY = $1 ORDER BY price ASC",
+                "SELECT * FROM products WHERE CATEGORY = $1 AND is_active = TRUE ORDER BY price ASC",
                 ["category_a"]
             );
         });
@@ -160,7 +167,7 @@ describe("Product Service", () => {
             
             expect(result).toEqual(mockProducts);
             expect(db.query).toHaveBeenCalledWith(
-                "SELECT * FROM products WHERE CATEGORY = $1 ORDER BY created_at DESC",
+                "SELECT * FROM products WHERE CATEGORY = $1 AND is_active = TRUE ORDER BY created_at DESC",
                 ["category_a"]
             );
         });
@@ -172,7 +179,7 @@ describe("Product Service", () => {
             
             expect(result).toEqual(mockProducts);
             expect(db.query).toHaveBeenCalledWith(
-                "SELECT * FROM products WHERE CATEGORY = $1",
+                "SELECT * FROM products WHERE CATEGORY = $1 AND is_active = TRUE",
                 ["category_a"]
             );
         });
@@ -194,7 +201,6 @@ describe("Product Service", () => {
           { id: 1, name: 'Brown Leather Belt', description: 'Genuine leather', category: 'belts' },
           { id: 2, name: 'Blue Keychain', description: 'Handmade', category: 'keychains' }
         ];
-      
         
         beforeEach(() => {
           vi.clearAllMocks();
@@ -207,8 +213,8 @@ describe("Product Service", () => {
           
             expect(result).toEqual(mockProducts);
             expect(db.query).toHaveBeenCalledWith(
-              expect.stringContaining('SELECT * FROM products WHERE name ILIKE $1'),
-              ['%brown%'] // Verify wildcards are added
+                expect.stringContaining('WHERE (name ILIKE $1 OR description ILIKE $1 OR category ILIKE $1)'),
+                ['%brown%']
             );
           });
 
@@ -266,9 +272,12 @@ describe("Product Service", () => {
           });
           
         it('should throw errors properly', async () => {
+            const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
             db.query.mockRejectedValue(new Error('DB error'));
           
             await expect(getProductsBySearch('test')).rejects.toThrow('DB error');
+
+            consoleErrorSpy.mockRestore();
         });
     })
 })    

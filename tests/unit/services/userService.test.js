@@ -18,7 +18,8 @@ describe("User Service", () => {
     describe("getAllUsers()", () => {
       it("should return all users without sensitive data", async () => {
         // Mock database response
-        db.query.mockResolvedValue({
+        db.query
+        .mockResolvedValueOnce({
           rows: [
             {
               id: 1,
@@ -29,26 +30,39 @@ describe("User Service", () => {
               role: "user"
             }
           ]
-        });
-         
+        })
+        .mockResolvedValueOnce({ // Count query
+          rows: [{ count: "1"}]
+        })
+        
         const users = await getAllUsers();
   
-        expect(users).toEqual([
-          {
-            id: 1,
-            first_name: "John",
-            last_name: "Doe",
-            email: "john@example.com",
-            created_at: expect.any(Date),
-            role: "user"
-          }
-        ]);
-    });
+        expect(users).toEqual({
+          users: [
+            {
+              id: 1,
+              first_name: "John",
+              last_name: "Doe",
+              email: "john@example.com",
+              created_at: expect.any(Date),
+              role: "user"
+            }
+          ],
+          total: 1
+        });
+      });
        
-    it("should handle empty user list", async () => {
-        db.query.mockResolvedValue({ rows: [] });
+      it("should handle empty user list", async () => {
+        db.query
+          .mockResolvedValueOnce({ rows: [] }) // Main query
+          .mockResolvedValueOnce({ rows: [{ count: '0' }] }); // Count query
+
         const users = await getAllUsers();
-        expect(users).toEqual([]);
+
+        expect(users).toEqual({
+          users: [],
+          total: 0
+        });
       });
     });
   

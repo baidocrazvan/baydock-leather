@@ -28,15 +28,21 @@ describe("Admin Routes", () => {
         req.isAuthenticated = () => true;
         next();
         },
-        isAdmin: (req, res, next) => next()
+        isAdmin: (req, res, next) => next(),
+        redirectIfAuthenticated: (req, res, next) => next(),
     }));
 
     const mockProduct = {
         id: 1,
         name: "Test Product",
+        description: "Test description",
+        detailed_description: "Long test description",
         price: 99.99,
+        category: "Test category",
         stock: 10,
-        thumbnail: "images/thumbnail.jpg"
+        thumbnail: "images/thumbnail.jpg",
+        images: "images/products/7357.jpg",
+
     };
 
     const mockOrder = {
@@ -51,9 +57,21 @@ describe("Admin Routes", () => {
     const mockOrderDetails = {
         id: 1,
         status: "pending",
+        subtotal: 199.98,
         total: 199.98,
+        shippingCost: 0,
         payment: "cash",
-        date: "2023-01-01",
+        date: "1/1/2025",
+        shippingMethod: {
+          id: 1,
+          name: "Cargus",
+          price: 0,
+          description: "Courier delivery",
+          deliveryDays: {
+            min: 1,
+            max: 3
+          }
+        },
         shippingAddress: {
           name: "Johnny Test",
           street: "Str Lunga 23A",
@@ -122,15 +140,22 @@ describe("Admin Routes", () => {
 
         // Default mocks
         getAllProducts.mockResolvedValue([mockProduct]);
-        getProductById.mockResolvedValue(mockProduct);
-        getAllOrders.mockResolvedValue([mockOrder]);
+        getProductById.mockResolvedValue({...mockProduct, description: "Test description"});
+        getAllOrders.mockResolvedValue({
+          orders: [mockOrder],
+          total: 1
+        });
         getOrderDetails.mockResolvedValue(mockOrderDetails);
-        getAllUsers.mockResolvedValue([mockUser]);
+        getAllUsers.mockResolvedValue({
+          users: [mockUser],
+          total: 1
+        });
         getUserDetails.mockResolvedValue(mockUserDetails);
         vi.mock("../../middleware/validationMiddleware.js", () => ({
           validateRegister: (req, res, next) => next(), // Mock validateRegister to always pass
           validateLogin: (req, res, next) => next(),    // Mock validateLogin to always pass
           validateAddress: (req, res, next) => next(), // Mock validateAddress to always pass
+          validateAdminRegister: (req, res, next) => next(), // Mock validatAdminRegister to always pass
         }));
     });
 
@@ -140,23 +165,13 @@ describe("Admin Routes", () => {
     })
 
     describe("GET /dashboard", () => {
-        it("should render admin dashboard with products", async () => {
+        it("should render admin dashboard with admin account info", async () => {
           const res = await request(app)
             .get("/admin/dashboard")
             .expect(200)
             .expect("Content-Type", /html/);
     
-          expect(res.text).toContain("Test Product");
-          expect(getAllProducts).toHaveBeenCalled();
-        });
-    
-        it("should redirect on error", async () => {
-          getAllProducts.mockRejectedValue(new Error("DB error"));
-    
-          const res = await request(app)
-            .get("/admin/dashboard")
-            .expect(302)
-            .expect("Location", "/");
+          expect(res.text).toContain("Welcome back, Admin!");
         });
     });
 
@@ -167,7 +182,7 @@ describe("Admin Routes", () => {
             .expect(200)
             .expect("Content-Type", /html/);
     
-          expect(res.text).toContain("Modify product");
+          expect(res.text).toContain("Partially or fully update a product:");
           expect(getProductById).toHaveBeenCalledWith("1");
         });
     });
@@ -180,7 +195,7 @@ describe("Admin Routes", () => {
             .expect("Content-Type", /html/);
     
           expect(res.text).toContain("User orders:");
-          expect(getAllOrders).toHaveBeenCalledWith("");
+          expect(getAllOrders).toHaveBeenCalledWith("", 10, 0);
         });
     
         it("should handle search term", async () => {
@@ -188,7 +203,7 @@ describe("Admin Routes", () => {
             .get("/admin/orders?search=1")
             .expect(200);
     
-          expect(getAllOrders).toHaveBeenCalledWith("1");
+          expect(getAllOrders).toHaveBeenCalledWith("1", 10, 0);
         });
     
         it("should redirect on error", async () => {
@@ -209,7 +224,7 @@ describe("Admin Routes", () => {
             .expect(200)
             .expect("Content-Type", /html/);
     
-          expect(res.text).toContain("Order number #1");
+          expect(res.text).toContain("Order #1");
           expect(getOrderDetails).toHaveBeenCalledWith("1");
         });
     
@@ -273,7 +288,7 @@ describe("Admin Routes", () => {
           const res = await request(app)
             .get("/admin/users")
             .expect(302)
-            .expect("Location", "/admin/dashboard.ejs");
+            .expect("Location", "/admin/dashboard");
 
         });
     });
@@ -285,7 +300,7 @@ describe("Admin Routes", () => {
             .expect(200)
             .expect("Content-Type", /html/);
     
-          expect(res.text).toContain("User Details:");
+          expect(res.text).toContain("User Details");
           expect(getUserDetails).toHaveBeenCalledWith("1");
         });
     

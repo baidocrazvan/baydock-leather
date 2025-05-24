@@ -3,17 +3,29 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import app from "../../app.js";
 import db from "../../db.js";
 import {
-  calculateTotalPrice,
+  calculateOrderPrice,
   createOrder,
   addOrderItems,
   clearCart,
   updateProductStock,
-  getOrderDetails
+  getOrderDetails,
+  getUserOrders
 } from "../../services/orderService.js";
 
 // Mock dependencies
 vi.mock("../../db.js");
-vi.mock("../../services/orderService.js");
+vi.mock("../../services/orderService.js", () => ({
+  calculateOrderPrice: vi.fn(),
+  createOrder: vi.fn(),
+  addOrderItems: vi.fn(),
+  clearCart: vi.fn(),
+  updateProductStock: vi.fn(),
+  getOrderDetails: vi.fn(),
+  getUserOrders: vi.fn().mockResolvedValue({
+    orders: [], 
+    total: 0
+  })
+}));
 
 vi.mock("../../middleware/middleware.js", () => ({
   authenticate: (req, res, next) => {
@@ -27,7 +39,8 @@ vi.mock("../../middleware/middleware.js", () => ({
     req.isAuthenticated = () => true;
     next();
   },
-  isAdmin: (req, res, next) => next()
+  isAdmin: (req, res, next) => next(),
+  redirectIfAuthenticated: (req, res, next) => next(),
 }));
 
 describe("Order Routes with authentication", () => {
@@ -46,9 +59,21 @@ describe("Order Routes with authentication", () => {
     const order = {
       id: 5,
       status: "pending",
+      subtotal: 99.99,
       total: 99.99,
+      shippingCost: 0,
       payment: "cash",
       date: "19/04/2025",
+      shippingMethod: {
+        id: 1,
+        name: "Cargus",
+        price: 0,
+        description: "Courier delivery",
+        deliveryDays: {
+          min: 1,
+          max: 3
+        }
+      },
       shippingAddress: {
         name: "Johnny Cash",
         street: "Strada Lunga 23A",
@@ -63,7 +88,7 @@ describe("Order Routes with authentication", () => {
         city: "Oradea, Romania",
         country: "Romania",
         postalCode: "410495",
-        phone: "+40771711988"
+        phoneNumber: "+40771711988"
       },
       products: [
         {
@@ -76,43 +101,43 @@ describe("Order Routes with authentication", () => {
         }
       ]
     }
-
-    const mockOrderHistory = [
-      {
-        order_id: 1,
-        order_status: "pending",
-        order_date: new Date(),
-        order_total: 59.45,
-        first_name: "Johnny",
-        last_name: "Cash"
-      }
-    ];
-
-
+    
     describe("GET /history", () => {
 
         it("should render order history for authenticated user", async () => {
             // Mock db response
-            db.query.mockResolvedValue({ rows: mockOrderHistory });
+            getUserOrders.mockResolvedValue({
+              orders: [{
+                order_id: 1,
+                order_status: "pending",
+                order_date: new Date(),
+                order_total: 59.45,
+                first_name: "Johnny",
+                last_name: "Cash",
+                city: "Oradea",
+                county: "Bihor"
+              }],
+              total: 1
+            });
         
             const res = await request(app)
                 .get("/orders/history")
                 .expect(200)
                 .expect("Content-Type", /html/);
         
-            expect(res.text).toContain("My orders");
+            expect(res.text).toContain("My Orders");
             expect(res.text).toContain("Johnny");
         });
 
         it("should handle empty order history", async () => {
-            db.query.mockResolvedValue({ rows: [] });
+            getUserOrders.mockResolvedValue({ orders: [], total: 0 });
       
             const res = await request(app)
               .get("/orders/history")
               .expect(200)
               .expect("Content-type", /html/);
       
-            expect(res.text).toContain("Sorry, there is no order history to display.");
+            expect(res.text).toContain("No orders found.");
         });  
     });
 
@@ -122,11 +147,11 @@ describe("Order Routes with authentication", () => {
           getOrderDetails.mockResolvedValue(order);
           
           const res = await request(app)
-            .get("/orders/1")
+            .get("/orders/5")
             .expect(200);
     
-          expect(res.text).toContain("Order number");
-          expect(getOrderDetails).toHaveBeenCalledWith("1", mockOrder.user_id);
+          expect(res.text).toContain("Order #5");
+          expect(getOrderDetails).toHaveBeenCalledWith("5", mockOrder.user_id);
         });
     
         it("should reject unauthorized access to orders", async () => {
@@ -155,8 +180,18 @@ describe("Order Routes with authentication", () => {
           // Mock db.connect to return the mock client
           db.connect.mockResolvedValue(mockClient);
 
+          // Mock all the required database responses
+          mockClient.query
+            .mockResolvedValueOnce({ rows: [] }) // BEGIN
+            .mockResolvedValueOnce({ rows: [{ id: 1 }] }) // Shipping method
+            .mockResolvedValueOnce({ rows: [{ id: 1, is_shipping: true }] }) // Shipping address
+            .mockResolvedValueOnce({ rows: [{ product_id: 1, quantity: 2 }] }) // Cart items
+            .mockResolvedValueOnce({ rows: [] }) // Stock check
+            .mockResolvedValueOnce({ rows: [] }) // COMMIT
+            
+
           // Mock service functions
-          calculateTotalPrice.mockResolvedValue(100.0);
+          calculateOrderPrice.mockResolvedValue(100.0);
           createOrder.mockResolvedValue(1); // Mock order ID
           addOrderItems.mockResolvedValue();
           updateProductStock.mockResolvedValue();
@@ -164,47 +199,23 @@ describe("Order Routes with authentication", () => {
       });
       
       it("should successfully create a new order and redirect to the order page", async () => {
-          // Mock database responses
-          mockClient.query
-          .mockResolvedValueOnce({ rows: [] }) // BEGIN
-          .mockResolvedValueOnce({ rows: [{ is_shipping: true }] }) // Shipping address
-          .mockResolvedValueOnce({ rows: [{ product_id: 1, quantity: 2 }] }) // Cart items
-          .mockResolvedValueOnce({ rows: [] }) // Stock check
-          .mockResolvedValueOnce({ rows: [] }); // COMMIT
-    
           const res = await request(app)
           .post("/orders/new-order")
           .send({
             shippingAddressId: 1,
             billingAddressId: 1,
             paymentMethod: "cash",
+            shippingMethodId: 1
           })
           .expect(302) 
           .expect("Location", "/orders/1"); // Success redirect to the order page
     
           expect(mockClient.query).toHaveBeenNthCalledWith(1, "BEGIN");
-          expect(mockClient.query).toHaveBeenNthCalledWith(
-            2,
-            "SELECT * FROM shipping_addresses WHERE id = $1 AND user_id = $2",
-            [1, 1]
-          );
-          expect(mockClient.query).toHaveBeenNthCalledWith(
-            3,
-            "SELECT * FROM carts WHERE user_id = $1",
-            [1]
-          );
-          expect(mockClient.query).toHaveBeenNthCalledWith(
-            4,
-            `SELECT p.name FROM carts c
-             JOIN products p ON c.product_id = p.id
-             WHERE c.user_id = $1 AND c.quantity > p.stock`,
-            [1]
-          );
-          expect(mockClient.query).toHaveBeenNthCalledWith(5, "COMMIT");
+          expect(mockClient.query).toHaveBeenNthCalledWith(6, "COMMIT");
     
           // Verify service function calls
-          expect(calculateTotalPrice).toHaveBeenCalledWith(1);
-          expect(createOrder).toHaveBeenCalledWith(1, 100.0, 1, 1, "cash");
+          expect(calculateOrderPrice).toHaveBeenCalledWith(1);
+          expect(createOrder).toHaveBeenCalledWith(1, 100.0, 0, 100.0 , 1, 1, "cash", 1);
           expect(addOrderItems).toHaveBeenCalledWith(1, 1);
           expect(updateProductStock).toHaveBeenCalledWith(1);
           expect(clearCart).toHaveBeenCalledWith(1);

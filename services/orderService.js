@@ -64,7 +64,7 @@ export async function getUserOrders(userId, { limit = 10, offset = 0 } = {}) {
 
 // Create entry inside orders table
 export async function createOrder(userId, subtotal, shippingCost, totalPrice, shippingAddressId, billingAddressId, paymentMethod, shippingMethodId) {
-    console.log(typeof(subtotal));
+
     const result = await db.query(
         `INSERT INTO orders (user_id, subtotal, shipping_cost, total_price, shipping_address_id, billing_address_id, payment_method, shipping_method_id)
          VALUES($1, $2, $3, $4, $5, $6, $7, $8)

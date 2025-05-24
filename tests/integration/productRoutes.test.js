@@ -36,13 +36,14 @@ vi.mock("../../middleware/middleware.js", () => ({
         req.isAuthenticated = () => true;
         next();
     },
-    isAdmin: (req, res, next) => next()
+    isAdmin: (req, res, next) => next(),
+    redirectIfAuthenticated: (req, res, next) => next(),
 }));
 
 describe("Product Routes", () => {
     const mockProducts = [
-      { id: 1, name: "Product A", price: 10.99, category: "belts", thumbnail: "images/test", images: ["images/test", "images/test2"] },
-      { id: 2, name: "Product B", price: 15.99, category: "wallets", thumbnail: "images/test", images: ["images/test", "images/test2"] }
+      { id: 1, name: "Product A", price: 10.99, category: "belts", thumbnail: "images/test", images: ["images/test", "images/test2"], is_active: true },
+      { id: 2, name: "Product B", price: 15.99, category: "wallets", thumbnail: "images/test", images: ["images/test", "images/test2"], is_active: true }
     ];
 
     beforeEach(async () => {
@@ -61,7 +62,7 @@ describe("Product Routes", () => {
 
             expect(res.text).toContain("Product A");
             expect(res.text).toContain("Product B");
-            expect(getAllProducts).toHaveBeenCalledWith(undefined, undefined);
+            expect(getAllProducts).toHaveBeenCalledWith(undefined, undefined, undefined, undefined);
         });
 
         it("should filter by category", async () => {
@@ -73,7 +74,7 @@ describe("Product Routes", () => {
       
             expect(res.text).toContain("Product A");
             expect(res.text).not.toContain("Product B");
-            expect(getProductsByCategory).toHaveBeenCalledWith("belts", undefined, undefined);
+            expect(getProductsByCategory).toHaveBeenCalledWith("belts", undefined, undefined, undefined, undefined);
         });
 
         it("should sort products", async () => {
@@ -83,7 +84,7 @@ describe("Product Routes", () => {
               .get("/products?sort=price&order=desc")
               .expect(200);
       
-            expect(getAllProducts).toHaveBeenCalledWith("price", "desc");
+            expect(getAllProducts).toHaveBeenCalledWith("price", "desc", undefined, undefined);
         });
 
         it("should show 404 when no products found", async () => {
@@ -125,32 +126,87 @@ describe("Product Routes", () => {
           .send({
               name: "New Product",
               description: "Original Description",
+              detailed_description: "Original Detailed Description",
               price: 25.99,
-              category: "Original Category",
+              category: "belts",
               stock: 10,
+              images: "test-image1.jpg",
+              thumbnail: "test-thumbnail.jpg",
             })
             .expect(302)
             .expect("Location", "/admin/dashboard")
       });
   });
 
-  describe("PATCH /products/:id", () => {
-    it("should update product (admin)", async () => {
+  describe("POST /products/:id/reactivate", () => {
+    const productId = 123;
+    
+    describe("when reactivation succeeds", () => {
+      beforeEach(() => {
+        db.query.mockResolvedValue({ rowCount: 1 });
+      });
+
+      it("should reactivate the product and redirect successfully", async () => {
+        const res = await request(app)
+          .post(`/products/${productId}/reactivate`)
+          .expect(302)
+          .expect("Location", "/admin/products");
+
+        // Verify database query
+        expect(db.query).toHaveBeenCalledWith(
+          "UPDATE products SET is_active = TRUE WHERE id = $1",
+          [productId]
+        );
+      });
+    });
+
+    describe("when reactivation fails", () => {
+      beforeEach(() => {
+        db.query.mockRejectedValue(new Error("Database error"));
+      });
+
+      it("should redirect with error message", async () => {
+        const res = await request(app)
+          .post(`/products/${productId}/reactivate`)
+          .expect(302)
+          .expect("Location", "/admin/products");
+
+        expect(db.query).toHaveBeenCalledWith(
+          "UPDATE products SET is_active = TRUE WHERE id = $1",
+          [productId]
+        );
+      });
+    });
+
+    describe("when product doesn't exist", () => {
+      it("should handle non-existent product gracefully", async () => {
+        db.query.mockResolvedValue({ rowCount: 0 }); // No rows updated
 
         const res = await request(app)
-        .post("/products/1?_method=PATCH") 
-        .send({
-          name: "Updated Product",
-          description: "Original Description",
-          price: 25.99,
-          category: "Original Category",
-          stock: 100,
-        })
-        .expect(302)
-        .expect("Location", "/admin/dashboard");
-    
-      
+          .post(`/products/${productId}/reactivate`)
+          .expect(302)
+          .expect("Location", "/admin/products");
+      });
     });
+  });
+
+    describe("PATCH /products/:id", () => {
+      it("should update product (admin)", async () => {
+
+          const res = await request(app)
+          .post("/products/1?_method=PATCH") 
+          .send({
+            name: "Updated Product",
+            description: "Original Description",
+            price: 25.99,
+            category: "Original Category",
+            stock: 100,
+          })
+          .expect(302)
+          .expect("Location", "/admin/dashboard");
+      
+        
+      });
   });
 
   describe("DELETE /products/:id", () => {
@@ -170,11 +226,11 @@ describe("Product Routes", () => {
           const res = await request(app)
             .post("/products/1?_method=DELETE") // Using method override
             .expect(302)
-            .expect("Location", "/admin/dashboard");
+            .expect("Location", "/admin/products");
         
           // Verify the DELETE query
           expect(db.query).toHaveBeenCalledWith(
-            "DELETE FROM products WHERE id = $1",
+            "UPDATE products SET is_active = FALSE WHERE id = $1",
             [1]
           );
         });

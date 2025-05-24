@@ -91,11 +91,6 @@ export async function getProductsBySearch(search, sort, order = 'asc', minPrice,
         }
 
         const result = await db.query(query, params)
-        console.log("search query: ", query);
-        console.log("params: ", params);
-        console.log("paramcount: ", paramCount);
-        console.log("Search term used:", searchTerm);
-        console.log("Filtered by search:", result.rows);
         return result.rows;
     } catch(err) {
         console.error("Search failed:", err);

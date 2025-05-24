@@ -64,11 +64,11 @@ router.get("/shipping-address/edit/:id", authenticate,  async (req, res) => {
 
     if (err.message === 'ADDRESS_NOT_FOUND') {
       req.flash('error', 'Address not found or no longer available');
-      return res.redirect('/customer/addresses');
+      return res.redirect('/user/addresses');
     }
 
     req.flash('error', 'Failed to load address');
-    return res.redirect('/customer/addresses');
+    return res.redirect('/user/addresses');
   }
 })
 
@@ -164,7 +164,7 @@ router.put("/shipping-address/edit/:id", authenticate, validateAddress, async (r
     } catch(err) {
       console.error("PUT error updating address:" , err);
       req.flash('error', 'Failed to update address');
-      return res.redirect("/customer/addresses");
+      return res.redirect("/user/addresses");
     }
 })
 

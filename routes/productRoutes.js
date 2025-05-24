@@ -74,18 +74,28 @@ router.get("/:id", async (req, res) => {
     const id = req.params.id;
     const product = await getProductById(id);
 
-    // If user is admin show the product page
-    if (req.user?.role === 'admin') {
-      return res.render("products/single.ejs", {
-        product: product,
-        adminPreview: !product.is_active
+    // If product doesn't exist
+    if (!product) {
+      return res.status(404).render("error.ejs", {
+        error: 404,
+        message: "Product not found"
       });
     }
 
-    // If product doesn't exist or is deactivated by admin
-    if (!product || !product.is_active) {
-      req.flash('error', 'This product is no longer available');
-      return res.redirect('/products');
+    // If user is admin show the product page regardless of active status
+    if (req.user?.role === 'admin') {
+      return res.render("products/single.ejs", {
+        product: product,
+        adminPreview: !product.is_active || undefined
+      });
+    }
+
+    // If product is deactivated
+    if (!product.is_active) {
+      return res.status(404).render("error.ejs", {
+        error: 404,
+        message: "This product is no longer available"
+      });
     }
 
     res.render("products/single.ejs", {

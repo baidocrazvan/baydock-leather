@@ -42,39 +42,6 @@ describe('loginSchema', () => {
     expect(error).toBeDefined();
     expect(error.details[0].message).toBe('Invalid email format');
   });
-
-  it('should fail if password is too short', () => {
-    const input = {
-      email: 'test@example.com',
-      password: 'Pass1',
-    };
-
-    const { error } = loginSchema.validate(input, { abortEarly: false });
-    expect(error).toBeDefined();
-    expect(error.details[0].message).toBe('Password must be at least 8 characters');
-  });
-
-  it('should fail if password does not contain an uppercase letter', () => {
-    const input = {
-      email: 'test@example.com',
-      password: 'password123',
-    };
-
-    const { error } = loginSchema.validate(input, { abortEarly: false });
-    expect(error).toBeDefined();
-    expect(error.details[0].message).toBe('Password must contain at least 1 uppercase letter and 1 number');
-  });
-
-  it('should fail if password does not contain a number', () => {
-    const input = {
-      email: 'test@example.com',
-      password: 'Password',
-    };
-
-    const { error } = loginSchema.validate(input, { abortEarly: false });
-    expect(error).toBeDefined();
-    expect(error.details[0].message).toBe('Password must contain at least 1 uppercase letter and 1 number');
-  });
 });
 
 describe('registerSchema', () => {

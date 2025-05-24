@@ -33,50 +33,145 @@ describe("Cart Service", () => {
     });
 
     describe("getCartData()", () => {
+       beforeEach(() => {
+          // Mock client with transaction support
+          const mockClient = {
+            query: vi.fn(),
+            release: vi.fn(),
+          };
+          db.connect.mockResolvedValue(mockClient);
+        });
+
         it("should return cart items and total", async () => {
             const mockUserId = 1;
             const mockCartItems = [
-            { 
+              { 
                 id: 1,
                 name: "Product 1",
                 price: 100,
                 stock: 5,
                 thumbnail: "images/test1",
+                is_active: true,
                 quantity: 2,
                 total_price: "200.00"
-            },
-            { 
+              },
+              { 
                 id: 2,
                 name: "Product 2",
                 price: 50,
                 stock: 5,
                 thumbnail: "images/test2",
+                is_active: true,
                 quantity: 3,
                 total_price: "150.00"
-            },
-        ];
+              },
+            ];
 
-            db.query.mockResolvedValue({ rows: mockCartItems });
+            const mockClient = {
+              query: vi.fn()
+                .mockResolvedValueOnce({}) // BEGIN
+                .mockResolvedValueOnce({ rows: mockCartItems }) // Main query
+                .mockResolvedValueOnce({}), // COMMIT
+              release: vi.fn(),
+            };
+            db.connect.mockResolvedValue(mockClient);
+            
             const result = await getCartData(mockUserId);
 
             expect(result).toEqual({
                 items: mockCartItems,
                 total: "350.00",
+                message: ""
             });
 
-            expect(db.query).toHaveBeenCalledWith(expect.stringContaining("FROM carts"), [mockUserId])
-        })
+            expect(mockClient.query).toHaveBeenCalledWith("BEGIN");
+            expect(mockClient.query).toHaveBeenCalledWith(expect.stringContaining("FROM carts"), [mockUserId]);
+            expect(mockClient.query).toHaveBeenCalledWith("COMMIT");
+        });
 
         it("should throw error on database failure", async () => {
             // Suppress console.error
             const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {}); 
 
-            db.query.mockRejectedValue(new Error("DB connection failed"));
-      
-            await expect(getCartData(1)).rejects.toThrow("Failed to fetch cart items");
+            //  Mock client that will fail the cart items query
+            const mockClient = {
+                query: vi.fn()
+                    .mockResolvedValueOnce({}) // 'BEGIN' succeeds
+                    .mockRejectedValueOnce(new Error("DB connection failed")), // Main query fails
+                release: vi.fn(),
+            };
+            
+            // Mock db.connect to return mock client
+            db.connect.mockResolvedValue(mockClient);
 
-            consoleErrorSpy.mockRestore(); // Restore console.error after the test
+            await expect(getCartData(1)).rejects.toThrow("DB connection failed");
+            expect(mockClient.query).toHaveBeenCalledWith("BEGIN");
+            expect(mockClient.query).toHaveBeenCalledWith("ROLLBACK");
+            expect(mockClient.release).toHaveBeenCalled();
+
+            consoleErrorSpy.mockRestore();
+        });
+        
+        it("should handle removed and adjusted items", async () => {
+          const mockUserId = 1;
+          const mockCartItems = [
+            {
+              id: 1,
+              name: "Product 1",
+              price: 100,
+              stock: 0, // To be removed
+              thumbnail: "images/test1",
+              is_active: true,
+              quantity: 2,
+              total_price: "200.00"
+            },
+            {
+              id: 2,
+              name: "Product 2",
+              price: 50,
+              stock: 2, // To be adjusted (quantity was 3)
+              thumbnail: "images/test2",
+              is_active: true,
+              quantity: 3,
+              total_price: "150.00"
+            },
+            {
+              id: 3,
+              name: "Product 3",
+              price: 75,
+              stock: 5,
+              thumbnail: "images/test3",
+              is_active: false, // To be deactivated
+              quantity: 1,
+              total_price: "75.00"
+            }
+          ];
+
+          const mockClient = {
+            query: vi.fn()
+              .mockResolvedValueOnce({}) // BEGIN
+              .mockResolvedValueOnce({ rows: mockCartItems }) // Main query
+              // DELETE calls for items 1 and 3
+              .mockResolvedValueOnce({}) 
+              .mockResolvedValueOnce({})
+              // UPDATE call for item 2
+              .mockResolvedValueOnce({})
+              .mockResolvedValueOnce({}), // COMMIT,
+            release: vi.fn(),
+          };
+          db.connect.mockResolvedValue(mockClient);
+
+          const result = await getCartData(mockUserId);
+
+          expect(result).toEqual({
+            items: [{
+              ...mockCartItems[1],
+              quantity: 2 // Adjusted to stock
+            }],
+            total: "100.00",
+            message: "1 item removed because they were discontinued. and 1 item removed because they are out of stock. and 1 item quantity adjusted because of limited stock."
           });
+        });
     });
     
 

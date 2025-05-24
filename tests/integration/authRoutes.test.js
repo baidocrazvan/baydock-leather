@@ -8,6 +8,21 @@ import bcrypt from 'bcryptjs';
 // Mock the database and bcrypt
 vi.mock('../../db.js');
 vi.mock('bcryptjs');
+vi.mock("../../middleware/middleware.js", () => ({
+    authenticate: (req, res, next) => {
+      req.user = {
+        id: 1,
+        first_name: "Johnny",
+        last_name: "Test",
+        email: "test@example.com",
+        role: "admin"
+      };
+      req.isAuthenticated = () => true;
+      next();
+    },
+    isAdmin: (req, res, next) => next(),
+    redirectIfAuthenticated: (req, res, next) => next(),
+}));
 
 describe('Auth Routes', () => {
   let testSession;

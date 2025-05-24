@@ -1,3 +1,20 @@
+// Mock authentication
+vi.mock("../../middleware/middleware.js", () => ({
+    authenticate: (req, res, next) => {
+      req.user = {
+        id: 1,
+        first_name: "Johnny",
+        last_name: "Test",
+        email: "test@example.com",
+        role: "admin"
+      };
+      req.isAuthenticated = () => true;
+      next();
+    },
+    isAdmin: (req, res, next) => next(),
+    redirectIfAuthenticated: (req, res, next) => next(),
+}));
+
 import request from "supertest";
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import app from "../../app.js";
@@ -11,27 +28,12 @@ vi.mock("../../services/addressService.js");
 
 describe("Address routes", () => {
     
-    // Mock authentication
-    vi.mock("../../middleware/middleware.js", () => ({
-        authenticate: (req, res, next) => {
-          req.user = {
-            id: 1,
-            first_name: "Johnny",
-            last_name: "Test",
-            email: "test@example.com",
-            role: "admin"
-          };
-          req.isAuthenticated = () => true;
-          next();
-        },
-        isAdmin: (req, res, next) => next()
-      }));
-
     // Mock validation middleware
     vi.mock("../../middleware/validationMiddleware.js", () => ({
         validateAddress: (req, res, next) => next(),
         validateLogin: (req, res, next) => next(),
         validateRegister: (req, res, next) => next(),
+        validateAdminRegister: (req, res, next) => next(),
       }));
 
     const mockAddress = {
@@ -63,7 +65,7 @@ describe("Address routes", () => {
             .expect(200)
             .expect("Content-Type", /html/);
     
-          expect(res.text).toContain("Add Address");
+          expect(res.text).toContain("Add New Address");
         });
     });
 
@@ -149,7 +151,7 @@ describe("Address routes", () => {
           const res = await request(app)
             .get("/address/shipping-address/edit/999")
             .expect(302)
-            .expect("Location", "/customer/addresses");
+            .expect("Location", "/user/addresses");
         });
     });
 
@@ -205,7 +207,7 @@ describe("Address routes", () => {
                 is_billing: "on"
               })
               .expect(302)
-              .expect("Location", "/customer/addresses");
+              .expect("Location", "/user/addresses");
       
             expect(mockClient.query).toHaveBeenCalledWith("ROLLBACK");
           });
@@ -253,7 +255,7 @@ describe("Address routes", () => {
           const res = await request(app)
             .delete("/address/shipping-address/1")
             .expect(302)
-            .expect("Location", "/customer/addresses");
+            .expect("Location", "/user/addresses");
     
           expect(db.query).toHaveBeenCalledWith(
             expect.stringContaining("UPDATE shipping_addresses SET is_active = FALSE"),
@@ -267,7 +269,7 @@ describe("Address routes", () => {
           const res = await request(app)
             .delete("/address/shipping-address/999")
             .expect(302)
-            .expect("Location", "/customer/addresses");
+            .expect("Location", "/user/addresses");
         });
       });
 })

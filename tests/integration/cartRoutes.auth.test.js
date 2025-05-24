@@ -39,7 +39,8 @@ describe("Cart routes", () => {
         req.isAuthenticated = () => true;
         next();
       },
-      isAdmin: (req, res, next) => next()
+      isAdmin: (req, res, next) => next(),
+      redirectIfAuthenticated: (req, res, next) => next(),
     }));
 
     const mockCartItems = [

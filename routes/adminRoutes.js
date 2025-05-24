@@ -13,9 +13,15 @@ const router = express.Router();
 
 // GET admin dashboard
 router.get("/dashboard", authenticate, isAdmin, async (req, res) => {
-  return res.render("admin/dashboard.ejs", {
+  try {
+    return res.render("admin/dashboard.ejs", {
       user: req.user,
-  });
+    });
+  } catch(err) {
+    console.error("GET admin/dashboard error:", err);
+    return res.redirect("/");
+  }
+  
 })
 
 // GET all products
@@ -49,7 +55,7 @@ router.get("/products", authenticate, isAdmin, async (req, res) => {
         
         const products = await db.query(productsQuery, queryParams);
         
-        res.render("admin/products.ejs", { 
+        return res.render("admin/products.ejs", { 
             products: products.rows,
             page,
             pages,
@@ -60,7 +66,7 @@ router.get("/products", authenticate, isAdmin, async (req, res) => {
     } catch(err) {
         console.error("GET error for admin-products:", err);
         req.flash('error', 'Error loading products');
-        res.redirect("/admin/products.ejs");
+        return res.redirect("/admin/products.ejs");
     }
 });
 
@@ -153,7 +159,7 @@ router.get("/users", authenticate, isAdmin, async (req, res) => {
     
       } catch(err) {
         console.error("Error fetching users:", err);
-        return res.redirect("/admin/products");
+        return res.redirect("/admin/dashboard");
       }
 });
 
@@ -170,7 +176,13 @@ router.get('/users/:id', authenticate, isAdmin, async (req, res) => {
 
 // GET route for admin account registration
 router.get("/create", authenticate, isAdmin, async(req, res) => {
-    return res.render("admin/register.ejs");
+  try {
+      return res.render("admin/register.ejs");
+  } catch(err) {
+    console.error("GET error admin/create:", err);
+    return res.redirect("/admin/dashboard");
+  }
+
 })
 
 // POST protected register an admin account 
@@ -213,7 +225,7 @@ router.post("/create", validateAdminRegister, authenticate, isAdmin, async (req,
     } catch (err) {
       console.error("Registration error:", err);
       req.flash("error", "Registration failed.");
-      res.redirect("/admin/dashboard");
+      return res.redirect("/admin/dashboard");
     }
   });
 

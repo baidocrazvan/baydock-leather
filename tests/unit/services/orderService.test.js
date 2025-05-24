@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import {
-  calculateTotalPrice,
+  calculateOrderPrice,
   createOrder,
   addOrderItems,
   updateProductStock,
@@ -19,7 +19,7 @@ describe("Order Service", () => {
         db.query.mockClear();
     });
 
-    describe("calculateTotalPrice()", () => {
+    describe("calculateOrderPrice()", () => {
         it("should calculate the correct total price", async () => {
             const mockUserId = 1;
             const mockTotal = "99.99";
@@ -28,7 +28,7 @@ describe("Order Service", () => {
                 rows: [{ total_price: mockTotal }]
             });
 
-            const result = await calculateTotalPrice(mockUserId);
+            const result = await calculateOrderPrice(mockUserId);
 
             expect(result).toBe(mockTotal);
 
@@ -41,7 +41,7 @@ describe("Order Service", () => {
         it("should return null when cart is empty", async () => {
             db.query.mockResolvedValue({ rows: [{ total_price: null }] });
             
-            const result = await calculateTotalPrice(1);
+            const result = await calculateOrderPrice(1);
             expect(result).toBeNull();
             expect(db.query).toHaveBeenCalledWith(
                 expect.stringContaining("SUM(p.price * c.quantity)"),
@@ -55,10 +55,13 @@ describe("Order Service", () => {
           const mockOrderId = 123;
           const mockOrderData = {
             userId: 1,
+            subtotal: 80.00,
+            shippingCost: 19.99,
             totalPrice: 99.99,
             shippingAddressId: 1,
             billingAddressId: 2,
-            paymentMethod: "cash"
+            paymentMethod: "cash",
+            shippingMethodId: 1
           };
     
           db.query.mockResolvedValue({
@@ -67,10 +70,13 @@ describe("Order Service", () => {
     
           const result = await createOrder(
             mockOrderData.userId,
+            mockOrderData.subtotal,
+            mockOrderData.shippingCost,
             mockOrderData.totalPrice,
             mockOrderData.shippingAddressId,
             mockOrderData.billingAddressId,
-            mockOrderData.paymentMethod
+            mockOrderData.paymentMethod,
+            mockOrderData.shippingMethodId
           );
     
           expect(result).toBe(mockOrderId);
@@ -78,10 +84,13 @@ describe("Order Service", () => {
             expect.stringContaining("INSERT INTO orders"),
             [
               mockOrderData.userId,
+              mockOrderData.subtotal,
+              mockOrderData.shippingCost,
               mockOrderData.totalPrice,
               mockOrderData.shippingAddressId,
               mockOrderData.billingAddressId,
-              mockOrderData.paymentMethod
+              mockOrderData.paymentMethod,
+              mockOrderData.shippingMethodId
             ]
           );
         });
