@@ -93,8 +93,8 @@ app.get("/loggedin", (req, res) => {
   }
 });
 
+// Admin endpoints
 app.use("/admin", adminRoutes)
-
 
 // Product endpoints
 app.use("/products", productRoutes);
@@ -109,8 +109,35 @@ app.use("/orders", orderRoutes);
 // User addresses endpoints
 app.use("/address", addressRoutes);
 
-// customer account endpoints
+// User account endpoints
 app.use("/user", userRoutes);
+
+// Database cleanup for temporary carts
+function startCleanupJob() {
+  setInterval(async () => {
+    try {
+      const result = await db.query(
+        `DELETE FROM pending_carts 
+         WHERE created_at < NOW() - INTERVAL '7 days'`
+      );
+      console.log(`Cleaned up ${result.rowCount} expired pending carts`);
+    } catch (err) {
+      console.error('Failed to clean pending carts:', err);
+    }
+  }, 24 * 60 * 60 * 1000); // 24 hours
+}
+
+
+// Start cleanup for temporary cart storage
+(async () => {
+  try {
+    await db.query('SELECT 1'); // Test connection
+    startCleanupJob();
+    console.log('Cleanup job started');
+  } catch (err) {
+    console.error('Failed to start cleanup job:', err);
+  }
+})();
 
 passport.use(new Strategy(
   {

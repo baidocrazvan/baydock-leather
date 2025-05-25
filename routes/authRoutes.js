@@ -51,8 +51,21 @@ router.post("/login", validateLogin, (req, res, next) => {
         return res.redirect("/auth/login");
       }
 
-      // Restore the guest cart after session regeneration
-      req.session.cart = guestCart;
+      // Check if a user has a pending cart from registration
+      const pendingCart = await db.query(
+        `DELETE FROM pending_carts 
+        WHERE user_email = $1
+        RETURNING cart_data`,
+        [user.email]
+      );
+
+      if (pendingCart.rows.length > 0) {
+        // Restore pending cart if exists
+        req.session.cart = pendingCart.rows[0].cart_data;
+      } else {
+        // Restore the guest cart after session regeneration
+        req.session.cart = guestCart;
+      }
 
       try {
         if (req.session.cart && req.session.cart.length > 0) {
@@ -78,7 +91,8 @@ router.post("/login", validateLogin, (req, res, next) => {
 router.post("/register", validateRegister, async (req, res) => {
     const { lastName, firstName, email, password, cpassword: confirmPassword } = req.body;
     const role = "user";
-  
+    const guestCart = req.session.cart || [];
+
     try {
       if (password !== confirmPassword) {
         req.flash("error", "Password does not match confirmation password");
@@ -99,7 +113,22 @@ router.post("/register", validateRegister, async (req, res) => {
       const checkUnconfirmedUser = await db.query(
         `SELECT * FROM users WHERE email = $1 AND is_confirmed = FALSE`,
         [email]
-      )
+      );
+
+      if (checkUnconfirmedUser.rows.length > 0) {
+        // Check if a registration email has already been sent and is still valid to prevent spam
+        const recentAttempt = await db.query(
+            `SELECT created_at FROM users 
+            WHERE email = $1 AND confirmation_token_expires > NOW()
+            ORDER BY created_at DESC LIMIT 1`,
+            [email]
+        );
+
+        if (recentAttempt.rows.length > 0) {
+          req.flash('error', 'Confirmation email already sent. Please check your inbox.');
+          return res.redirect('/auth/register');
+        }
+      }
 
       // Hash password using bcrypt
       const hash = await bcrypt.hash(password, saltRounds);
@@ -141,7 +170,18 @@ router.post("/register", validateRegister, async (req, res) => {
         user = result.rows[0];
       }
       
-      
+      // Store guest cart if exists
+      if (guestCart.length > 0) {
+        await db.query(
+          `INSERT INTO pending_carts 
+          (user_email, cart_data) 
+          VALUES ($1, $2)
+          ON CONFLICT (user_email) 
+          DO UPDATE SET cart_data = $2`,
+          [email, JSON.stringify(guestCart)]
+        );
+     }
+    
       // Send confirmation email
       try {
         await sendConfirmationEmail(email, user.confirmation_token);
@@ -189,7 +229,7 @@ router.post("/confirm", async (req, res) => {
        AND confirmation_token_expires > NOW()`,
       [token]
     );
-
+    console.log("line 233 result:", result.rows);
     if (!result.rows[0].length === 0) {
       const details = await db.query(
         `SELECT 
@@ -201,8 +241,8 @@ router.post("/confirm", async (req, res) => {
       );
       console.log("Expiration details:", details.rows[0]);
       
-      req.flash("error", "Invalid or expired confirmation link");
-      return res.redirect("/auth/register");
+    req.flash("error", "Invalid or expired confirmation link");
+    return res.redirect("/auth/register");
     }
 
     // Mark user as confirmed

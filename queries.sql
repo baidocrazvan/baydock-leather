@@ -33,6 +33,12 @@ CREATE TABLE carts (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE pending_carts (
+  user_email VARCHAR(100) PRIMARY KEY,
+  cart_data JSONB NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 CREATE TABLE orders (
   id SERIAL PRIMARY KEY,
   user_id INTEGER REFERENCES users(id),
@@ -96,3 +102,7 @@ WITH (OIDS=FALSE);
 ALTER TABLE "session" ADD CONSTRAINT "session_pkey" PRIMARY KEY ("sid") NOT DEFERRABLE INITIALLY IMMEDIATE;
 
 CREATE INDEX "IDX_session_expire" ON "session" ("expire");
+
+CREATE INDEX idx_users_confirmation_token ON users(confirmation_token);
+CREATE INDEX idx_users_email_created ON users(email, created_at);
+CREATE INDEX idx_pending_carts_created ON pending_carts(created_at);
