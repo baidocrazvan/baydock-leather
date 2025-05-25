@@ -6,6 +6,7 @@ import Joi from "joi";
 import { validateLogin, validateRegister } from "../middleware/validationMiddleware.js";
 import { redirectIfAuthenticated } from "../middleware/middleware.js";
 import { updateCartItem } from "../services/cartService.js";
+import { generateConfirmationToken, sendConfirmationEmail } from "../services/emailService.js";
 
 
 const saltRounds = 10;
@@ -37,7 +38,12 @@ router.post("/login", validateLogin, (req, res, next) => {
       req.flash("error", info ? info.message : "Invalid credentials.");
       return res.redirect("/auth/login");
     }
-
+    console.log("Is user confirmed?: ", user.is_confirmed);
+    // Email confirmation check
+    if (!user.is_confirmed) {
+      req.flash("error", "Please confirm your email before logging in.");
+      return res.redirect("/auth/login");
+    }
     req.login(user, async (err) => {
       if (err) {
         console.error("Error logging in:", err);
@@ -74,77 +80,188 @@ router.post("/register", validateRegister, async (req, res) => {
     const role = "user";
   
     try {
-  
       if (password !== confirmPassword) {
         req.flash("error", "Password does not match confirmation password");
         return res.redirect("/auth/register");
-      } else {
-
-          // Temporarily store the guest cart ( req.session gets reset during registration or login and cart data is lost otherwise)
-          const guestCart = req.session.cart || [];
-
-          // Check if email already exists
-          const checkResult = await db.query(`SELECT * FROM users WHERE email = $1`, [email]);
-          if (checkResult.rows.length > 0) {
-            req.flash('error', 'Email already exists. Please log in.');
-            return res.redirect("/auth/register");
-          } else {
-              // Hash password using bcrypt
-              bcrypt.hash(password, saltRounds, async (err, hash) => {
-              if (err) {
-                console.log("Error hashing password:", err);
-                req.flash("Error hashing password. Try registering again later")
-                return res.redirect("/auth/register")
-              } else {
-                const result = await db.query(
-                  `INSERT INTO users (first_name, last_name, email, password, role) VALUES ($1, $2, $3, $4, $5) RETURNING *`,[
-                  firstName, lastName, email, hash, role
-              ]);
-              const user = result.rows[0];
-
-              // Log user in
-              req.login(user, async (err) => {
-                if (err) {
-                  console.error("Error logging in after registration: ", err);
-                  req.flash("error", "Registration successful, but login failed.");
-                  return res.redirect("/auth/login");
-                }
-              
-                // Restore the guest cart after session regeneration
-                req.session.cart = guestCart;
-              
-                try {
-                  // Merge guest cart into user's cart
-                  if (req.session.cart && req.session.cart.length > 0) {
-                    const userId = req.user.id;
-              
-                    for (const item of req.session.cart) {
-                      await updateCartItem(userId, item.productId, item.quantity);
-                    }
-              
-                    // Clear guest cart after merge
-                    req.session.cart = [];
-                  }
-                  req.flash("success", "Account registered successfully");
-                  return res.redirect("/");
-                } catch (mergeErr) {
-                  console.error("Error merging guest cart:", mergeErr);
-                  req.flash("error", "Registration successful, but failed to merge guest cart contents.");
-                  return res.redirect("/");
-                }
-                
-              })
-            }
-        })
       }
+
+      // Check for existing confirmed user
+      const checkConfirmedUser = await db.query(
+        `SELECT * FROM users WHERE email = $1 AND is_confirmed = TRUE`,
+        [email]
+      );
+      if (checkConfirmedUser.rows.length > 0) {
+        req.flash('error', 'Account already registered. Please log in.');
+        return res.redirect("/auth/register");
       } 
-  
+
+      // Check for unconfirmed user
+      const checkUnconfirmedUser = await db.query(
+        `SELECT * FROM users WHERE email = $1 AND is_confirmed = FALSE`,
+        [email]
+      )
+
+      // Hash password using bcrypt
+      const hash = await bcrypt.hash(password, saltRounds);
+      console.log("password before hashing: ", password);
+      console.log("password after hashing: ", hash);
+      // Generate confirmation token
+      const confirmationToken = generateConfirmationToken();
+
+      // Get token expiration date from DB
+      const dbExpires = await db.query(
+        `SELECT (NOW() + INTERVAL '10 minutes') AS expires`
+      );
+      const tokenExpires = dbExpires.rows[0].expires;
+      console.log("Token expiration set to:", tokenExpires);
+      console.log("Current server time:", new Date().toISOString());
+      let user;
+      if (checkUnconfirmedUser.rows.length > 0) {
+        // Update existing unconfirmed user and prepare to resend new activation email
+        const result = await db.query(
+          `UPDATE users SET
+          first_name = $1,
+          last_name = $2,
+          password = $3,
+          confirmation_token = $4,
+          confirmation_token_expires = $5
+          WHERE email = $6
+          RETURNING *`,
+          [firstName, lastName, hash, confirmationToken, tokenExpires, email]
+        );
+        user = result.rows[0];
+      } else { // Create new user
+        // Insert user with confirmation data
+        const result = await db.query(
+            `INSERT INTO users (first_name, last_name, email, password, role, confirmation_token, confirmation_token_expires)
+            VALUES ($1, $2, $3, $4, $5, $6, $7)
+            RETURNING *`,
+            [firstName, lastName, email, hash, role, confirmationToken, tokenExpires]
+        );
+        user = result.rows[0];
+      }
+      
+      
+      // Send confirmation email
+      try {
+        await sendConfirmationEmail(email, user.confirmation_token);
+        req.flash("success", "Registration successfull! Please check your email to confirm your account.");
+        return res.redirect("/auth/login");
+      } catch (emailErr) {
+          console.error("Email error:", emailErr);
+          // Clean up unconfirmed registration
+          await db.query(
+            `DELETE FROM users WHERE email = $1 AND is_confirmed = FALSE`,
+            [email]
+          );
+          req.flash("error", "Failed to send confirmation. Please try again.");
+          return res.redirect("/auth/register");
+      }
     } catch (err) {
       console.error("Registration error:", err);
       req.flash("error", "Registration failed.");
       res.redirect("/auth/register");
     }
-  });
+});
+
+// GET email confirmation page
+router.get("/confirm", (req, res) => {
+  res.render("auth/confirm.ejs", {token: req.query.token});
+});
+
+// POST confirm email
+router.post("/confirm", async (req, res) => {
+  const { token } = req.body;
+  console.log("Received token:", token);
+  console.log("Token length:", token.length);
+  console.log("Token type:", typeof token);
+
+  if (!token) {
+    req.flash("error", "Missing confirmation token");
+    return res.redirect("/auth/register");
+  }
+
+  try {
+    // Check if non-expired token exists
+    const result = await db.query(
+      `SELECT id FROM users 
+       WHERE confirmation_token = $1
+       AND confirmation_token_expires > NOW()`,
+      [token]
+    );
+
+    if (!result.rows[0].length === 0) {
+      const details = await db.query(
+        `SELECT 
+          confirmation_token_expires,
+          NOW() AS current_db_time,
+          (confirmation_token_expires > NOW()) AS is_valid
+         FROM users WHERE confirmation_token = $1`,
+        [token]
+      );
+      console.log("Expiration details:", details.rows[0]);
+      
+      req.flash("error", "Invalid or expired confirmation link");
+      return res.redirect("/auth/register");
+    }
+
+    // Mark user as confirmed
+    await db.query(
+      `UPDATE users
+       SET is_confirmed = TRUE,
+           confirmation_token = NULL,
+           confirmation_token_expires = NULL
+       WHERE confirmation_token = $1`,
+      [token]
+    );
+
+    req.flash("success", "Email has been confirmed. You can now log into your account.");
+    return res.redirect("/auth/login");
+
+  } catch(err) {
+    console.error("Confirmation error:", err);
+    req.flash("error", "Confirmation failed.");
+    return res.redirect("/auth/register");
+  }
+});
+
+//POST resend confirmation email
+router.post("/resend-confirmation", async(req, res) => {
+  const { email } = req.body;
+
+  try {
+    const user = await db.query(
+      `SELECT * FROM users
+      WHERE email = $1 AND is_confirmed = FALSE`,
+      [email]
+    );
+
+    if(!user.rows.length) {
+      req.flash("error", "Email already confirmed or account not found");
+      return res.redirect("/auth/login");
+    }
+
+    // Generate new token
+    const newToken = generateConfirmationToken();
+    const newExpiry = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+
+    await db.query(
+      `UPDATE users
+      SET confirmation_token = $1,
+          confirmation_token_expires = $2
+      WHERE email = $3`,
+      [newToken, newExpiry, email]
+    );
+
+    await sendConfirmationEmail(email, newTorken);
+    req.flash("success", "New confirmation email sent!");
+    res.redirect("/auth/login");
+  } catch(err) {
+    console.error("Email confirmation resend error:", err);
+    req.flash("error", "Failed to resend confirmation email.");
+    return res.redirect("auth/login");
+  }
+})
 
 // POST Logout a user, clear session cookie and end the session.
 router.post("/logout", function(req, res, next) { // Clear session cookie when user logs out

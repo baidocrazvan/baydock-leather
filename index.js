@@ -137,6 +137,7 @@ passport.use(new Strategy(
               last_name: initialUser.last_name,
               email: initialUser.email,
               role: initialUser.role,
+              is_confirmed: initialUser.is_confirmed,
               created_at: initialUser.created_at
             };
             return cb(null, user)

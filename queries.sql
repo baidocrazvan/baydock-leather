@@ -3,6 +3,9 @@ CREATE TABLE users (
   first_name NOT NULL,
   last_name NOT NULL,
   email VARCHAR(100) UNIQUE NOT NULL,
+  is_confirmed BOOLEAN NOT NULL DEFAULT FALSE,
+  confirmation_token VARCHAR(100),
+  confirmation_token_expires TIMESTAMP;
   password VARCHAR(255) UNIQUE NOT NULL,
   role VARCHAR(20) NOT NULL CHECK (role IN ('user', 'admin')),
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

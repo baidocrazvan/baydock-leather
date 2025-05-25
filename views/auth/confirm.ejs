@@ -1,0 +1,19 @@
+<%- include('../partials/header') %>
+
+<main>
+    <div class="container">
+        <h1>Please confirm your email</h1>
+    
+
+        <% if (messages.error) { %>
+        <div class="alert alert-danger"><%= messages.error %></div>
+        <% } %>
+
+        <form action="/auth/confirm" method="POST">
+            <input type="hidden" name="token" value="<%= token %>">
+            <button type="submit" class="btn btn-primary">Confirm Email</button>
+        </form>
+    </div>
+</main>
+
+<%- include('../partials/footer') %>
