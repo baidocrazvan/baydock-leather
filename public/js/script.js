@@ -852,6 +852,8 @@ const validateEmailInputs = () => {
   } else {
     setSuccess(email);
   }
+
+  return isValid;
 }
 
 const validateResetInputs = () => {

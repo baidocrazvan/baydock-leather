@@ -363,6 +363,12 @@ router.post("/reset-password", validateResetPassword, async (req, res) => {
       return res.redirect("/auth/forgot-password");
     }
 
+    const isSamePassword = await bcrypt.compare(password, user.rows[0].password);
+    if (isSamePassword) {
+      req.flash("error", "New password cannot be the same as current password");
+      return res.redirect(`/auth/reset-password?token=${token}`);
+    }
+
     const hash = await bcrypt.hash(password, saltRounds);
     await db.query(
       `UPDATE users 
