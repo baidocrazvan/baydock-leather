@@ -28,7 +28,7 @@
               <% if (user.role == "admin") { %>
                 <a href="/admin/dashboard" class="edit-btn btn-secondary">Admin Dashboard</a> 
               <% } else { %>
-                <a href="/user/edit" class="edit-btn btn-secondary">Edit Profile</a>
+                <a href="/user/update-password" class="edit-btn btn-secondary">Change Password</a>
               <% } %>
               <form action="/auth/logout" method="post" class="logout-form">
                 <button type="submit" class="logout-btn">Logout</a>

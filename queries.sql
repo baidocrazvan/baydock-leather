@@ -6,6 +6,8 @@ CREATE TABLE users (
   is_confirmed BOOLEAN NOT NULL DEFAULT FALSE,
   confirmation_token VARCHAR(100),
   confirmation_token_expires TIMESTAMP;
+  reset_token VARCHAR(100),
+  reset_token_expires TIMESTAMP;
   password VARCHAR(255) UNIQUE NOT NULL,
   role VARCHAR(20) NOT NULL CHECK (role IN ('user', 'admin')),
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -106,3 +108,4 @@ CREATE INDEX "IDX_session_expire" ON "session" ("expire");
 CREATE INDEX idx_users_confirmation_token ON users(confirmation_token);
 CREATE INDEX idx_users_email_created ON users(email, created_at);
 CREATE INDEX idx_pending_carts_created ON pending_carts(created_at);
+CREATE INDEX idx_users_reset_token ON users(reset_token);

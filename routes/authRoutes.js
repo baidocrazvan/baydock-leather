@@ -2,11 +2,10 @@ import express from "express";
 import bcrypt from "bcryptjs";
 import passport from "passport";
 import db from "../db.js";
-import Joi from "joi";
-import { validateLogin, validateRegister } from "../middleware/validationMiddleware.js";
+import { validateLogin, validateEmail, validateRegister, validateResetPassword } from "../middleware/validationMiddleware.js";
 import { redirectIfAuthenticated } from "../middleware/middleware.js";
 import { updateCartItem } from "../services/cartService.js";
-import { generateConfirmationToken, sendConfirmationEmail } from "../services/emailService.js";
+import { generateConfirmationToken, sendConfirmationEmail, sendResetEmail } from "../services/emailService.js";
 
 
 const saltRounds = 10;
@@ -38,7 +37,7 @@ router.post("/login", validateLogin, (req, res, next) => {
       req.flash("error", info ? info.message : "Invalid credentials.");
       return res.redirect("/auth/login");
     }
-    console.log("Is user confirmed?: ", user.is_confirmed);
+  
     // Email confirmation check
     if (!user.is_confirmed) {
       req.flash("error", "Please confirm your email before logging in.");
@@ -132,8 +131,7 @@ router.post("/register", validateRegister, async (req, res) => {
 
       // Hash password using bcrypt
       const hash = await bcrypt.hash(password, saltRounds);
-      console.log("password before hashing: ", password);
-      console.log("password after hashing: ", hash);
+
       // Generate confirmation token
       const confirmationToken = generateConfirmationToken();
 
@@ -142,8 +140,7 @@ router.post("/register", validateRegister, async (req, res) => {
         `SELECT (NOW() + INTERVAL '10 minutes') AS expires`
       );
       const tokenExpires = dbExpires.rows[0].expires;
-      console.log("Token expiration set to:", tokenExpires);
-      console.log("Current server time:", new Date().toISOString());
+
       let user;
       if (checkUnconfirmedUser.rows.length > 0) {
         // Update existing unconfirmed user and prepare to resend new activation email
@@ -212,9 +209,6 @@ router.get("/confirm", (req, res) => {
 // POST confirm email
 router.post("/confirm", async (req, res) => {
   const { token } = req.body;
-  console.log("Received token:", token);
-  console.log("Token length:", token.length);
-  console.log("Token type:", typeof token);
 
   if (!token) {
     req.flash("error", "Missing confirmation token");
@@ -229,7 +223,7 @@ router.post("/confirm", async (req, res) => {
        AND confirmation_token_expires > NOW()`,
       [token]
     );
-    console.log("line 233 result:", result.rows);
+
     if (!result.rows[0].length === 0) {
       const details = await db.query(
         `SELECT 
@@ -239,7 +233,6 @@ router.post("/confirm", async (req, res) => {
          FROM users WHERE confirmation_token = $1`,
         [token]
       );
-      console.log("Expiration details:", details.rows[0]);
       
     req.flash("error", "Invalid or expired confirmation link");
     return res.redirect("/auth/register");
@@ -265,7 +258,7 @@ router.post("/confirm", async (req, res) => {
   }
 });
 
-//POST resend confirmation email
+// POST resend confirmation email
 router.post("/resend-confirmation", async(req, res) => {
   const { email } = req.body;
 
@@ -302,6 +295,90 @@ router.post("/resend-confirmation", async(req, res) => {
     return res.redirect("auth/login");
   }
 })
+
+// GET Forgot Password Page
+router.get("/forgot-password", redirectIfAuthenticated, (req, res) => {
+  res.render('auth/forgot-password.ejs');
+});
+
+// POST Forgot Password (send reset email)
+router.post("/forgot-password", redirectIfAuthenticated, validateEmail, async (req, res) => {
+  const { email } = req.body;
+  
+  try {
+    const user = await db.query('SELECT * FROM users WHERE email = $1', [email]);
+    if (!user.rows.length) {
+      req.flash("error", "There is no account linked to this email");
+      return res.redirect("/auth/forgot-password");
+    }
+
+    const token = generateConfirmationToken();
+    const dbExpires = await db.query(
+        `SELECT (NOW() + INTERVAL '10 minutes') AS expires`
+      );
+    const expires = dbExpires.rows[0].expires;
+
+    await db.query(
+      `UPDATE users 
+       SET reset_token = $1, reset_token_expires = $2
+       WHERE email = $3`,
+      [token, expires, email]
+    );
+
+    const resetLink = `${process.env.BASE_URL}/auth/reset-password?token=${token}`;
+    await sendResetEmail(email, resetLink);
+
+    req.flash("success", "Password reset link sent to your email");
+    res.redirect("/auth/login");
+  } catch (err) {
+    console.error("Password reset error:", err);
+    req.flash("error", "Failed to process reset request");
+    res.redirect("/auth/forgot-password");
+  }
+});
+
+// GET Reset Password Page
+router.get("/reset-password", (req, res) => {
+  res.render("auth/reset-password.ejs", { token: req.query.token });
+});
+
+// POST Reset Password
+router.post("/reset-password", validateResetPassword, async (req, res) => {
+  const { token, password, cpassword: confirmPassword } = req.body;
+  
+  try {
+    if (password !== confirmPassword) {
+      req.flash("error", "Passwords do not match");
+      return res.redirect(`/auth/reset-password?token=${token}`);
+    }
+
+    const user = await db.query(
+      `SELECT * FROM users 
+       WHERE reset_token = $1 AND reset_token_expires > NOW()`,
+      [token]
+    );
+
+    if (!user.rows.length) {
+      req.flash("error", "Invalid or expired reset link");
+      return res.redirect("/auth/forgot-password");
+    }
+
+    const hash = await bcrypt.hash(password, saltRounds);
+    await db.query(
+      `UPDATE users 
+       SET password = $1, reset_token = NULL, reset_token_expires = NULL
+       WHERE id = $2`,
+      [hash, user.rows[0].id]
+    );
+
+    req.flash("success", "Password updated successfully");
+    res.redirect("/auth/login");
+  } catch (err) {
+    console.error("Reset error:", err);
+    req.flash("error", "Failed to reset password");
+    res.redirect(`/auth/reset-password?token=${token}`);
+  }
+});
 
 // POST Logout a user, clear session cookie and end the session.
 router.post("/logout", function(req, res, next) { // Clear session cookie when user logs out

@@ -125,6 +125,65 @@
     }
 }
 
+.forgot-pass-container, 
+.reset-pass-container,
+.change-pass-container {
+  max-width: 500px;
+  margin: 2rem auto;
+  padding: 2rem;
+  border-radius: 8px;
+
+  h1 {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    color: #333;
+    font-family: "Poppins", sans-serif;
+  }
+
+  .input-control {
+    margin-bottom: 0.5rem;
+
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 1rem;
+
+      &:focus {
+        border-color: #4a4a4a;
+        outline: none;
+        box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
+      }
+    }
+  }
+
+  .btn {
+    display: block;
+    width: 100%;
+    padding: 0.75rem;
+    border: none;
+    border-radius: 4px;
+    margin-top: 1rem;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+
+  .input-control .error {
+        color: #ff3860;
+        margin-top: u.rem(8);
+        margin-bottom: u.rem(8);
+        font-size: u.rem(10);
+    }
+}
+
 @media (min-width: u.rem(600)) {
     .auth-container {
         width: clamp(300px, 50vw, 600px);

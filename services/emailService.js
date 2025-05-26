@@ -1,5 +1,10 @@
 import nodemailer from "nodemailer";
 import { v4 as uuidv4 } from "uuid";
+import ejs from "ejs";
+import fs from "fs";
+
+const template = fs.readFileSync("views/emails/confirmation.ejs", "utf-8");
+const resetTemplate = fs.readFileSync("views/emails/password-reset.ejs", "utf-8");
 
 // Create transporter
 const transporter = nodemailer.createTransport({
@@ -27,16 +32,24 @@ export async function sendConfirmationEmail(email, token) {
             from: process.env.EMAIL_FROM,
             to: email,
             subject: "Confirm Your Accont",
-            html: `
-                <h1>Welcome to Baydock Leather Store!</h1>
-                <p>Please click the link below to confirm your email address:</p>
-                <a href="${confirmationLink}">Confirm Email</a>
-                <p>This link will expire in 10 minutes.<p>
-            `,
+            html: ejs.render(template, { confirmationLink })
         });
     } catch(err) {
-        console.error('DEBUG - Full Mailtrap error:', err);
+        console.error("Account confirmation email error:", err);
         throw new Error("Failed to send confirmation email");
     }
 }
 
+export async function sendResetEmail(email, resetLink) {
+    try {
+        await transporter.sendMail({
+            from: process.env.EMAIL_FROM,
+            to: email,
+            subject: "Password Reset Request",
+            html: ejs.render(resetTemplate, { resetLink })
+        });
+    } catch(err) {
+        console.error('Password reset email error:', err);
+        throw new Error("Failed to send reset email");
+    }
+}

@@ -1,8 +1,10 @@
 import express from "express";
 import db from "../db.js";
+import bcrypt from "bcryptjs";
 import { authenticate, isAdmin } from "../middleware/middleware.js";
 import { getActiveUserAddresses } from "../services/addressService.js";
 import { getRecentUserOrders } from "../services/orderService.js";
+import { validateChangePassword } from "../middleware/validationMiddleware.js";
 
 const router = express.Router();
 
@@ -42,5 +44,40 @@ router.get("/addresses", authenticate, async (req, res) => {
         })
     }
 })
+
+router.get("/update-password", authenticate, (req, res) => {
+    return res.render("user/change-password.ejs");
+})
+
+router.post("/update-password", validateChangePassword, authenticate, async (req, res) => {
+  const { currentPassword, password, cpassword: confirmPassword } = req.body;
+  const saltRounds = 10;
+  try {
+    // Verify current password
+    const user = await db.query("SELECT password FROM users WHERE id = $1", [req.user.id]);
+
+    const isValid = await bcrypt.compare(currentPassword, user.rows[0].password);
+ 
+    if (!isValid) {
+      req.flash("error", "Current password is incorrect");
+      return res.redirect("/user/update-password");
+    }
+
+    if (password !== confirmPassword) {
+      req.flash("error", "New passwords do not match");
+      return res.redirect("/user/update-password");
+    }
+
+    const hash = await bcrypt.hash(password, saltRounds);
+    await db.query("UPDATE users SET password = $1 WHERE id = $2", [hash, req.user.id]);
+
+    req.flash("success", "Password updated successfully");
+    res.redirect("/user/account");
+  } catch (err) {
+    console.error("Password change error:", err);
+    req.flash("error", "Failed to update password");
+    res.redirect("/user/update-password");
+  }
+});
 
 export default router;

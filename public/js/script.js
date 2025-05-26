@@ -506,6 +506,9 @@ document.addEventListener("DOMContentLoaded", function() {
 const loginForm = document.getElementById("loginForm");
 const registerForm = document.getElementById("registerForm");
 const addressForm = document.getElementById("addressForm");
+const passwordForm = document.getElementById("passwordForm");
+const forgotPasswordForm = document.getElementById("forgotPasswordForm");
+const resetPasswordForm = document.getElementById("resetPasswordForm");
 const email = document.getElementById("email");
 const password = document.getElementById("password");
 const confirmPassword = document.getElementById("cpassword");
@@ -531,6 +534,30 @@ if (registerForm) {
       e.preventDefault();
     }
 });
+}
+
+if (passwordForm) {
+  passwordForm.addEventListener("submit", (e) => {
+    if(!validatePasswordInputs()) {
+      e.preventDefault();
+    }
+  })
+}
+
+if (forgotPasswordForm) {
+  forgotPasswordForm.addEventListener("submit", (e) => {
+    if(!validateEmailInputs()) {
+      e.preventDefault();
+    }
+  })
+}
+
+if (resetPasswordForm) {
+  resetPasswordForm.addEventListener("submit", (e) => {
+    if(!validateResetInputs()) {
+      e.preventDefault();
+    }
+  })
 }
 
 if (addressForm) {
@@ -777,6 +804,82 @@ const validateAddressInputs = () => {
     isValid = false;
   } else {
     setSuccess(postalCode);
+  }
+
+  return isValid;
+}
+
+const validatePasswordInputs = () => {
+  const passwordValue = password.value;
+  const confirmPasswordValue = confirmPassword.value;
+  let isValid = true;
+
+  if (passwordValue === "") {
+    setError(password, "Password is required");
+    isValid = false;
+  } else if (passwordValue.length < 8 ) {
+    setError(password, "Password must be atleast 8 characters long");
+    isValid = false;
+  } else if (!isValidPassword(passwordValue)) {
+    setError(password, "Password must contain an uppercase and a number");
+    isValid = false;
+  } else {
+    setSuccess(password);
+  }
+
+  if (confirmPasswordValue === "") {
+    setError(confirmPassword, "Confirmation password is required");
+    isValid = false;
+  }  else if (passwordValue !== confirmPasswordValue) {
+    setError(confirmPassword, "Confirmation password does not match password");
+    isValid = false;
+  } else {
+    setSuccess(confirmPassword);
+  }
+
+  return isValid;
+}
+
+const validateEmailInputs = () => {
+  const emailValue = email.value;
+  let isValid = true;
+  if (emailValue === "") {
+      setError(email, "Email is required");
+      isValid = false;
+  } else if (!isValidEmail(emailValue)) {
+    setError(email, "Email address is invalid");
+    isValid = false;
+  } else {
+    setSuccess(email);
+  }
+}
+
+const validateResetInputs = () => {
+  const passwordValue = password.value;
+  const confirmPasswordValue = confirmPassword.value;
+  let isValid = true;
+
+  if (passwordValue === "") {
+    setError(password, "Password is required");
+    isValid = false;
+  } else if (passwordValue.length < 8 ) {
+    setError(password, "Password must be atleast 8 characters long");
+    isValid = false;
+  } else if (!isValidPassword(passwordValue)) {
+    setError(password, "Password must contain an uppercase and a number");
+    isValid = false;
+  } else {
+    setSuccess(password);
+  }
+
+  if (confirmPasswordValue === "") {
+    setError(confirmPassword, "Confirmation password is required");
+    isValid = false;
+  }  else if (passwordValue !== confirmPasswordValue) {
+    setError(confirmPassword, "Confirmation password does not match password");
+    isValid = false;
+  } else {
+    setSuccess(confirmPassword);
   }
 
   return isValid;
