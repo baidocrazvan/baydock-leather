@@ -9,6 +9,7 @@ import passport from "passport";
 import pgSession from 'connect-pg-simple';
 import { Strategy } from "passport-local";
 import methodOverride from "method-override";
+import helmet from 'helmet';
 import authRoutes from "./routes/authRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
@@ -75,8 +76,16 @@ app.use((req, res, next) => {
   next();
 })
 
-// use method-ovveride to enable PUT/PATCH/DELETE
+// Use method-ovveride to enable PUT/PATCH/DELETE
 app.use(methodOverride('_method'));
+
+// Register delay middleware
+app.use((req, res, next) => {
+  if (req.path === '/register') setTimeout(next, 500); // 0.5s delay
+  else next();
+});
+
+app.use(helmet()); // Security middleware
 
 app.get("/", (req, res) => {
   res.render("index.ejs");

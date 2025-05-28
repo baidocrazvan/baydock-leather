@@ -71,3 +71,11 @@ export async function getUserDetails(userId) {
         orders: orders.rows
     };  
 }
+
+export async function isEmailAlreadyRegistered(email) {
+  const result = await db.query(
+    `SELECT 1 FROM users WHERE email = $1 AND is_confirmed = TRUE`,
+    [email]
+  );
+  return result.rows.length > 0;
+}

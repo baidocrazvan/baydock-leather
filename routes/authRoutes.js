@@ -2,11 +2,12 @@ import express from "express";
 import bcrypt from "bcryptjs";
 import passport from "passport";
 import db from "../db.js";
+import rateLimit from "express-rate-limit";
 import { validateLogin, validateEmail, validateRegister, validateResetPassword } from "../middleware/validationMiddleware.js";
 import { redirectIfAuthenticated } from "../middleware/middleware.js";
 import { updateCartItem } from "../services/cartService.js";
 import { generateConfirmationToken, sendConfirmationEmail, sendResetEmail } from "../services/emailService.js";
-
+import { isEmailAlreadyRegistered } from "../services/userService.js";
 
 const saltRounds = 10;
 const router = express.Router();
@@ -86,8 +87,26 @@ router.post("/login", validateLogin, (req, res, next) => {
   })(req, res, next);
 });
 
+// Registration rate limiter (IP + email)
+const registerLimiter = rateLimit({
+  windowMs: 1 * 60 * 60 * 1000, // 1 Hour
+  max: 5,
+  keyGenerator: (req) => 
+    `${req.ip}_${req.body.email?.toLowerCase() || "missing-email"}`, // Combo key
+  handler: (req, res) => {
+    req.flash("error", "Too many registration attempts. Try again later.");
+    res.redirect("/auth/register");
+  },
+  skip: (req) => 
+    // Skip rate limiter if email is already registered
+    req.body.email && isEmailAlreadyRegistered(req.body.email),
+  onLimitReached: (req) => {
+    console.log(`Rate limit hit: IP=${req.ip} Path=${req.path} Email=${req.body.email}`);
+  }
+});
+
 // POST register a user
-router.post("/register", validateRegister, async (req, res) => {
+router.post("/register", registerLimiter, validateRegister, async (req, res) => {
     const { lastName, firstName, email, password, cpassword: confirmPassword } = req.body;
     const role = "user";
     const guestCart = req.session.cart || [];
@@ -301,8 +320,41 @@ router.get("/forgot-password", redirectIfAuthenticated, (req, res) => {
   res.render('auth/forgot-password.ejs');
 });
 
+// IP based limiter
+const ipLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 3, // Max 3 requests for window of time
+  handler: (req, res) => {
+    req.flash('error', 'Too many attempts from your network. Try again later.');
+    res.redirect('/auth/forgot-password');
+  },
+  onLimitReached: (req) => {
+    console.log(`Rate limit hit: IP=${req.ip}`);
+  }
+});
+
+// Email based limiter
+const emailLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 hour
+  max: 5,
+  keyGenerator: (req) => req.body.email.toLowerCase(),
+  handler: (req, res) => {
+    req.flash('error', 'Too many requests for this email. Check your inbox or try later.');
+    res.redirect('/auth/forgot-password');
+  },
+  skip: (req) => !req.body.email,
+  onLimitReached: (req) => {
+    console.log(`Rate limit hit for Email=${req.body.email}`);
+  } // If no email is provided, skip
+});
+
 // POST Forgot Password (send reset email)
-router.post("/forgot-password", redirectIfAuthenticated, validateEmail, async (req, res) => {
+router.post("/forgot-password",
+  ipLimiter,
+  emailLimiter,
+  redirectIfAuthenticated,
+  validateEmail,
+  async (req, res) => {
   const { email } = req.body;
   
   try {
