@@ -127,7 +127,8 @@
 
 .forgot-pass-container, 
 .reset-pass-container,
-.change-pass-container {
+.change-pass-container,
+.confirm-email-container {
   max-width: 500px;
   margin: 2rem auto;
   padding: 2rem;
@@ -152,14 +153,13 @@
     .form-input {
       width: 100%;
       padding: 0.75rem;
-      border: 1px solid #ddd;
+      border: 1px solid var(--line-color);
       border-radius: 4px;
       font-size: 1rem;
-
+      transition: border-color 0.3s ease;
       &:focus {
-        border-color: #4a4a4a;
         outline: none;
-        box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
+        border-color: var(--text-color);
       }
     }
   }
@@ -172,6 +172,8 @@
     border-radius: 4px;
     margin-top: 1rem;
     font-size: 1rem;
+    font-family: inherit;
+    font-weight: 500;
     cursor: pointer;
     transition: background 0.3s;
   }
@@ -181,6 +183,7 @@
         margin-top: u.rem(8);
         margin-bottom: u.rem(8);
         font-size: u.rem(10);
+        margin-bottom: 1rem;  
     }
 }
 

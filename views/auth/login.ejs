@@ -44,12 +44,6 @@
             </div>
                 
         </form>
-        <% if (!currentUser) { %>
-            <form action="/auth/resend-confirmation" method="POST">
-                <input type="email" name="email" placeholder="Resend confirmation email">
-                <button type="submit">Resend</button>
-            </form>
-        <% } %>
     </div>
     
       

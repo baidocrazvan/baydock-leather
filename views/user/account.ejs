@@ -11,7 +11,10 @@
         <!-- Account Info Section -->
         <section class="dashboard-card account-info">
           <div class="card-header">
-            <h2>Account Information</h2>
+            <h2 class="account-header-info">Account Information</h2>
+            <% if (user.role == "admin") { %>
+                <a href="/admin/dashboard" class="btn-tertiary manage-btn">Admin Dashboard</a> 
+            <% } %>
           </div>
           <div class="card-body">
             <div class="info-item">
@@ -25,11 +28,9 @@
 
             <div class="button-group">
               
-              <% if (user.role == "admin") { %>
-                <a href="/admin/dashboard" class="edit-btn btn-secondary">Admin Dashboard</a> 
-              <% } else { %>
+              
                 <a href="/user/update-password" class="edit-btn btn-secondary">Change Password</a>
-              <% } %>
+              
               <form action="/auth/logout" method="post" class="logout-form">
                 <button type="submit" class="logout-btn">Logout</a>
               </form>
@@ -40,8 +41,8 @@
         <!-- Addresses Section -->
         <section class="dashboard-card addresses">
           <div class="card-header">
-            <h2>Your Addresses</h2>
-            <a href="/user/addresses" class="manage-btn">Manage Addresses</a>
+            <h2 class="address-header-title">Addresses</h2>
+            <a href="/user/addresses" class="manage-btn btn-tertiary">Manage Addresses</a>
           </div>
           
           <div class="address-grid">
@@ -129,6 +130,7 @@
         <section class="dashboard-card recent-orders">
           <div class="card-header">
             <h2>Recent Orders</h2>
+            <a href="/orders/history" class="manage-btn btn-tertiary view-all">View All Orders</a>
           </div>
           
           <div class="card-body">
@@ -168,7 +170,6 @@
                   </tbody>
                 </table>
               </div>
-              <a href="/orders/history" class="view-all">View All Orders</a>
             <% } else { %>
               <div class="no-orders">
                 <p>You haven't placed any orders yet</p>

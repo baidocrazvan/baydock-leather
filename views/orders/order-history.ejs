@@ -20,7 +20,7 @@
                     <% if (orders.length > 0) { %>
                         <% orders.forEach(order => { %>
                             <tr>
-                                <td data-label="ID"><%= order.order_id %></td>
+                                <td data-label="Order ID"><%= order.order_id %></td>
                                 <td data-label="Status">
                                     <span class="badge badge-<%= order.order_status %>">
                                         <%= order.order_status %>

@@ -201,7 +201,8 @@
   font-size: 0.75rem;
   font-weight: 600;
   text-transform: capitalize;
-  
+  text-align: center;
+  max-width: u.rem(100);
   &-info { background: var(--text-color); color: white; }
   &-active { background: #2e7d32; color: white;}
   &-inactive { background: #dc3545; color: white; }

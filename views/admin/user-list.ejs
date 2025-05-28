@@ -40,7 +40,7 @@
                   <td data-label="Role"><span class="role-badge <%= user.role %>"><%= user.role %></span></td>
                   <td data-label="Joined"><%= new Date(user.created_at).toLocaleDateString() %></td>
                   <td data-label="Actions">
-                    <a href="/admin/users/<%= user.id %>" class="action-btn view-btn">View</a>
+                    <a href="/admin/users/<%= user.id %>" class="action-btn btn-tertiary">View</a>
                   </td>
                 </tr>
               <% }) %>
