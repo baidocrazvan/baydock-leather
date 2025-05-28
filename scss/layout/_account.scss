@@ -236,17 +236,10 @@ $error-color: #ff3333;
         .add-btn {
           display: inline-block;
           padding: 0.5rem 1rem;
-          background: var(--text-color);
-          color: var(--background-color);
           border-radius: u.rem(6);
           text-decoration: none;
           font-size: 0.9rem;
           transition: background 0.3s ease;
-  
-          &:hover {
-            background: var(--background-color);
-            color: var(--text-color);
-          }
         }
       }
     }
@@ -419,16 +412,10 @@ $error-color: #ff3333;
       .shop-btn {
         display: inline-block;
         padding: 0.7rem 1.5rem;
-        background: var(--text-color);
-        color: var(--background-color);
         border-radius: u.rem(6);
         text-decoration: none;
         font-weight: 500;
         transition: background 0.3s ease;
-
-        &:hover {
-          background: var(--background-color);
-        }
       }
     }
   }
