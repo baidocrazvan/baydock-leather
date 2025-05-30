@@ -14,8 +14,8 @@ const router = express.Router();
 
 // GET login page
 router.get("/login", redirectIfAuthenticated, (req, res) => {
-  const errors = req.flash('error');
-  res.render("auth/login.ejs", { errors });
+  const unconfirmedEmail = req.query.unconfirmedEmail || null;
+  res.render("auth/login.ejs", { unconfirmedEmail });
   });
 
 // GET register page
@@ -42,7 +42,7 @@ router.post("/login", validateLogin, (req, res, next) => {
     // Email confirmation check
     if (!user.is_confirmed) {
       req.flash("error", "Please confirm your email before logging in.");
-      return res.redirect("/auth/login");
+      return res.redirect(`/auth/login?unconfirmedEmail=${encodeURIComponent(req.body.email)}`);
     }
     req.login(user, async (err) => {
       if (err) {
@@ -287,23 +287,26 @@ router.post("/resend-confirmation", async(req, res) => {
     );
 
     if(!user.rows.length) {
-      req.flash("error", "Email already confirmed or account not found");
+      req.flash("error", "Email already confirmed or not registered");
       return res.redirect("/auth/login");
     }
 
     // Generate new token
     const newToken = generateConfirmationToken();
-    const newExpiry = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+    const dbExpires = await db.query(
+        `SELECT (NOW() + INTERVAL '10 minutes') AS expires`
+      );
+    const expires = dbExpires.rows[0].expires;
 
     await db.query(
       `UPDATE users
       SET confirmation_token = $1,
           confirmation_token_expires = $2
       WHERE email = $3`,
-      [newToken, newExpiry, email]
+      [newToken, expires, email]
     );
 
-    await sendConfirmationEmail(email, newTorken);
+    await sendConfirmationEmail(email, newToken);
     req.flash("success", "New confirmation email sent!");
     res.redirect("/auth/login");
   } catch(err) {

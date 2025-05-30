@@ -42,8 +42,17 @@
                 <button type="submit" class="submit-button btn-primary">LOGIN</button>
                 <a href="/auth/register" class="register-button btn-primary">REGISTER</a>
             </div>
-                
         </form>
+
+        <% if (unconfirmedEmail) { %>
+            <div class="resend-confirmation">
+                Didn't receive a confirmation email? 
+                <form action="/auth/resend-confirmation" method="POST">
+                    <input type="hidden" name="email" value="<%= unconfirmedEmail %>">
+                    <button type="submit" class="btn-secondary">Resend</button>
+                </form>
+            </div>
+        <% } %>    
     </div>
     
       
