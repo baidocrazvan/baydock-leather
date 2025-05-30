@@ -151,10 +151,13 @@ describe("Admin Routes", () => {
         });
         getUserDetails.mockResolvedValue(mockUserDetails);
         vi.mock("../../middleware/validationMiddleware.js", () => ({
-          validateRegister: (req, res, next) => next(), // Mock validateRegister to always pass
-          validateLogin: (req, res, next) => next(),    // Mock validateLogin to always pass
-          validateAddress: (req, res, next) => next(), // Mock validateAddress to always pass
-          validateAdminRegister: (req, res, next) => next(), // Mock validatAdminRegister to always pass
+          validateRegister: (req, res, next) => next(), // Mock to always pass
+          validateLogin: (req, res, next) => next(),
+          validateAddress: (req, res, next) => next(),
+          validateAdminRegister: (req, res, next) => next(),
+          validateEmail: (req, res, next) => next(),
+          validateResetPassword: (req, res, next) => next(),
+          validateChangePassword: (req, res, next) => next()
         }));
     });
 

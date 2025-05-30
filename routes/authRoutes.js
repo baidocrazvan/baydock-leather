@@ -92,17 +92,17 @@ const registerLimiter = rateLimit({
   windowMs: 1 * 60 * 60 * 1000, // 1 Hour
   max: 5,
   keyGenerator: (req) => 
-    `${req.ip}_${req.body.email?.toLowerCase() || "missing-email"}`, // Combo key
-  handler: (req, res) => {
+    `${req.ip}_${req.body.email?.toLowerCase() || "missing-email"}`,
+  handler: (req, res, next, options) => {
+    if (req.rateLimit.used === req.rateLimit.limit + 1) {
+      console.log(`Rate limit hit: IP=${req.ip} Path=${req.path} Email=${req.body.email}`);
+    }
     req.flash("error", "Too many registration attempts. Try again later.");
     res.redirect("/auth/register");
   },
   skip: (req) => 
     // Skip rate limiter if email is already registered
     req.body.email && isEmailAlreadyRegistered(req.body.email),
-  onLimitReached: (req) => {
-    console.log(`Rate limit hit: IP=${req.ip} Path=${req.path} Email=${req.body.email}`);
-  }
 });
 
 // POST register a user
@@ -124,7 +124,7 @@ router.post("/register", registerLimiter, validateRegister, async (req, res) => 
       );
       if (checkConfirmedUser.rows.length > 0) {
         req.flash('error', 'Account already registered. Please log in.');
-        return res.redirect("/auth/register");
+        return res.redirect("/auth/login");
       } 
 
       // Check for unconfirmed user
@@ -243,17 +243,15 @@ router.post("/confirm", async (req, res) => {
       [token]
     );
 
-    if (!result.rows[0].length === 0) {
+    if (result.rows.length === 0) { // If no valid token found
+      // Check if token exists at all
       const details = await db.query(
-        `SELECT 
-          confirmation_token_expires,
-          NOW() AS current_db_time,
-          (confirmation_token_expires > NOW()) AS is_valid
-         FROM users WHERE confirmation_token = $1`,
+        `SELECT 1 FROM users WHERE confirmation_token = $1`,
         [token]
       );
       
-    req.flash("error", "Invalid or expired confirmation link");
+    req.flash("error", 
+      details.rows.length ? "Confirmation link expired" : "Invalid confirmation link");
     return res.redirect("/auth/register");
     }
 
@@ -317,19 +315,19 @@ router.post("/resend-confirmation", async(req, res) => {
 
 // GET Forgot Password Page
 router.get("/forgot-password", redirectIfAuthenticated, (req, res) => {
-  res.render('auth/forgot-password.ejs');
+  res.render("auth/forgot-password.ejs");
 });
 
 // IP based limiter
 const ipLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 3, // Max 3 requests for window of time
-  handler: (req, res) => {
-    req.flash('error', 'Too many attempts from your network. Try again later.');
+  handler: (req, res, next, options) => {
+    if (req.rateLimit.used === req.rateLimit.limit + 1) {
+      console.log(`Rate limit hit: IP=${req.ip}`);
+    }
+    req.flash("error", "Too many attempts from your network. Try again later.");
     res.redirect('/auth/forgot-password');
-  },
-  onLimitReached: (req) => {
-    console.log(`Rate limit hit: IP=${req.ip}`);
   }
 });
 
@@ -338,14 +336,15 @@ const emailLimiter = rateLimit({
   windowMs: 60 * 60 * 1000, // 1 hour
   max: 5,
   keyGenerator: (req) => req.body.email.toLowerCase(),
-  handler: (req, res) => {
-    req.flash('error', 'Too many requests for this email. Check your inbox or try later.');
-    res.redirect('/auth/forgot-password');
+  handler: (req, res, next, options) => {
+    if (req.rateLimit.used === req.rateLimit.limit + 1) {
+      console.log(`Rate limit hit for Email=${req.body.email}`);
+    }
+    req.flash("error", "Too many requests for this email. Check your inbox or try later.");
+    res.redirect("/auth/forgot-password");
   },
-  skip: (req) => !req.body.email,
-  onLimitReached: (req) => {
-    console.log(`Rate limit hit for Email=${req.body.email}`);
-  } // If no email is provided, skip
+  skip: (req) => !req.body.email // If no email is provided, skip
+  
 });
 
 // POST Forgot Password (send reset email)

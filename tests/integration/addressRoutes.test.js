@@ -1,3 +1,14 @@
+import request from "supertest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import app from "../../app.js";
+import db from "../../db.js";
+import { validateAddress } from "../../middleware/validationMiddleware.js"
+import { getUserAddress } from "../../services/addressService.js";
+
+// Mock dependencies
+vi.mock("../../db.js");
+vi.mock("../../services/addressService.js");
+
 // Mock authentication
 vi.mock("../../middleware/middleware.js", () => ({
     authenticate: (req, res, next) => {
@@ -15,16 +26,6 @@ vi.mock("../../middleware/middleware.js", () => ({
     redirectIfAuthenticated: (req, res, next) => next(),
 }));
 
-import request from "supertest";
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import app from "../../app.js";
-import db from "../../db.js";
-import { validateAddress } from "../../middleware/validationMiddleware.js"
-import { getUserAddress } from "../../services/addressService.js";
-
-// Mock dependencies
-vi.mock("../../db.js");
-vi.mock("../../services/addressService.js");
 
 describe("Address routes", () => {
     
@@ -34,6 +35,9 @@ describe("Address routes", () => {
         validateLogin: (req, res, next) => next(),
         validateRegister: (req, res, next) => next(),
         validateAdminRegister: (req, res, next) => next(),
+        validateEmail: (req, res, next) => next(),
+        validateResetPassword: (req, res, next) => next(),
+        validateChangePassword: (req, res, next) => next()
       }));
 
     const mockAddress = {

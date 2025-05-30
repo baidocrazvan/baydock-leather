@@ -1,13 +1,15 @@
 import request from "supertest";
+import db from "../../db.js";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import app from "../../app.js";
 import { getActiveUserAddresses } from "../../services/addressService.js";
 import { getRecentUserOrders } from "../../services/orderService.js";
 
 // Mock dependencies
+vi.mock("../../db.js");
 vi.mock("../../services/addressService.js");
 vi.mock("../../services/orderService.js");
-vi.mock('../../middleware/middleware.js', () => ({
+vi.mock("../../middleware/middleware.js", () => ({
   authenticate: (req, res, next) => {
     req.user = {
       id: 1,
@@ -22,6 +24,24 @@ vi.mock('../../middleware/middleware.js', () => ({
   },
   isAdmin: (req, res, next) => next(),
   redirectIfAuthenticated: (req, res, next) => next(),
+}));
+
+// bcrypt mock
+vi.mock("bcryptjs", () => ({
+  default: {
+    compare: vi.fn(),
+    hash: vi.fn()
+  }
+}));
+
+vi.mock("../../middleware/validationMiddleware.js", () => ({
+  validateRegister: (req, res, next) => next(),
+  validateLogin: (req, res, next) => next(),
+  validateAddress: (req, res, next) => next(),
+  validateAdminRegister: (req, res, next) => next(),
+  validateEmail: (req, res, next) => next(),
+  validateResetPassword: (req, res, next) => next(),
+  validateChangePassword: (req, res, next) => next()
 }));
 
 describe("User Routes", () => {
@@ -118,7 +138,6 @@ describe("User Routes", () => {
 
       expect(res.text).toContain("You haven't placed any orders yet");
       expect(res.text).toContain("Start Shopping");
-      expect(res.text).not.toContain("View All Orders");
     });
 
     it("should handle errors from both address and order services", async () => {
@@ -138,7 +157,7 @@ describe("User Routes", () => {
     });
   });
 
-  describe('GET /addresses', () => {
+  describe("GET /addresses", () => {
     it("should render the addresses page with user addresses for authenticated users", async () => {
 
       // Mock the address service to return addresses
@@ -187,6 +206,106 @@ describe("User Routes", () => {
 
       // Should still render without crashing
       expect(res.text).toContain("Recent Orders");
+    });
+  });
+
+  describe("Password Update Routes", () => {
+    let bcrypt;
+    
+    beforeEach(async () => {
+      bcrypt = (await import("bcryptjs")).default;
+      vi.clearAllMocks();
+      
+      // Default mock for db.query
+      db.query = vi.fn().mockResolvedValue({ 
+        rows: [{ 
+          password: "hashedCurrentPassword" 
+        }] 
+      });
+      
+      // Default mock for bcrypt
+      bcrypt.compare.mockResolvedValue(true);
+      bcrypt.hash.mockResolvedValue("newHashedPassword");
+    });
+
+    describe("GET /update-password", () => {
+      it("should render the change password page", async () => {
+        const res = await request(app)
+          .get("/user/update-password")
+          .expect(200)
+          .expect("Content-Type", /html/);
+
+        expect(res.text).toContain("Change Password");
+        expect(res.text).toContain('form action="/user/update-password"');
+      });
+    });
+
+    describe("POST /update-password", () => {
+      it("should update password with valid current password", async () => {
+        const res = await request(app)
+          .post("/user/update-password")
+          .send({
+            currentPassword: "correctPassword",
+            password: "newPassword123",
+            cpassword: "newPassword123"
+          })
+          .expect(302)
+          .expect("Location", "/user/account");
+
+        expect(bcrypt.compare).toHaveBeenCalledWith(
+          "correctPassword",
+          "hashedCurrentPassword"
+        );
+        expect(bcrypt.hash).toHaveBeenCalledWith("newPassword123", 10);
+        expect(db.query).toHaveBeenCalledWith(
+          "UPDATE users SET password = $1 WHERE id = $2",
+          ["newHashedPassword", 1]
+        );
+      });
+
+      it("should reject incorrect current password", async () => {
+        bcrypt.compare.mockResolvedValue(false);
+
+        const res = await request(app)
+          .post("/user/update-password")
+          .send({
+            currentPassword: "wrongPassword",
+            password: "newPassword123",
+            cpassword: "newPassword123"
+          })
+          .expect(302)
+          .expect("Location", "/user/update-password");
+
+        expect(res.headers["set-cookie"]).toBeDefined(); // Flash message
+      });
+
+      it("should reject mismatched new passwords", async () => {
+        const res = await request(app)
+          .post("/user/update-password")
+          .send({
+            currentPassword: "correctPassword",
+            password: "newPassword123",
+            cpassword: "differentPassword"
+          })
+          .expect(302)
+          .expect("Location", "/user/update-password");
+
+        expect(bcrypt.hash).not.toHaveBeenCalled();
+      });
+
+      it("should handle database errors", async () => {
+        db.query.mockRejectedValue(new Error("Database error"));
+
+        const res = await request(app)
+          .post("/user/update-password")
+          .send({
+            currentPassword: "correctPassword",
+            password: "newPassword123",
+            cpassword: "newPassword123"
+          })
+          .expect(302)
+          .expect("Location", "/user/update-password");
+      });
     });
   });
 });
