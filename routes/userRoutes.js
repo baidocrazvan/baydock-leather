@@ -1,6 +1,7 @@
 import express from "express";
 import db from "../db.js";
 import bcrypt from "bcryptjs";
+import rateLimit from "express-rate-limit";
 import { authenticate, isAdmin } from "../middleware/middleware.js";
 import { getActiveUserAddresses } from "../services/addressService.js";
 import { getRecentUserOrders } from "../services/orderService.js";
@@ -49,7 +50,17 @@ router.get("/update-password", authenticate, (req, res) => {
     return res.render("user/change-password.ejs");
 })
 
-router.post("/update-password", validateChangePassword, authenticate, async (req, res) => {
+const passwordChangeLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 min
+  max: 3, 
+  keyGenerator: (req) => req.user.id.toString(), // Track by user ID
+  handler: (req, res) => {
+    req.flash("error", "Too many password change attempts. Try again later.");
+    res.redirect("/user/update-password");
+  },
+});
+
+router.post("/update-password", authenticate, passwordChangeLimiter, validateChangePassword,  async (req, res) => {
   const { currentPassword, password, cpassword: confirmPassword } = req.body;
   const saltRounds = 10;
   try {
