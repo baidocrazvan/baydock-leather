@@ -64,7 +64,7 @@ describe("Auth Routes", () => {
         .expect(200)
         .expect("Content-Type", /html/);
 
-      expect(res.text).toContain("Login"); // Check if the login page is rendered
+      expect(res.text).toContain("Login"); 
     });
 
     it("should render the register page", async () => {
@@ -73,7 +73,7 @@ describe("Auth Routes", () => {
         .expect(200)
         .expect("Content-Type", /html/);
 
-      expect(res.text).toContain("Register"); // Check if the register page is rendered
+      expect(res.text).toContain("Register"); 
     });
   });
 
@@ -99,10 +99,8 @@ describe("Auth Routes", () => {
         .mockResolvedValueOnce({ rows: [] })  // Recent attempt
         // Mock token expiration check
         .mockResolvedValueOnce({ rows: [{ expires: new Date(Date.now() + 600000) }] })
-        // Mock user creation
-        .mockResolvedValueOnce({ rows: [mockUser] })
-        // Mock cart insertion
-        .mockResolvedValueOnce({ rows: [] });
+        .mockResolvedValueOnce({ rows: [mockUser] }) // Mock user creation
+        .mockResolvedValueOnce({ rows: [] }); // Mock cart insertion
     });
 
     it("should redirect to login after successful registration", async () => {
@@ -116,7 +114,7 @@ describe("Auth Routes", () => {
           password: "Password123",
           cpassword: "Password123",
         })
-        .expect(302) // Redirect
+        .expect(302) 
         .expect("Location", "/auth/login");
 
         expect(sendConfirmationEmail).toHaveBeenCalled();
@@ -133,7 +131,7 @@ describe("Auth Routes", () => {
           password: "Password123",
           cpassword: "DifferentPassword",
         })
-        .expect(302) // Redirect
+        .expect(302)
         .expect("Location", "/auth/register");
     });
 
@@ -153,7 +151,7 @@ describe("Auth Routes", () => {
           password: "Password123",
           cpassword: "Password123",
         })
-        .expect(302) // Redirect
+        .expect(302)
         
       expect(res.header.location).toBe("/auth/login");
     });
@@ -249,12 +247,13 @@ describe("Auth Routes", () => {
         password: "Password123"
       })
       .expect(302)
-      .expect("Location", "/auth/login");
 
+      expect(res.headers.location).toBe("/auth/login?unconfirmedEmail=test%40example.com");
 
     // Check that user has not been authenticated
-    const authCheck = await testSession.get("/account/dashboard"); // Try protected route
+    const authCheck = await testSession.get("/account/dashboard");
     expect(authCheck.status).not.toBe(200);
+    expect(res.headers.location).toContain("unconfirmedEmail=test%40example.com");
   });
   });
   
@@ -284,38 +283,176 @@ describe("Auth Routes", () => {
     });
   });
 
-  describe("Rate Limiting", () => {
-  it("should block after 5 registration attempts", async () => {
-    // Mock successful registration (except last attempt)
-    db.query.mockResolvedValue({ rows: [] });
-    
-    // First 4 attempts should succeed
-    for (let i = 0; i < 4; i++) {
-      await request(app)
-        .post("/auth/register")
-        .send({
-          firstName: "Test",
-          lastName: "User",
-          email: `test${i}@example.com`,
-          password: "password123",
-          cpassword: "password123"
-        })
-        .expect(302);
-    }
+  describe("POST /resend-confirmation", () => {
+    beforeEach(() => {
+      vi.clearAllMocks();
+      db.query.mockReset();
+    });
 
-    // 5th attempt should be blocked
-    const res = await request(app)
-      .post("/auth/register")
-      .send({
-        firstName: "Test",
-        lastName: "User",
-        email: "test5@example.com",
-        password: "password123",
-        cpassword: "password123"
+    it("should resend confirmation email for unconfirmed user", async () => {
+      // Check if user exists and is unconfirmed, update token and get new expiry time
+      db.query
+        .mockResolvedValueOnce({ rows: [{ email: "test@example.com", is_confirmed: false }] })
+        .mockResolvedValueOnce({ rows: [{ expires: new Date(Date.now() + 600000) }] })
+        .mockResolvedValueOnce({ rows: [{}] }); // Successful update
+
+      const res = await request(app)
+        .post("/auth/resend-confirmation")
+        .send({ email: "test@example.com" })
+        .expect(302)
+        .expect("Location", "/auth/login");
+
+      expect(sendConfirmationEmail).toHaveBeenCalledWith(
+        "test@example.com",
+        expect.any(String)
+      );
+    });
+
+    it("should reject already confirmed users", async () => {
+      db.query.mockResolvedValueOnce({ rows: [] });
+
+      const res = await request(app)
+        .post("/auth/resend-confirmation")
+        .send({ email: "confirmed@example.com" })
+        .expect(302)
+        .expect("Location", "/auth/login");
+
+      expect(res.headers["set-cookie"]).toBeDefined(); // Flash message
+    });
+
+    it("should handle database errors", async () => {
+      db.query.mockRejectedValue(new Error("DB error"));
+
+      const res = await request(app)
+        .post("/auth/resend-confirmation")
+        .send({ email: "test@example.com" })
+        .expect(302);
+    });
+  });
+
+  describe("Rate Limiting", () => {
+    describe("Register Rate Limiting", () => {
+      it("should block after 5 registration attempts", async () => {
+        // Mock successful registration (except last attempt)
+        db.query.mockResolvedValue({ rows: [] });
+        
+        // First 4 attempts should succeed
+        for (let i = 0; i < 4; i++) {
+          await request(app)
+            .post("/auth/register")
+            .send({
+              firstName: "Test",
+              lastName: "User",
+              email: `test${i}@example.com`,
+              password: "password123",
+              cpassword: "password123"
+            })
+            .expect(302);
+        }
+
+        // 5th attempt should be blocked
+        const res = await request(app)
+          .post("/auth/register")
+          .send({
+            firstName: "Test",
+            lastName: "User",
+            email: "test5@example.com",
+            password: "password123",
+            cpassword: "password123"
+          });
+
+        expect(res.header.location).toBe("/auth/register");
+      });
+    });
+
+    describe("POST /login rate limiting", () => {
+      let limiterSession;
+
+      beforeEach(() => {
+        // Create a persistent session for rate limit testing
+        limiterSession = request.agent(app);
+        vi.clearAllMocks();
+        
+        // Mock failed login responses
+        vi.spyOn(passport, 'authenticate').mockImplementation((strategy, options) => {
+          return (req, res, next) => {
+            const callback = options ? options : (err, user, info) => {
+              if (err) return next(err);
+              if (!user) {
+                req.flash('error', info?.message || 'Invalid credentials');
+                return res.redirect('/auth/login');
+              }
+              req.logIn(user, (err) => {
+                if (err) return next(err);
+                return res.redirect('/');
+              });
+            };
+
+            // Simulate failed authentication
+            callback(null, false, { message: "Invalid credentials" });
+          };
+        });
+
+        db.query.mockImplementation(async (query) => {
+          if (query.includes('SELECT')) {
+            return { 
+              rows: [{
+                id: 1,
+                email: "test@example.com",
+                password: await bcrypt.hash("password", 10),
+                is_confirmed: true
+              }] 
+            };
+          }
+          return { rows: [] };
+        });
+
+        // Always fail password comparison
+        bcrypt.compare.mockImplementation((pw, hash, cb) => cb(null, false));
       });
 
-    expect(res.header.location).toBe("/auth/register");
-  });
-});
-});
 
+      it("should block after 5 login attempts", async () => {
+        // First 5 attempts should redirect to /auth/login (failure)
+        for (let i = 0; i < 5; i++) {
+          await limiterSession
+            const res = await limiterSession
+              .post("/auth/login")
+              .send({ email: "test@example.com", password: "wrong" })
+              .expect(302);
+            
+            expect(res.header.location).toBe("/auth/login");
+        }
+
+        // 6th attempt should be blocked by the limiter
+        const limitedRes = await limiterSession
+          .post("/auth/login")
+          .send({ email: "test@example.com", password: "wrong" })
+          .expect(302);
+
+        expect(limitedRes.header.location).toBe("/auth/login");
+      });
+    });
+
+    describe("POST /resend-confirmation", () => {
+      it("should block after 3 attempts per email", async () => {
+        db.query.mockResolvedValue({ rows: [{ is_confirmed: false }] });
+        
+        // First 2 attempts
+        for (let i = 0; i < 2; i++) {
+          await testSession
+            .post("/auth/resend-confirmation")
+            .send({ email: "test@example.com" })
+            .expect(302);
+        }
+
+        // 3rd attempt should be blocked
+        const res = await testSession
+          .post("/auth/resend-confirmation")
+          .send({ email: "test@example.com" });
+
+        expect(res.header.location).toBe("/");
+      });
+    });
+  });
+})

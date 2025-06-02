@@ -16,15 +16,26 @@ const router = express.Router();
 router.get("/login", redirectIfAuthenticated, (req, res) => {
   const unconfirmedEmail = req.query.unconfirmedEmail || null;
   res.render("auth/login.ejs", { unconfirmedEmail });
-  });
+});
 
 // GET register page
 router.get("/register", redirectIfAuthenticated, (req, res) => {
     res.render("auth/register.ejs");
-  });
+});
+
+const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 5, // 5 login attempts
+  keyGenerator: (req) => `${req.ip}_${req.body.email || "unknown"}`, // Track by IP + email
+  skip: (req) => req.isAuthenticated(), // Skip if already logged in
+  handler: (req, res) => {
+    req.flash("error", "Too many login attempts. Try again later.");
+    res.redirect("/auth/login");
+  },
+});
 
 // POST login a user
-router.post("/login", validateLogin, (req, res, next) => {
+router.post("/login", loginLimiter, validateLogin, (req, res, next) => {
   // Temporarily store the guest cart ( req.session gets reset during registration or login and cart data is lost otherwise)
   const guestCart = req.session.cart || [];
 
@@ -275,8 +286,19 @@ router.post("/confirm", async (req, res) => {
   }
 });
 
+const resendLimiter = rateLimit({
+  windowMs: 1 * 60 * 60 * 1000, // 1 hour
+  max: 2, // 3 requests
+  keyGenerator: (req) => `${req.ip}_${req.body.email}`,
+  handler: (req, res) => {
+    req.flash("error", "Too many resend attempts. Try again later.");
+    res.redirect("/");
+  },
+  skip: (req) => !req.body.email, // Skip if no email
+});
+
 // POST resend confirmation email
-router.post("/resend-confirmation", async(req, res) => {
+router.post("/resend-confirmation", resendLimiter, async(req, res) => {
   const { email } = req.body;
 
   try {
@@ -308,11 +330,11 @@ router.post("/resend-confirmation", async(req, res) => {
 
     await sendConfirmationEmail(email, newToken);
     req.flash("success", "New confirmation email sent!");
-    res.redirect("/auth/login");
+    return res.redirect("/auth/login");
   } catch(err) {
     console.error("Email confirmation resend error:", err);
     req.flash("error", "Failed to resend confirmation email.");
-    return res.redirect("auth/login");
+    return res.redirect("/auth/login");
   }
 })
 
