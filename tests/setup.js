@@ -1,6 +1,6 @@
-import { vi } from 'vitest';
+import { vi } from "vitest";
 
 // Global mocks setup
-vi.mock('bcrypt');
-vi.mock('passport');
-vi.mock('pg');
+vi.mock("bcrypt");
+vi.mock("passport");
+vi.mock("pg");

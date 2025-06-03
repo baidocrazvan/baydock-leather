@@ -1,38 +1,44 @@
 <%- include("../partials/admin-header.ejs"); %>
 
 <main class="admin-main dashboard">
-    <div class="account-dashboard">
-        <div class="dashboard-header">
-        <h1 class="welcome-message">Welcome back, Admin!</h1>
-        <p class="account-since">Admin since <%= new Date(user.created_at).toLocaleDateString() %></p>
-        </div>
-    
-        <div class="dashboard-grid">
-        <!-- Account Info Section -->
-        <section class="dashboard-card account-info">
-            <div class="card-header">
-            <h2 class="admin">Account Information</h2>
-            </div>
-            <div class="card-body">
-            <div class="info-item">
-                <span class="info-label">Full Name:</span>
-                <span class="info-value"><%= user.first_name %> <%= user.last_name %></span>
-            </div>
-            <div class="info-item">
-                <span class="info-label">Email:</span>
-                <span class="info-value"><%= user.email %></span>
-            </div>
-
-            <div class="button-group">
-                <a href="/admin/create" class="edit-btn btn-secondary">Create new admin account</a>
-                <form action="/auth/logout" method="post" class="logout-form">
-                <button type="submit" class="logout-btn">Logout</a>
-                </form>
-            </div>
-            </div>
-        </section>
-        </div>
+  <div class="account-dashboard">
+    <div class="dashboard-header">
+      <h1 class="welcome-message">Welcome back, Admin!</h1>
+      <p class="account-since">
+        Admin since <%= new Date(user.created_at).toLocaleDateString() %>
+      </p>
     </div>
+
+    <div class="dashboard-grid">
+      <!-- Account Info Section -->
+      <section class="dashboard-card account-info">
+        <div class="card-header">
+          <h2 class="admin">Account Information</h2>
+        </div>
+        <div class="card-body">
+          <div class="info-item">
+            <span class="info-label">Full Name:</span>
+            <span class="info-value"
+              ><%= user.first_name %> <%= user.last_name %></span
+            >
+          </div>
+          <div class="info-item">
+            <span class="info-label">Email:</span>
+            <span class="info-value"><%= user.email %></span>
+          </div>
+
+          <div class="button-group">
+            <a href="/admin/create" class="edit-btn btn-secondary"
+              >Create new admin account</a
+            >
+            <form action="/auth/logout" method="post" class="logout-form">
+              <button type="submit" class="logout-btn">Logout</button>
+            </form>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
 </main>
 
 <%- include("../partials/admin-footer.ejs"); %>

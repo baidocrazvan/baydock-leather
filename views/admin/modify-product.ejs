@@ -9,7 +9,7 @@
         <label for="description">Product description:</label>
         <input id="description" type="text" name="description" value="<%= product.description %>" required >
         <label for="detailed">Detailed Description:</label>
-        <textarea id="detailed" name="detailed_description" rows="5" required></textarea>
+        <textarea id="detailed" name="detailed_description" rows="5" required><%= product.detailed_description %></textarea>
         <label for="price">Price:</label>
         <input id="price" type="number" name="price" value="<%= product.price %>" min="0.01" step="0.01" required >
         <label for="category">Category:</label>

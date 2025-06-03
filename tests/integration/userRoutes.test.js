@@ -17,7 +17,7 @@ vi.mock("../../middleware/middleware.js", () => ({
       last_name: "Test",
       email: "test@example.com",
       role: "admin",
-      created_at: new Date()
+      created_at: new Date(),
     };
     req.isAuthenticated = () => true;
     next();
@@ -26,12 +26,12 @@ vi.mock("../../middleware/middleware.js", () => ({
   redirectIfAuthenticated: (req, res, next) => next(),
 }));
 
-// bcrypt mock
+// Mock bcrypt
 vi.mock("bcryptjs", () => ({
   default: {
     compare: vi.fn(),
-    hash: vi.fn()
-  }
+    hash: vi.fn(),
+  },
 }));
 
 vi.mock("../../middleware/validationMiddleware.js", () => ({
@@ -41,19 +41,10 @@ vi.mock("../../middleware/validationMiddleware.js", () => ({
   validateAdminRegister: (req, res, next) => next(),
   validateEmail: (req, res, next) => next(),
   validateResetPassword: (req, res, next) => next(),
-  validateChangePassword: (req, res, next) => next()
+  validateChangePassword: (req, res, next) => next(),
 }));
 
 describe("User Routes", () => {
-  const mockUser = {
-    id: 1,
-    first_name: "Johnny",
-    last_name: "Test",
-    email: "test@example.com",
-    role: "user",
-    created_at: new Date()
-  };
-
   const mockAddresses = [
     {
       id: 1,
@@ -81,7 +72,7 @@ describe("User Routes", () => {
       created_at: new Date(),
       shipping_address_id: 1,
       billing_address_id: 1,
-      payment_method: "card"
+      payment_method: "card",
     },
     {
       id: 2,
@@ -91,14 +82,13 @@ describe("User Routes", () => {
       created_at: new Date(Date.now() - 86400000),
       shipping_address_id: 1,
       billing_address_id: 1,
-      payment_method: "cash"
-    }
+      payment_method: "cash",
+    },
   ];
 
   beforeEach(() => {
     vi.clearAllMocks();
   });
-
 
   describe("GET /account", () => {
     it("should render the account page with user data, addresses, and orders for authenticated users", async () => {
@@ -109,7 +99,7 @@ describe("User Routes", () => {
       const res = await request(app)
         .get("/user/account")
         .expect(200)
-        .expect("Content-Type", /html/); 
+        .expect("Content-Type", /html/);
 
       // Verify user details
       expect(res.text).toContain("Welcome back, Johnny"); // Check for user name in the HTML
@@ -132,34 +122,31 @@ describe("User Routes", () => {
       getActiveUserAddresses.mockResolvedValue(mockAddresses);
       getRecentUserOrders.mockResolvedValue([]);
 
-      const res = await request(app)
-        .get("/user/account")
-        .expect(200);
+      const res = await request(app).get("/user/account").expect(200);
 
       expect(res.text).toContain("You haven't placed any orders yet");
       expect(res.text).toContain("Start Shopping");
     });
 
     it("should handle errors from both address and order services", async () => {
-      const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
-      
+      const consoleErrorSpy = vi
+        .spyOn(console, "error")
+        .mockImplementation(() => {});
+
       getActiveUserAddresses.mockRejectedValue(new Error("Address error"));
       getRecentUserOrders.mockRejectedValue(new Error("Order error"));
 
-      const res = await request(app)
-        .get("/user/account")
-        .expect(200);
+      const res = await request(app).get("/user/account").expect(200);
 
       expect(res.text).toContain("No shipping address saved");
       expect(res.text).toContain("You haven't placed any orders yet");
-      
+
       consoleErrorSpy.mockRestore();
     });
   });
 
   describe("GET /addresses", () => {
     it("should render the addresses page with user addresses for authenticated users", async () => {
-
       // Mock the address service to return addresses
       getActiveUserAddresses.mockResolvedValue(mockAddresses);
 
@@ -174,7 +161,9 @@ describe("User Routes", () => {
     });
 
     it("should handle errors from the address service ", async () => {
-      const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+      const consoleErrorSpy = vi
+        .spyOn(console, "error")
+        .mockImplementation(() => {});
 
       // Mock the address service to throw an error
       getActiveUserAddresses.mockRejectedValue(new Error("Database error"));
@@ -184,25 +173,21 @@ describe("User Routes", () => {
         .expect(200)
         .expect("Content-Type", /html/);
 
-        // No address details should be displayed
-        expect(res.text).not.toContain("Str Lunga 23A");
-        
-        expect(res.text).toContain("You haven't added any addresses yet.")
+      // No address details should be displayed
+      expect(res.text).not.toContain("Str Lunga 23A");
 
-        consoleErrorSpy.mockRestore();
+      expect(res.text).toContain("You haven't added any addresses yet.");
+
+      consoleErrorSpy.mockRestore();
     });
   });
 
   describe("Order Display", () => {
     it("should handle bad order data gracefully", async () => {
       getActiveUserAddresses.mockResolvedValue(mockAddresses);
-      getRecentUserOrders.mockResolvedValue([
-        { id: 1, invalid_field: "test" } 
-      ]);
+      getRecentUserOrders.mockResolvedValue([{ id: 1, invalid_field: "test" }]);
 
-      const res = await request(app)
-        .get("/user/account")
-        .expect(200);
+      const res = await request(app).get("/user/account").expect(200);
 
       // Should still render without crashing
       expect(res.text).toContain("Recent Orders");
@@ -211,18 +196,20 @@ describe("User Routes", () => {
 
   describe("Password Update Routes", () => {
     let bcrypt;
-    
+
     beforeEach(async () => {
       bcrypt = (await import("bcryptjs")).default;
       vi.clearAllMocks();
-      
+
       // Default mock for db.query
-      db.query = vi.fn().mockResolvedValue({ 
-        rows: [{ 
-          password: "hashedCurrentPassword" 
-        }] 
+      db.query = vi.fn().mockResolvedValue({
+        rows: [
+          {
+            password: "hashedCurrentPassword",
+          },
+        ],
       });
-      
+
       // Default mock for bcrypt
       bcrypt.compare.mockResolvedValue(true);
       bcrypt.hash.mockResolvedValue("newHashedPassword");
@@ -242,12 +229,12 @@ describe("User Routes", () => {
 
     describe("POST /update-password", () => {
       it("should update password with valid current password", async () => {
-        const res = await request(app)
+        await request(app)
           .post("/user/update-password")
           .send({
             currentPassword: "correctPassword",
             password: "newPassword123",
-            cpassword: "newPassword123"
+            cpassword: "newPassword123",
           })
           .expect(302)
           .expect("Location", "/user/account");
@@ -271,7 +258,7 @@ describe("User Routes", () => {
           .send({
             currentPassword: "wrongPassword",
             password: "newPassword123",
-            cpassword: "newPassword123"
+            cpassword: "newPassword123",
           })
           .expect(302)
           .expect("Location", "/user/update-password");
@@ -280,12 +267,12 @@ describe("User Routes", () => {
       });
 
       it("should reject mismatched new passwords", async () => {
-        const res = await request(app)
+        await request(app)
           .post("/user/update-password")
           .send({
             currentPassword: "correctPassword",
             password: "newPassword123",
-            cpassword: "differentPassword"
+            cpassword: "differentPassword",
           })
           .expect(302)
           .expect("Location", "/user/update-password");
@@ -296,12 +283,12 @@ describe("User Routes", () => {
       it("should handle database errors", async () => {
         db.query.mockRejectedValue(new Error("Database error"));
 
-        const res = await request(app)
+        await request(app)
           .post("/user/update-password")
           .send({
             currentPassword: "correctPassword",
             password: "newPassword123",
-            cpassword: "newPassword123"
+            cpassword: "newPassword123",
           })
           .expect(302)
           .expect("Location", "/user/update-password");

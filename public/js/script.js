@@ -7,49 +7,57 @@ let lastScroll = 0;
 
 // Make header scroll-activated
 window.addEventListener("scroll", () => {
-    const currentScroll = window.pageYOffset;
-    const header = document.getElementById("header-background")
-    const navbar = document.querySelector(".header__navbar");
+  const currentScroll = window.pageYOffset;
+  const header = document.getElementById("header-background");
+  const navbar = document.querySelector(".header__navbar");
 
-    if (header && navbar) {
+  if (header && navbar) {
     // Skip if menu is open
     if (navbar.classList.contains("active")) return;
 
     if (currentScroll <= 0) {
-        // If you scroll up to the top, remove class
-        header.classList.remove("header--hidden");
-        return;
+      // If you scroll up to the top, remove class
+      header.classList.remove("header--hidden");
+      return;
     }
 
-    if (currentScroll > lastScroll && !header.classList.contains("header--hidden")) {
-        // Add class when scrolling down
-        header.classList.add("header--hidden");
-    } else if (currentScroll <= lastScroll && header.classList.contains("header--hidden")) {
-        header.classList.remove("header--hidden");
+    if (
+      currentScroll > lastScroll &&
+      !header.classList.contains("header--hidden")
+    ) {
+      // Add class when scrolling down
+      header.classList.add("header--hidden");
+    } else if (
+      currentScroll <= lastScroll &&
+      header.classList.contains("header--hidden")
+    ) {
+      header.classList.remove("header--hidden");
     }
 
     lastScroll = currentScroll;
-    }
-})
+  }
+});
 
 // Toggle mobile menu and overlay
 if (hamburger) {
   hamburger.addEventListener("click", function (e) {
-      e.preventDefault();
-      navbar.classList.toggle("active");
-      overlay.classList.add("active");
-      // Toggle body scroll lock
-      // document.body.style.overflow = navbar.classList.contains('active') ? 'hidden' : '';
-      document.body.style.overflow = "hidden";
-
-  })
+    e.preventDefault();
+    navbar.classList.toggle("active");
+    overlay.classList.add("active");
+    // Toggle body scroll lock
+    document.body.style.overflow = "hidden";
+  });
 }
 
 // Close mobile menu
 if (document.querySelector(".header__navbar-close")) {
-  document.querySelector(".header__navbar-close").addEventListener("click", function() {
+  document
+    .querySelector(".header__navbar-close")
+    .addEventListener("click", function () {
       navbar.classList.remove("active");
-      document.querySelector(".header__navbar-overlay").classList.remove("active");
+      document
+        .querySelector(".header__navbar-overlay")
+        .classList.remove("active");
       document.body.style.overflow = "";
     });
 }
@@ -57,13 +65,12 @@ if (document.querySelector(".header__navbar-close")) {
 // Close when clicking overlay
 
 if (overlay) {
-  overlay.addEventListener("click", function() {
+  overlay.addEventListener("click", function () {
     navbar.classList.remove("active");
     overlay.classList.remove("active");
     document.body.style.overflow = "";
   });
 }
-
 
 // Search icon modal
 // Get elements
@@ -96,19 +103,20 @@ if (searchModal) {
 }
 
 // Confirmation for forms and links
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener("DOMContentLoaded", () => {
   // Handle forms
-  document.querySelectorAll('form[data-confirm]').forEach(form => {
-    form.addEventListener('submit', (e) => { // Listen for submit event
+  document.querySelectorAll("form[data-confirm]").forEach((form) => {
+    form.addEventListener("submit", (e) => {
+      // Listen for submit event
       if (!confirm(form.dataset.confirm)) {
-        e.preventDefault(); 
+        e.preventDefault();
       }
     });
   });
 
   // Handle confirmable links
-  document.querySelectorAll('a[data-confirm]').forEach(link => {
-    link.addEventListener('click', (e) => {
+  document.querySelectorAll("a[data-confirm]").forEach((link) => {
+    link.addEventListener("click", (e) => {
       if (!confirm(link.dataset.confirm)) {
         e.preventDefault();
       }
@@ -120,17 +128,16 @@ document.addEventListener('DOMContentLoaded', () => {
 document.addEventListener("DOMContentLoaded", () => {
   const mainImage = document.querySelector(".product-main__image img");
   const thumbnails = document.querySelectorAll(".product-main__slideshow img");
-  
-  thumbnails.forEach(thumbnail => {
+
+  thumbnails.forEach((thumbnail) => {
     thumbnail.addEventListener("click", () => {
       mainImage.src = thumbnail.src;
     });
   });
 });
 
-
 // Script for sorting products by price or age
-
+// eslint-disable-next-line no-unused-vars
 function productSort() {
   const sortSelect = document.getElementById("sort-select");
   const [sort, order] = sortSelect.value.split("-");
@@ -141,7 +148,8 @@ function productSort() {
   if (sort) {
     url.searchParams.set("sort", sort);
     url.searchParams.set("order", order);
-  } else { // If default is selected, remove search params
+  } else {
+    // If default is selected, remove search params
     url.searchParams.delete("sort");
     url.searchParams.delete("order");
   }
@@ -158,18 +166,18 @@ document.addEventListener("DOMContentLoaded", () => {
     #size-select .quantity-selector
   `);
 
-  quantitySelectors.forEach(selector => {
+  quantitySelectors.forEach((selector) => {
     const minusBtn = selector.querySelector(".quantity-btn.minus");
     const plusBtn = selector.querySelector(".quantity-btn.plus");
     const quantityInput = selector.querySelector(".quantity-input");
-    const form = selector.closest('form');
+    const form = selector.closest("form");
     const updateIconBtn = form?.querySelector(".update-icon-btn");
 
     if (!minusBtn || !plusBtn || !quantityInput) return;
 
     const max = parseInt(quantityInput.max) || 10;
     const initialValue = parseInt(quantityInput.value);
-    
+
     // Store initial value
     quantityInput.dataset.initialValue = initialValue;
 
@@ -214,48 +222,50 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
-
 // Checkout address selection script
 
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", function () {
   const shippingSelect = document.getElementById("shippingAddress");
   const billingSelect = document.getElementById("billingAddress");
   const updateBtn = document.getElementById("updateDefaultBtn");
-  
+
   function checkForChange() {
     // Access the <option> selected value and check if the isShipping/isBilling has changed to false
-    const shippingChanged = shippingSelect.options[shippingSelect.selectedIndex].dataset.isShipping === "false";
-    const billingChanged = billingSelect.options[billingSelect.selectedIndex].dataset.isBilling === "false";
-    
+    const shippingChanged =
+      shippingSelect.options[shippingSelect.selectedIndex].dataset
+        .isShipping === "false";
+    const billingChanged =
+      billingSelect.options[billingSelect.selectedIndex].dataset.isBilling ===
+      "false";
+
     // Show update button if defaults changed
-    updateBtn.style.display = (shippingChanged || billingChanged) ? "block" : "none";
+    updateBtn.style.display =
+      shippingChanged || billingChanged ? "block" : "none";
   }
   if (shippingSelect && billingSelect) {
     shippingSelect.addEventListener("change", checkForChange);
     billingSelect.addEventListener("change", checkForChange);
   }
-  
-
 });
-
 
 // Order submission script, take values from address selection on page and pass them to form
 
-document.addEventListener("DOMContentLoaded", function() {
-    const orderForm = document.querySelector(".order-submission");
-    if (orderForm) {
-      orderForm.addEventListener("submit", function(e) {
-      document.getElementById("hiddenShippingAddressId").value = document.getElementById("shippingAddress").value;
-  
+document.addEventListener("DOMContentLoaded", function () {
+  const orderForm = document.querySelector(".order-submission");
+  if (orderForm) {
+    orderForm.addEventListener("submit", function () {
+      document.getElementById("hiddenShippingAddressId").value =
+        document.getElementById("shippingAddress").value;
+
       const billingSelect = document.getElementById("billingAddress");
-      document.getElementById("hiddenBillingAddressId").value = 
-      billingSelect.value || document.getElementById("shippingAddress").value;
-    }
-  )};    
+      document.getElementById("hiddenBillingAddressId").value =
+        billingSelect.value || document.getElementById("shippingAddress").value;
+    });
+  }
 });
 
 // Script for products price filter and slider
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", function () {
   const filterForm = document.querySelector(".price-filter");
   const minThumb = document.querySelector(".min-thumb");
   const maxThumb = document.querySelector(".max-thumb");
@@ -269,17 +279,17 @@ document.addEventListener("DOMContentLoaded", function() {
     function updateSlider() {
       const minVal = parseInt(minThumb.value);
       const maxVal = parseInt(maxThumb.value);
-      
+
       // Prevent sliders crossing
       if (minVal > maxVal - 5) {
         minThumb.value = maxVal - 5;
         return;
       }
-      
+
       // Update track position
       track.style.left = `${(minVal / 500) * 100}%`;
       track.style.right = `${100 - (maxVal / 500) * 100}%`;
-      
+
       // Update price displays
       minPriceDisplay.textContent = `€${minVal}`;
       maxPriceDisplay.textContent = `€${maxVal}`;
@@ -291,59 +301,64 @@ document.addEventListener("DOMContentLoaded", function() {
       minThumb.addEventListener("input", updateSlider);
       maxThumb.addEventListener("input", updateSlider);
     }
-  
-    
+
     // Initialize
     updateSlider();
   }
 });
 
 // Product page products-tab
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", function () {
   const tabs = document.querySelectorAll(".tabs li");
-    if (tabs && tabs.length > 0) {
-      tabs.forEach(tab => {
-        tab.addEventListener("click", function() {
-          // Remove all selections
-          document.querySelectorAll(".tabs li").forEach(t => t.classList.remove("selected"));
-          document.querySelectorAll(".panel").forEach(p => p.classList.remove("active"));
-          
-          // Add selection to clicked tab
-          this.classList.add("selected");
-          
-          // Activate corresponding panel
-          const panelId = this.id.replace("tab-title-", "tab-");
-          document.getElementById(panelId).classList.add("active");
-        });
+  if (tabs && tabs.length > 0) {
+    tabs.forEach((tab) => {
+      tab.addEventListener("click", function () {
+        // Remove all selections
+        document
+          .querySelectorAll(".tabs li")
+          .forEach((t) => t.classList.remove("selected"));
+        document
+          .querySelectorAll(".panel")
+          .forEach((p) => p.classList.remove("active"));
+
+        // Add selection to clicked tab
+        this.classList.add("selected");
+
+        // Activate corresponding panel
+        const panelId = this.id.replace("tab-title-", "tab-");
+        document.getElementById(panelId).classList.add("active");
       });
-      
-      // Initialize first tab as active if none selected
-      if (!document.querySelector(".tabs li.selected")) {
-        tabs[0].classList.add("selected");
-        document.querySelector(".panel").classList.add("active");
-      }
+    });
+
+    // Initialize first tab as active if none selected
+    if (!document.querySelector(".tabs li.selected")) {
+      tabs[0].classList.add("selected");
+      document.querySelector(".panel").classList.add("active");
     }
+  }
 });
 
 // Product page size selector for belts
 if (document.getElementById("size-select")) {
-  document.getElementById("size-select").addEventListener("submit", function(e) {
-    const sizeSelect = document.getElementById("belt-size");
-    if (!sizeSelect.value) {
-      e.preventDefault();
-      sizeSelect.setCustomValidity("Please select a size");
-      sizeSelect.reportValidity();
-    }
-  });
+  document
+    .getElementById("size-select")
+    .addEventListener("submit", function (e) {
+      const sizeSelect = document.getElementById("belt-size");
+      if (!sizeSelect.value) {
+        e.preventDefault();
+        sizeSelect.setCustomValidity("Please select a size");
+        sizeSelect.reportValidity();
+      }
+    });
 }
 
 // Checkout page script for showing address summary
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", function () {
   // Update address summary
   function updateAddressSummary(selectElement, summaryElement) {
     const selectedOption = selectElement.options[selectElement.selectedIndex];
     const addressData = JSON.parse(selectedOption.getAttribute("data-address"));
-    
+
     summaryElement.innerHTML = `
       <div class="address-card">
         <p><strong>${addressData.first_name} ${addressData.last_name}</strong></p>
@@ -363,20 +378,24 @@ document.addEventListener("DOMContentLoaded", function() {
 
   if (shippingSelect && shippingSummary) {
     updateAddressSummary(shippingSelect, shippingSummary);
-    shippingSelect.addEventListener("change", () => updateAddressSummary(shippingSelect, shippingSummary));
+    shippingSelect.addEventListener("change", () =>
+      updateAddressSummary(shippingSelect, shippingSummary)
+    );
   }
 
   if (billingSelect && billingSummary) {
     updateAddressSummary(billingSelect, billingSummary);
-    billingSelect.addEventListener("change", () => updateAddressSummary(billingSelect, billingSummary));
+    billingSelect.addEventListener("change", () =>
+      updateAddressSummary(billingSelect, billingSummary)
+    );
   }
 });
 
-// Flash message handler 
-  document.addEventListener("DOMContentLoaded", function() {
-    // Handle all flash messages (user, admin, cart)
-    const handleFlashMessages = (selector) => {
-    document.querySelectorAll(selector).forEach(flash => {
+// Flash message handler
+document.addEventListener("DOMContentLoaded", function () {
+  // Handle all flash messages (user, admin, cart)
+  const handleFlashMessages = (selector) => {
+    document.querySelectorAll(selector).forEach((flash) => {
       // Close button functionality
       const closeBtn = flash.querySelector(`${selector}__close`);
       if (closeBtn) {
@@ -384,7 +403,7 @@ document.addEventListener("DOMContentLoaded", function() {
       }
 
       // Auto-dismiss after 5 seconds
-      const autoDismiss = setTimeout(() => dismissFlash(flash), 5000);
+      setTimeout(() => dismissFlash(flash), 5000);
     });
   };
 
@@ -397,9 +416,9 @@ document.addEventListener("DOMContentLoaded", function() {
 // Dismiss function
 function dismissFlash(flashElement) {
   if (!flashElement || flashElement.classList.contains("hide")) return;
-  
+
   flashElement.classList.add("hide");
-  
+
   // Remove element after "slideOut" animation completes
   const handleSlideOutEnd = (e) => {
     // Only remove flash element after the slideOut animation ends
@@ -408,31 +427,33 @@ function dismissFlash(flashElement) {
       flashElement.remove();
     }
   };
-  
+
   flashElement.addEventListener("animationend", handleSlideOutEnd);
-  
-  // Fallback removal 
+
+  // Fallback removal
   setTimeout(() => {
     if (document.body.contains(flashElement)) {
       flashElement.remove();
     }
-  }, 500); // slideOut duration + extra buffer
+  }, 500); // Duration of slideOut + extra buffer
 }
 
 // Shipping methods script
 
-document.addEventListener('DOMContentLoaded', function() {
-  const shippingMethodRadios = document.querySelectorAll('input[name="shippingMethodId"]');
-  const shippingCostEl = document.getElementById('shipping-cost');
-  const orderTotalEl = document.getElementById('order-total');
-  
+document.addEventListener("DOMContentLoaded", function () {
+  const shippingMethodRadios = document.querySelectorAll(
+    'input[name="shippingMethodId"]'
+  );
+  const shippingCostEl = document.getElementById("shipping-cost");
+  const orderTotalEl = document.getElementById("order-total");
+
   // Get data from window object
   const subtotal = parseFloat(window.cartSubtotal);
   const shippingMethods = window.shippingMethods || [];
-  
+
   // Convert shipping methods array to lookup object
   const methodsData = {};
-  shippingMethods.forEach(method => {
+  shippingMethods.forEach((method) => {
     methodsData[method.id] = method.base_price;
   });
 
@@ -440,14 +461,16 @@ document.addEventListener('DOMContentLoaded', function() {
   updateShippingCost();
 
   // Handle shipping method selection changes
-  shippingMethodRadios.forEach(radio => {
-    radio.addEventListener('change', updateShippingCost);
+  shippingMethodRadios.forEach((radio) => {
+    radio.addEventListener("change", updateShippingCost);
   });
 
   function updateShippingCost() {
-    const selectedMethod = document.querySelector('input[name="shippingMethodId"]:checked');
+    const selectedMethod = document.querySelector(
+      'input[name="shippingMethodId"]:checked'
+    );
     if (!selectedMethod || !methodsData[selectedMethod.value]) return;
-    
+
     let shippingCost = 0;
     if (subtotal < 100) {
       shippingCost = parseFloat(methodsData[selectedMethod.value]);
@@ -456,37 +479,41 @@ document.addEventListener('DOMContentLoaded', function() {
     const total = subtotal + shippingCost;
 
     // Update displayed prices
-    shippingCostEl.textContent = subtotal >= 100 ? "FREE" : formatPrice(shippingCost);
+    shippingCostEl.textContent =
+      subtotal >= 100 ? "FREE" : formatPrice(shippingCost);
     orderTotalEl.textContent = formatPrice(total);
     // Update hidden form field
-    const hiddenShippingInput = document.getElementById('hiddenShippingMethodId');
+    const hiddenShippingInput = document.getElementById(
+      "hiddenShippingMethodId"
+    );
     if (hiddenShippingInput) {
       hiddenShippingInput.value = selectedMethod.value;
     }
   }
 
   function formatPrice(amount) {
-    return '€' + parseFloat(amount).toFixed(2);
+    return "€" + parseFloat(amount).toFixed(2);
   }
 });
 
 // Cart collapsible product breakdown
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", function () {
   // Product breakdown toggle functionality
   const breakdownToggle = document.querySelector(".breakdown-toggle-btn");
   const productBreakdown = document.querySelector(".product-breakdown");
-  
+
   if (breakdownToggle && productBreakdown) {
-    breakdownToggle.addEventListener("click", function() {
+    breakdownToggle.addEventListener("click", function () {
       // Toggle visibility
       const isExpanded = productBreakdown.style.display === "flex";
       productBreakdown.style.display = isExpanded ? "none" : "flex";
-      
+
       // Update button text and icon
       breakdownToggle.classList.toggle("expanded");
-      breakdownToggle.querySelector("span").textContent = 
-        isExpanded ? "Show item details" : "Hide item details";
-      
+      breakdownToggle.querySelector("span").textContent = isExpanded
+        ? "Show item details"
+        : "Hide item details";
+
       // Animate the toggle
       if (!isExpanded) {
         productBreakdown.style.animation = "fadeIn 0.3s ease-out";
@@ -495,13 +522,11 @@ document.addEventListener("DOMContentLoaded", function() {
   }
 });
 
-
 // =====================
 // FORM VALIDATION
 // =====================
 
 // Validate login form before submission
-
 
 const loginForm = document.getElementById("loginForm");
 const registerForm = document.getElementById("registerForm");
@@ -521,51 +546,51 @@ const phoneNumber = document.getElementById("phoneNumber");
 const postalCode = document.getElementById("postalCode");
 
 if (loginForm) {
-    loginForm.addEventListener("submit", (e) => {
-      if (!validateLoginInputs()) {
-        e.preventDefault(); // Only prevent if validation fails
-      }
+  loginForm.addEventListener("submit", (e) => {
+    if (!validateLoginInputs()) {
+      e.preventDefault(); // Only prevent if validation fails
+    }
   });
 }
 
 if (registerForm) {
   registerForm.addEventListener("submit", (e) => {
-    if(!validateRegisterInputs()) {
+    if (!validateRegisterInputs()) {
       e.preventDefault();
     }
-});
+  });
 }
 
 if (passwordForm) {
   passwordForm.addEventListener("submit", (e) => {
-    if(!validatePasswordInputs()) {
+    if (!validatePasswordInputs()) {
       e.preventDefault();
     }
-  })
+  });
 }
 
 if (forgotPasswordForm) {
   forgotPasswordForm.addEventListener("submit", (e) => {
-    if(!validateEmailInputs()) {
+    if (!validateEmailInputs()) {
       e.preventDefault();
     }
-  })
+  });
 }
 
 if (resetPasswordForm) {
   resetPasswordForm.addEventListener("submit", (e) => {
-    if(!validateResetInputs()) {
+    if (!validateResetInputs()) {
       e.preventDefault();
     }
-  })
+  });
 }
 
 if (addressForm) {
   addressForm.addEventListener("submit", (e) => {
-    if(!validateAddressInputs()) {
+    if (!validateAddressInputs()) {
       e.preventDefault();
     }
-  })
+  });
 }
 
 const setError = (element, message) => {
@@ -576,9 +601,9 @@ const setError = (element, message) => {
 
   inputControl.classList.add("error");
   inputControl.classList.remove("success");
-}
+};
 
-const setSuccess = element => {
+const setSuccess = (element) => {
   const inputControl = element.parentElement;
   const errorDisplay = inputControl.querySelector(".error");
 
@@ -586,32 +611,32 @@ const setSuccess = element => {
     errorDisplay.innerText = "";
     inputControl.classList.remove("error");
   }
-}
+};
 
-const isValidEmail = email => {
-  const re = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/
-  return re.test(email)
-}
+const isValidEmail = (email) => {
+  const re = /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/;
+  return re.test(email);
+};
 
-const isValidPassword = password => {
-  const re = /(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}/
+const isValidPassword = (password) => {
+  const re = /(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}/;
   return re.test(password);
-}
+};
 
-const isValidName = name => {
-  const re = /^[A-Za-zÀ-ÖØ-öø-ÿ\s'-]{2,50}$/
+const isValidName = (name) => {
+  const re = /^[A-Za-zÀ-ÖØ-öø-ÿ\s'-]{2,50}$/;
   return re.test(name);
-}
+};
 
-const isValidPhoneNumber = phoneNumber => {
-  const re = /^\+40\d{1,10}$/
+const isValidPhoneNumber = (phoneNumber) => {
+  const re = /^\+40\d{1,10}$/;
   return re.test(phoneNumber);
-}
+};
 
-const isValidPostalCode = postalCode => {
-  const re = /^\d{6}$/
-  return re.test(postalCode)
-}
+const isValidPostalCode = (postalCode) => {
+  const re = /^\d{6}$/;
+  return re.test(postalCode);
+};
 
 const validateLoginInputs = () => {
   const emailValue = email.value.trim();
@@ -619,8 +644,8 @@ const validateLoginInputs = () => {
   let isValid = true;
 
   if (emailValue === "") {
-      setError(email, "Email is required");
-      isValid = false;
+    setError(email, "Email is required");
+    isValid = false;
   } else if (!isValidEmail(emailValue)) {
     setError(email, "Email address is invalid");
     isValid = false;
@@ -636,7 +661,7 @@ const validateLoginInputs = () => {
   }
 
   return isValid;
-}
+};
 
 const validateRegisterInputs = () => {
   const emailValue = email.value;
@@ -659,7 +684,7 @@ const validateRegisterInputs = () => {
   if (passwordValue === "") {
     setError(password, "Password is required");
     isValid = false;
-  } else if (passwordValue.length < 8 ) {
+  } else if (passwordValue.length < 8) {
     setError(password, "Password must be atleast 8 characters long");
     isValid = false;
   } else if (!isValidPassword(passwordValue)) {
@@ -673,7 +698,7 @@ const validateRegisterInputs = () => {
     console.log(confirmPasswordValue);
     setError(confirmPassword, "Confirmation password is required");
     isValid = false;
-  }  else if (passwordValue !== confirmPasswordValue) {
+  } else if (passwordValue !== confirmPasswordValue) {
     console.log(confirmPasswordValue);
     setError(confirmPassword, "Confirmation password does not match password");
     isValid = false;
@@ -708,8 +733,7 @@ const validateRegisterInputs = () => {
   }
 
   return isValid;
-}
-
+};
 
 const validateAddressInputs = () => {
   const firstNameValue = firstName.value.trim();
@@ -790,24 +814,27 @@ const validateAddressInputs = () => {
     setError(phoneNumber, "Valid mobile phone number is required");
     isValid = false;
   } else if (!isValidPhoneNumber(phoneNumberValue)) {
-    setError(phoneNumber, "Phone number must start with +40 and be a valid Romanian mobile phone number");
+    setError(
+      phoneNumber,
+      "Phone number must start with +40 and be a valid Romanian mobile phone number"
+    );
     isValid = false;
   } else {
-    setSuccess(phoneNumber)
+    setSuccess(phoneNumber);
   }
 
   if (postalCodeValue === "") {
     setError(postalCode, "Postal code is required");
     isValid = false;
   } else if (!isValidPostalCode(postalCodeValue)) {
-    setError(postalCode, "Valid 6-character postal code is required")
+    setError(postalCode, "Valid 6-character postal code is required");
     isValid = false;
   } else {
     setSuccess(postalCode);
   }
 
   return isValid;
-}
+};
 
 const validatePasswordInputs = () => {
   const passwordValue = password.value;
@@ -817,7 +844,7 @@ const validatePasswordInputs = () => {
   if (passwordValue === "") {
     setError(password, "Password is required");
     isValid = false;
-  } else if (passwordValue.length < 8 ) {
+  } else if (passwordValue.length < 8) {
     setError(password, "Password must be atleast 8 characters long");
     isValid = false;
   } else if (!isValidPassword(passwordValue)) {
@@ -830,7 +857,7 @@ const validatePasswordInputs = () => {
   if (confirmPasswordValue === "") {
     setError(confirmPassword, "Confirmation password is required");
     isValid = false;
-  }  else if (passwordValue !== confirmPasswordValue) {
+  } else if (passwordValue !== confirmPasswordValue) {
     setError(confirmPassword, "Confirmation password does not match password");
     isValid = false;
   } else {
@@ -838,14 +865,14 @@ const validatePasswordInputs = () => {
   }
 
   return isValid;
-}
+};
 
 const validateEmailInputs = () => {
   const emailValue = email.value;
   let isValid = true;
   if (emailValue === "") {
-      setError(email, "Email is required");
-      isValid = false;
+    setError(email, "Email is required");
+    isValid = false;
   } else if (!isValidEmail(emailValue)) {
     setError(email, "Email address is invalid");
     isValid = false;
@@ -854,7 +881,7 @@ const validateEmailInputs = () => {
   }
 
   return isValid;
-}
+};
 
 const validateResetInputs = () => {
   const passwordValue = password.value;
@@ -864,7 +891,7 @@ const validateResetInputs = () => {
   if (passwordValue === "") {
     setError(password, "Password is required");
     isValid = false;
-  } else if (passwordValue.length < 8 ) {
+  } else if (passwordValue.length < 8) {
     setError(password, "Password must be atleast 8 characters long");
     isValid = false;
   } else if (!isValidPassword(passwordValue)) {
@@ -877,7 +904,7 @@ const validateResetInputs = () => {
   if (confirmPasswordValue === "") {
     setError(confirmPassword, "Confirmation password is required");
     isValid = false;
-  }  else if (passwordValue !== confirmPasswordValue) {
+  } else if (passwordValue !== confirmPasswordValue) {
     setError(confirmPassword, "Confirmation password does not match password");
     isValid = false;
   } else {
@@ -885,4 +912,4 @@ const validateResetInputs = () => {
   }
 
   return isValid;
-}
+};

@@ -1,44 +1,67 @@
-  <header id="admin-header">
-    <nav class="admin-nav">
-      <button id="admin-sidebar-toggle" class="admin-nav__toggle">
-        <svg xmlns="http://www.w3.org/2000/svg" id="toggle-icon-menu" width="24" height="24" fill="currentColor" class="bi bi-list" viewBox="0 0 16 16">
-          <path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5"/>
-        </svg>
-        <svg xmlns="http://www.w3.org/2000/svg" id="toggle-icon-close" width="36" height="36" fill="currentColor" class="bi bi-x" viewBox="0 0 16 16">
-          <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
-        </svg>
-      </button>
-  
-      <div class="admin-nav__brand">
-        <a href="/admin/dashboard">Admin Panel</a>
-      </div>
-  
-      
-    </nav>
-  </header>
-  
-  <aside id="admin-sidebar">
-    <nav class="admin-sidebar__nav">
-      <ul>
-        <li><a href="/admin/dashboard">Dashboard</a></li>
-        <li><a href="/admin/products">Products</a></li>
-        <li><a href="/admin/users">Users</a></li>
-        <li><a href="/admin/orders">Orders</a></li>
-        <li><a href="/">Store</a></li>
-      </ul>
-    </nav>
-  </aside>
-  
-  <div id="admin-overlay"></div>
-  
-  <script>
-    // Toggle sidebar
-    document.getElementById("admin-sidebar-toggle").addEventListener("click", function() {
+<header id="admin-header">
+  <nav class="admin-nav">
+    <button id="admin-sidebar-toggle" class="admin-nav__toggle">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        id="toggle-icon-menu"
+        width="24"
+        height="24"
+        fill="currentColor"
+        class="bi bi-list"
+        viewBox="0 0 16 16"
+      >
+        <path
+          fill-rule="evenodd"
+          d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5"
+        />
+      </svg>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        id="toggle-icon-close"
+        width="36"
+        height="36"
+        fill="currentColor"
+        class="bi bi-x"
+        viewBox="0 0 16 16"
+      >
+        <path
+          d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"
+        />
+      </svg>
+    </button>
+
+    <div class="admin-nav__brand">
+      <a href="/admin/dashboard">Admin Panel</a>
+    </div>
+  </nav>
+</header>
+
+<aside id="admin-sidebar">
+  <nav class="admin-sidebar__nav">
+    <ul>
+      <li><a href="/admin/dashboard">Dashboard</a></li>
+      <li><a href="/admin/products">Products</a></li>
+      <li><a href="/admin/users">Users</a></li>
+      <li><a href="/admin/orders">Orders</a></li>
+      <li><a href="/">Store</a></li>
+    </ul>
+  </nav>
+</aside>
+
+<div id="admin-overlay"></div>
+
+<script>
+  // Toggle sidebar
+  document
+    .getElementById("admin-sidebar-toggle")
+    .addEventListener("click", function () {
       document.body.classList.toggle("admin-sidebar-open");
     });
-  
-    // Close sidebar when clicking overlay
-    document.getElementById("admin-overlay").addEventListener("click", function() {
+
+  // Close sidebar when clicking overlay
+  document
+    .getElementById("admin-overlay")
+    .addEventListener("click", function () {
       document.body.classList.remove("admin-sidebar-open");
     });
-  </script>
+</script>

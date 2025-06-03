@@ -3,10 +3,19 @@ import bcrypt from "bcryptjs";
 import passport from "passport";
 import db from "../db.js";
 import rateLimit from "express-rate-limit";
-import { validateLogin, validateEmail, validateRegister, validateResetPassword } from "../middleware/validationMiddleware.js";
+import {
+  validateLogin,
+  validateEmail,
+  validateRegister,
+  validateResetPassword,
+} from "../middleware/validationMiddleware.js";
 import { redirectIfAuthenticated } from "../middleware/middleware.js";
 import { updateCartItem } from "../services/cartService.js";
-import { generateConfirmationToken, sendConfirmationEmail, sendResetEmail } from "../services/emailService.js";
+import {
+  generateConfirmationToken,
+  sendConfirmationEmail,
+  sendResetEmail,
+} from "../services/emailService.js";
 import { isEmailAlreadyRegistered } from "../services/userService.js";
 
 const saltRounds = 10;
@@ -20,7 +29,7 @@ router.get("/login", redirectIfAuthenticated, (req, res) => {
 
 // GET register page
 router.get("/register", redirectIfAuthenticated, (req, res) => {
-    res.render("auth/register.ejs");
+  res.render("auth/register.ejs");
 });
 
 const loginLimiter = rateLimit({
@@ -49,11 +58,13 @@ router.post("/login", loginLimiter, validateLogin, (req, res, next) => {
       req.flash("error", info ? info.message : "Invalid credentials.");
       return res.redirect("/auth/login");
     }
-  
+
     // Email confirmation check
     if (!user.is_confirmed) {
       req.flash("error", "Please confirm your email before logging in.");
-      return res.redirect(`/auth/login?unconfirmedEmail=${encodeURIComponent(req.body.email)}`);
+      return res.redirect(
+        `/auth/login?unconfirmedEmail=${encodeURIComponent(req.body.email)}`
+      );
     }
     req.login(user, async (err) => {
       if (err) {
@@ -102,23 +113,35 @@ router.post("/login", loginLimiter, validateLogin, (req, res, next) => {
 const registerLimiter = rateLimit({
   windowMs: 1 * 60 * 60 * 1000, // 1 Hour
   max: 5,
-  keyGenerator: (req) => 
+  keyGenerator: (req) =>
     `${req.ip}_${req.body.email?.toLowerCase() || "missing-email"}`,
-  handler: (req, res, next, options) => {
+  handler: (req, res) => {
     if (req.rateLimit.used === req.rateLimit.limit + 1) {
-      console.log(`Rate limit hit: IP=${req.ip} Path=${req.path} Email=${req.body.email}`);
+      console.log(
+        `Rate limit hit: IP=${req.ip} Path=${req.path} Email=${req.body.email}`
+      );
     }
     req.flash("error", "Too many registration attempts. Try again later.");
     res.redirect("/auth/register");
   },
-  skip: (req) => 
+  skip: (req) =>
     // Skip rate limiter if email is already registered
     req.body.email && isEmailAlreadyRegistered(req.body.email),
 });
 
 // POST register a user
-router.post("/register", registerLimiter, validateRegister, async (req, res) => {
-    const { lastName, firstName, email, password, cpassword: confirmPassword } = req.body;
+router.post(
+  "/register",
+  registerLimiter,
+  validateRegister,
+  async (req, res) => {
+    const {
+      lastName,
+      firstName,
+      email,
+      password,
+      cpassword: confirmPassword,
+    } = req.body;
     const role = "user";
     const guestCart = req.session.cart || [];
 
@@ -134,9 +157,9 @@ router.post("/register", registerLimiter, validateRegister, async (req, res) => 
         [email]
       );
       if (checkConfirmedUser.rows.length > 0) {
-        req.flash('error', 'Account already registered. Please log in.');
+        req.flash("error", "Account already registered. Please log in.");
         return res.redirect("/auth/login");
-      } 
+      }
 
       // Check for unconfirmed user
       const checkUnconfirmedUser = await db.query(
@@ -147,15 +170,18 @@ router.post("/register", registerLimiter, validateRegister, async (req, res) => 
       if (checkUnconfirmedUser.rows.length > 0) {
         // Check if a registration email has already been sent and is still valid to prevent spam
         const recentAttempt = await db.query(
-            `SELECT created_at FROM users 
+          `SELECT created_at FROM users 
             WHERE email = $1 AND confirmation_token_expires > NOW()
             ORDER BY created_at DESC LIMIT 1`,
-            [email]
+          [email]
         );
 
         if (recentAttempt.rows.length > 0) {
-          req.flash('error', 'Confirmation email already sent. Please check your inbox.');
-          return res.redirect('/auth/register');
+          req.flash(
+            "error",
+            "Confirmation email already sent. Please check your inbox."
+          );
+          return res.redirect("/auth/register");
         }
       }
 
@@ -176,27 +202,36 @@ router.post("/register", registerLimiter, validateRegister, async (req, res) => 
         // Update existing unconfirmed user and prepare to resend new activation email
         const result = await db.query(
           `UPDATE users SET
-          first_name = $1,
-          last_name = $2,
-          password = $3,
-          confirmation_token = $4,
-          confirmation_token_expires = $5
-          WHERE email = $6
+                first_name = $1,
+                last_name = $2,
+                password = $3,
+                confirmation_token = $4,
+                confirmation_token_expires = $5
+                WHERE email = $6
           RETURNING *`,
           [firstName, lastName, hash, confirmationToken, tokenExpires, email]
         );
         user = result.rows[0];
-      } else { // Create new user
+      } else {
+        // Create new user
         // Insert user with confirmation data
         const result = await db.query(
-            `INSERT INTO users (first_name, last_name, email, password, role, confirmation_token, confirmation_token_expires)
+          `INSERT INTO users (first_name, last_name, email, password, role, confirmation_token, confirmation_token_expires)
             VALUES ($1, $2, $3, $4, $5, $6, $7)
             RETURNING *`,
-            [firstName, lastName, email, hash, role, confirmationToken, tokenExpires]
+          [
+            firstName,
+            lastName,
+            email,
+            hash,
+            role,
+            confirmationToken,
+            tokenExpires,
+          ]
         );
         user = result.rows[0];
       }
-      
+
       // Store guest cart if exists
       if (guestCart.length > 0) {
         await db.query(
@@ -207,33 +242,37 @@ router.post("/register", registerLimiter, validateRegister, async (req, res) => 
           DO UPDATE SET cart_data = $2`,
           [email, JSON.stringify(guestCart)]
         );
-     }
-    
+      }
+
       // Send confirmation email
       try {
         await sendConfirmationEmail(email, user.confirmation_token);
-        req.flash("success", "Registration successfull! Please check your email to confirm your account.");
+        req.flash(
+          "success",
+          "Registration successfull! Please check your email to confirm your account."
+        );
         return res.redirect("/auth/login");
       } catch (emailErr) {
-          console.error("Email error:", emailErr);
-          // Clean up unconfirmed registration
-          await db.query(
-            `DELETE FROM users WHERE email = $1 AND is_confirmed = FALSE`,
-            [email]
-          );
-          req.flash("error", "Failed to send confirmation. Please try again.");
-          return res.redirect("/auth/register");
+        console.error("Email error:", emailErr);
+        // Clean up unconfirmed registration
+        await db.query(
+          `DELETE FROM users WHERE email = $1 AND is_confirmed = FALSE`,
+          [email]
+        );
+        req.flash("error", "Failed to send confirmation. Please try again.");
+        return res.redirect("/auth/register");
       }
     } catch (err) {
       console.error("Registration error:", err);
       req.flash("error", "Registration failed.");
       res.redirect("/auth/register");
     }
-});
+  }
+);
 
 // GET email confirmation page
 router.get("/confirm", (req, res) => {
-  res.render("auth/confirm.ejs", {token: req.query.token});
+  res.render("auth/confirm.ejs", { token: req.query.token });
 });
 
 // POST confirm email
@@ -254,16 +293,21 @@ router.post("/confirm", async (req, res) => {
       [token]
     );
 
-    if (result.rows.length === 0) { // If no valid token found
+    if (result.rows.length === 0) {
+      // If no valid token found
       // Check if token exists at all
       const details = await db.query(
         `SELECT 1 FROM users WHERE confirmation_token = $1`,
         [token]
       );
-      
-    req.flash("error", 
-      details.rows.length ? "Confirmation link expired" : "Invalid confirmation link");
-    return res.redirect("/auth/register");
+
+      req.flash(
+        "error",
+        details.rows.length
+          ? "Confirmation link expired"
+          : "Invalid confirmation link"
+      );
+      return res.redirect("/auth/register");
     }
 
     // Mark user as confirmed
@@ -276,10 +320,12 @@ router.post("/confirm", async (req, res) => {
       [token]
     );
 
-    req.flash("success", "Email has been confirmed. You can now log into your account.");
+    req.flash(
+      "success",
+      "Email has been confirmed. You can now log into your account."
+    );
     return res.redirect("/auth/login");
-
-  } catch(err) {
+  } catch (err) {
     console.error("Confirmation error:", err);
     req.flash("error", "Confirmation failed.");
     return res.redirect("/auth/register");
@@ -298,7 +344,7 @@ const resendLimiter = rateLimit({
 });
 
 // POST resend confirmation email
-router.post("/resend-confirmation", resendLimiter, async(req, res) => {
+router.post("/resend-confirmation", resendLimiter, async (req, res) => {
   const { email } = req.body;
 
   try {
@@ -308,7 +354,7 @@ router.post("/resend-confirmation", resendLimiter, async(req, res) => {
       [email]
     );
 
-    if(!user.rows.length) {
+    if (!user.rows.length) {
       req.flash("error", "Email already confirmed or not registered");
       return res.redirect("/auth/login");
     }
@@ -316,8 +362,8 @@ router.post("/resend-confirmation", resendLimiter, async(req, res) => {
     // Generate new token
     const newToken = generateConfirmationToken();
     const dbExpires = await db.query(
-        `SELECT (NOW() + INTERVAL '10 minutes') AS expires`
-      );
+      `SELECT (NOW() + INTERVAL '10 minutes') AS expires`
+    );
     const expires = dbExpires.rows[0].expires;
 
     await db.query(
@@ -331,12 +377,12 @@ router.post("/resend-confirmation", resendLimiter, async(req, res) => {
     await sendConfirmationEmail(email, newToken);
     req.flash("success", "New confirmation email sent!");
     return res.redirect("/auth/login");
-  } catch(err) {
+  } catch (err) {
     console.error("Email confirmation resend error:", err);
     req.flash("error", "Failed to resend confirmation email.");
     return res.redirect("/auth/login");
   }
-})
+});
 
 // GET Forgot Password Page
 router.get("/forgot-password", redirectIfAuthenticated, (req, res) => {
@@ -347,13 +393,13 @@ router.get("/forgot-password", redirectIfAuthenticated, (req, res) => {
 const ipLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 3, // Max 3 requests for window of time
-  handler: (req, res, next, options) => {
+  handler: (req, res) => {
     if (req.rateLimit.used === req.rateLimit.limit + 1) {
       console.log(`Rate limit hit: IP=${req.ip}`);
     }
     req.flash("error", "Too many attempts from your network. Try again later.");
-    res.redirect('/auth/forgot-password');
-  }
+    res.redirect("/auth/forgot-password");
+  },
 });
 
 // Email based limiter
@@ -361,57 +407,63 @@ const emailLimiter = rateLimit({
   windowMs: 60 * 60 * 1000, // 1 hour
   max: 5,
   keyGenerator: (req) => req.body.email.toLowerCase(),
-  handler: (req, res, next, options) => {
+  handler: (req, res) => {
     if (req.rateLimit.used === req.rateLimit.limit + 1) {
       console.log(`Rate limit hit for Email=${req.body.email}`);
     }
-    req.flash("error", "Too many requests for this email. Check your inbox or try later.");
+    req.flash(
+      "error",
+      "Too many requests for this email. Check your inbox or try later."
+    );
     res.redirect("/auth/forgot-password");
   },
-  skip: (req) => !req.body.email // If no email is provided, skip
-  
+  skip: (req) => !req.body.email, // If no email is provided, skip
 });
 
 // POST Forgot Password (send reset email)
-router.post("/forgot-password",
+router.post(
+  "/forgot-password",
   ipLimiter,
   emailLimiter,
   redirectIfAuthenticated,
   validateEmail,
   async (req, res) => {
-  const { email } = req.body;
-  
-  try {
-    const user = await db.query('SELECT * FROM users WHERE email = $1', [email]);
-    if (!user.rows.length) {
-      req.flash("error", "There is no account linked to this email");
-      return res.redirect("/auth/forgot-password");
-    }
+    const { email } = req.body;
 
-    const token = generateConfirmationToken();
-    const dbExpires = await db.query(
+    try {
+      const user = await db.query("SELECT * FROM users WHERE email = $1", [
+        email,
+      ]);
+      if (!user.rows.length) {
+        req.flash("error", "There is no account linked to this email");
+        return res.redirect("/auth/forgot-password");
+      }
+
+      const token = generateConfirmationToken();
+      const dbExpires = await db.query(
         `SELECT (NOW() + INTERVAL '10 minutes') AS expires`
       );
-    const expires = dbExpires.rows[0].expires;
+      const expires = dbExpires.rows[0].expires;
 
-    await db.query(
-      `UPDATE users 
+      await db.query(
+        `UPDATE users 
        SET reset_token = $1, reset_token_expires = $2
        WHERE email = $3`,
-      [token, expires, email]
-    );
+        [token, expires, email]
+      );
 
-    const resetLink = `${process.env.BASE_URL}/auth/reset-password?token=${token}`;
-    await sendResetEmail(email, resetLink);
+      const resetLink = `${process.env.BASE_URL}/auth/reset-password?token=${token}`;
+      await sendResetEmail(email, resetLink);
 
-    req.flash("success", "Password reset link sent to your email");
-    res.redirect("/auth/login");
-  } catch (err) {
-    console.error("Password reset error:", err);
-    req.flash("error", "Failed to process reset request");
-    res.redirect("/auth/forgot-password");
+      req.flash("success", "Password reset link sent to your email");
+      res.redirect("/auth/login");
+    } catch (err) {
+      console.error("Password reset error:", err);
+      req.flash("error", "Failed to process reset request");
+      res.redirect("/auth/forgot-password");
+    }
   }
-});
+);
 
 // GET Reset Password Page
 router.get("/reset-password", (req, res) => {
@@ -421,7 +473,7 @@ router.get("/reset-password", (req, res) => {
 // POST Reset Password
 router.post("/reset-password", validateResetPassword, async (req, res) => {
   const { token, password, cpassword: confirmPassword } = req.body;
-  
+
   try {
     if (password !== confirmPassword) {
       req.flash("error", "Passwords do not match");
@@ -439,7 +491,10 @@ router.post("/reset-password", validateResetPassword, async (req, res) => {
       return res.redirect("/auth/forgot-password");
     }
 
-    const isSamePassword = await bcrypt.compare(password, user.rows[0].password);
+    const isSamePassword = await bcrypt.compare(
+      password,
+      user.rows[0].password
+    );
     if (isSamePassword) {
       req.flash("error", "New password cannot be the same as current password");
       return res.redirect(`/auth/reset-password?token=${token}`);
@@ -463,22 +518,27 @@ router.post("/reset-password", validateResetPassword, async (req, res) => {
 });
 
 // POST Logout a user, clear session cookie and end the session.
-router.post("/logout", function(req, res, next) { // Clear session cookie when user logs out
-    req.logout((err) => { // Removes the req.user property and ends user's session
-        if (err) { return next(err); }
-        req.session.destroy(function(err) { // Destroy the session
-        if (err) { 
-            return next(err); 
-        }
+router.post("/logout", function (req, res, next) {
+  // Clear session cookie when user logs out
+  req.logout((err) => {
+    // Removes the req.user property and ends user's session
+    if (err) {
+      return next(err);
+    }
+    req.session.destroy(function (err) {
+      // Destroy the session
+      if (err) {
+        return next(err);
+      }
 
-        res.clearCookie('connect.sid', {
-            httpOnly: true,
-            sameSite: "strict",
-        }); // Clear the session cookie
-        
-        res.redirect('/')
-        });
+      res.clearCookie("connect.sid", {
+        httpOnly: true,
+        sameSite: "strict",
+      }); // Clear the session cookie
+
+      res.redirect("/");
     });
-    });
+  });
+});
 
 export default router;

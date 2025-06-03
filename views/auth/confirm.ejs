@@ -1,15 +1,18 @@
 <%- include('../partials/header') %>
 
 <main>
-    <div class="confirm-email-container">
-        <h1>Activate your account</h1>
-        <p>Please confirm your account by clicking the button below. You will be redirected to the login page.</p>
+  <div class="confirm-email-container">
+    <h1>Activate your account</h1>
+    <p>
+      Please confirm your account by clicking the button below. You will be
+      redirected to the login page.
+    </p>
 
-        <form action="/auth/confirm" method="POST">
-            <input type="hidden" name="token" value="<%= token %>">
-            <button type="submit" class="btn btn-primary">Confirm</button>
-        </form>
-    </div>
+    <form action="/auth/confirm" method="POST">
+      <input type="hidden" name="token" value="<%= token %>" />
+      <button type="submit" class="btn btn-primary">Confirm</button>
+    </form>
+  </div>
 </main>
 
 <%- include('../partials/footer') %>

@@ -10,7 +10,7 @@ import {
   updateProductStock,
   getOrderDetails,
   getUserOrders,
-  getAllOrders
+  getAllOrders,
 } from "../../services/orderService.js";
 
 // Mock dependencies
@@ -24,9 +24,9 @@ vi.mock("../../services/orderService.js", () => ({
   updateProductStock: vi.fn(),
   getOrderDetails: vi.fn(),
   getUserOrders: vi.fn().mockResolvedValue({
-    orders: [], 
-    total: 0
-  })
+    orders: [],
+    total: 0,
+  }),
 }));
 
 vi.mock("../../middleware/middleware.js", () => ({
@@ -36,7 +36,7 @@ vi.mock("../../middleware/middleware.js", () => ({
       first_name: "Johnny",
       last_name: "Test",
       email: "test@example.com",
-      role: "admin"
+      role: "admin",
     };
     req.isAuthenticated = () => true;
     next();
@@ -46,201 +46,205 @@ vi.mock("../../middleware/middleware.js", () => ({
 }));
 
 describe("Order Routes with authentication", () => {
+  const mockOrder = {
+    id: 1,
+    user_id: 1,
+    total_price: 333.33,
+    status: "pending",
+    created_at: new Date(),
+    shipping_address_id: 1,
+    billing_address_id: 1,
+    payment_method: "cash",
+  };
 
-    const mockOrder = {
+  const order = {
+    id: 5,
+    status: "pending",
+    subtotal: 99.99,
+    total: 99.99,
+    shippingCost: 0,
+    payment: "cash",
+    date: "19/04/2025",
+    shippingMethod: {
       id: 1,
-      user_id: 1,
-      total_price: 333.33,
-      status: "pending",
-      created_at: new Date(),
-      shipping_address_id: 1,
-      billing_address_id: 1,
-      payment_method: "cash" 
-    };
-
-    const order = {
-      id: 5,
-      status: "pending",
-      subtotal: 99.99,
-      total: 99.99,
-      shippingCost: 0,
-      payment: "cash",
-      date: "19/04/2025",
-      shippingMethod: {
-        id: 1,
-        name: "Cargus",
-        price: 0,
-        description: "Courier delivery",
-        deliveryDays: {
-          min: 1,
-          max: 3
-        }
+      name: "Cargus",
+      price: 0,
+      description: "Courier delivery",
+      deliveryDays: {
+        min: 1,
+        max: 3,
       },
-      shippingAddress: {
-        name: "Johnny Cash",
-        street: "Strada Lunga 23A",
-        city: "Oradea, Romania",
-        country: "Romania",
-        postalCode: "410495",
-        phoneNumber: "+40771711988"
+    },
+    shippingAddress: {
+      name: "Johnny Cash",
+      street: "Strada Lunga 23A",
+      city: "Oradea, Romania",
+      country: "Romania",
+      postalCode: "410495",
+      phoneNumber: "+40771711988",
+    },
+    billingAddress: {
+      name: "Johnny Cash",
+      street: "Strada Lunga 23A",
+      city: "Oradea, Romania",
+      country: "Romania",
+      postalCode: "410495",
+      phoneNumber: "+40771711988",
+    },
+    products: [
+      {
+        productId: 1,
+        name: "Product A",
+        thumbnail: "product-a.jpg",
+        quantity: 2,
+        price: 10,
+        subtotal: "20.00",
       },
-      billingAddress: {
-        name: "Johnny Cash",
-        street: "Strada Lunga 23A",
-        city: "Oradea, Romania",
-        country: "Romania",
-        postalCode: "410495",
-        phoneNumber: "+40771711988"
-      },
-      products: [
-        {
-          productId: 1,
-          name: "Product A",
-          thumbnail: "product-a.jpg",
-          quantity: 2,
-          price: 10,
-          subtotal: "20.00"
-        }
-      ]
-    }
-    
-    describe("GET /history", () => {
+    ],
+  };
 
-        it("should render order history for authenticated user", async () => {
-            // Mock db response
-            getUserOrders.mockResolvedValue({
-              orders: [{
-                order_id: 1,
-                order_status: "pending",
-                order_date: new Date(),
-                order_total: 59.45,
-                first_name: "Johnny",
-                last_name: "Cash",
-                city: "Oradea",
-                county: "Bihor"
-              }],
-              total: 1
-            });
-        
-            const res = await request(app)
-                .get("/orders/history")
-                .expect(200)
-                .expect("Content-Type", /html/);
-        
-            expect(res.text).toContain("My Orders");
-            expect(res.text).toContain("Johnny");
-        });
-
-        it("should handle empty order history", async () => {
-            getUserOrders.mockResolvedValue({ orders: [], total: 0 });
-      
-            const res = await request(app)
-              .get("/orders/history")
-              .expect(200)
-              .expect("Content-type", /html/);
-      
-            expect(res.text).toContain("No orders found.");
-        });  
-    });
-
-    describe("GET /:id", () => {
-        it("should render order details for valid order", async () => {
-          
-          getOrderDetails.mockResolvedValue(order);
-          
-          const res = await request(app)
-            .get("/orders/5")
-            .expect(200);
-    
-          expect(res.text).toContain("Order #5");
-          expect(getOrderDetails).toHaveBeenCalledWith("5", mockOrder.user_id);
-        });
-    
-        it("should reject unauthorized access to orders", async () => {
-          getOrderDetails.mockRejectedValue(new Error("Unauthorized"));
-    
-          const res = await request(app)
-            .get("/orders/999")
-            .expect(302)
-            .expect("Location", "/orders");
-    
-          expect(res.headers.location).toBe("/orders");
-        });
-    });
-
-
-    describe("POST /new-order", () => {
-      let mockClient;
-
-      beforeEach(() => {
-          // Mock the database client
-          mockClient = {
-            query: vi.fn(),
-            release: vi.fn(),
-          };
-
-          // Mock db.connect to return the mock client
-          db.connect.mockResolvedValue(mockClient);
-
-          // Mock all the required database responses
-          mockClient.query
-            .mockResolvedValueOnce({ rows: [] }) // BEGIN
-            .mockResolvedValueOnce({ rows: [{ id: 1 }] }) // Shipping method
-            .mockResolvedValueOnce({ rows: [{ id: 1, is_shipping: true }] }) // Shipping address
-            .mockResolvedValueOnce({ rows: [{ product_id: 1, quantity: 2 }] }) // Cart items
-            .mockResolvedValueOnce({ rows: [] }) // Stock check
-            .mockResolvedValueOnce({ rows: [] }) // COMMIT
-            
-
-          // Mock service functions
-          calculateOrderPrice.mockResolvedValue(100.0);
-          createOrder.mockResolvedValue(1); // Mock order ID
-          addOrderItems.mockResolvedValue();
-          updateProductStock.mockResolvedValue();
-          clearCart.mockResolvedValue();
+  describe("GET /history", () => {
+    it("should render order history for authenticated user", async () => {
+      // Mock db response
+      getUserOrders.mockResolvedValue({
+        orders: [
+          {
+            order_id: 1,
+            order_status: "pending",
+            order_date: new Date(),
+            order_total: 59.45,
+            first_name: "Johnny",
+            last_name: "Cash",
+            city: "Oradea",
+            county: "Bihor",
+          },
+        ],
+        total: 1,
       });
-      
-      it("should successfully create a new order and redirect to the order page", async () => {
-          const res = await request(app)
-          .post("/orders/new-order")
-          .send({
-            shippingAddressId: 1,
-            billingAddressId: 1,
-            paymentMethod: "cash",
-            shippingMethodId: 1
-          })
-          .expect(302) 
-          .expect("Location", "/orders/1"); // Success redirect to the order page
-    
-          expect(mockClient.query).toHaveBeenNthCalledWith(1, "BEGIN");
-          expect(mockClient.query).toHaveBeenNthCalledWith(6, "COMMIT");
-    
-          // Verify service function calls
-          expect(calculateOrderPrice).toHaveBeenCalledWith(1);
-          expect(createOrder).toHaveBeenCalledWith(1, 100.0, 0, 100.0 , 1, 1, "cash", 1);
-          expect(addOrderItems).toHaveBeenCalledWith(1, 1);
-          expect(updateProductStock).toHaveBeenCalledWith(1);
-          expect(clearCart).toHaveBeenCalledWith(1);
-      });
+
+      const res = await request(app)
+        .get("/orders/history")
+        .expect(200)
+        .expect("Content-Type", /html/);
+
+      expect(res.text).toContain("My Orders");
+      expect(res.text).toContain("Johnny");
     });
 
-    describe("PATCH /orders/:id", () => {
-      beforeEach(() => {
-        vi.clearAllMocks();
+    it("should handle empty order history", async () => {
+      getUserOrders.mockResolvedValue({ orders: [], total: 0 });
 
-        // Supress console.error
-        vi.spyOn(console, "error").mockImplementation(() => {});
+      const res = await request(app)
+        .get("/orders/history")
+        .expect(200)
+        .expect("Content-type", /html/);
 
-        const mockOrder = {
-          order_id: 1,
-          order_status: "pending",
-          order_date: new Date(),
-          order_total: 199.98,
-          first_name: "Johnny",
-          last_name: "Test"
-        };
+      expect(res.text).toContain("No orders found.");
+    });
+  });
 
-        const mockOrderDetails = {
+  describe("GET /:id", () => {
+    it("should render order details for valid order", async () => {
+      getOrderDetails.mockResolvedValue(order);
+
+      const res = await request(app).get("/orders/5").expect(200);
+
+      expect(res.text).toContain("Order #5");
+      expect(getOrderDetails).toHaveBeenCalledWith("5", mockOrder.user_id);
+    });
+
+    it("should reject unauthorized access to orders", async () => {
+      getOrderDetails.mockRejectedValue(new Error("Unauthorized"));
+
+      const res = await request(app)
+        .get("/orders/999")
+        .expect(302)
+        .expect("Location", "/orders");
+
+      expect(res.headers.location).toBe("/orders");
+    });
+  });
+
+  describe("POST /new-order", () => {
+    let mockClient;
+
+    beforeEach(() => {
+      // Mock the database client
+      mockClient = {
+        query: vi.fn(),
+        release: vi.fn(),
+      };
+
+      // Mock db.connect to return the mock client
+      db.connect.mockResolvedValue(mockClient);
+
+      // Mock all the required database responses
+      mockClient.query
+        .mockResolvedValueOnce({ rows: [] }) // BEGIN
+        .mockResolvedValueOnce({ rows: [{ id: 1 }] }) // Shipping method
+        .mockResolvedValueOnce({ rows: [{ id: 1, is_shipping: true }] }) // Shipping address
+        .mockResolvedValueOnce({ rows: [{ product_id: 1, quantity: 2 }] }) // Cart items
+        .mockResolvedValueOnce({ rows: [] }) // Stock check
+        .mockResolvedValueOnce({ rows: [] }); // COMMIT
+
+      // Mock service functions
+      calculateOrderPrice.mockResolvedValue(100.0);
+      createOrder.mockResolvedValue(1); // Mock order ID
+      addOrderItems.mockResolvedValue();
+      updateProductStock.mockResolvedValue();
+      clearCart.mockResolvedValue();
+    });
+
+    it("should successfully create a new order and redirect to the order page", async () => {
+      await request(app)
+        .post("/orders/new-order")
+        .send({
+          shippingAddressId: 1,
+          billingAddressId: 1,
+          paymentMethod: "cash",
+          shippingMethodId: 1,
+        })
+        .expect(302)
+        .expect("Location", "/orders/1"); // Success redirect to the order page
+
+      expect(mockClient.query).toHaveBeenNthCalledWith(1, "BEGIN");
+      expect(mockClient.query).toHaveBeenNthCalledWith(6, "COMMIT");
+
+      // Verify service function calls
+      expect(calculateOrderPrice).toHaveBeenCalledWith(1);
+      expect(createOrder).toHaveBeenCalledWith(
+        1,
+        100.0,
+        0,
+        100.0,
+        1,
+        1,
+        "cash",
+        1
+      );
+      expect(addOrderItems).toHaveBeenCalledWith(1, 1);
+      expect(updateProductStock).toHaveBeenCalledWith(1);
+      expect(clearCart).toHaveBeenCalledWith(1);
+    });
+  });
+
+  describe("PATCH /orders/:id", () => {
+    beforeEach(() => {
+      vi.clearAllMocks();
+
+      // Supress console.error
+      vi.spyOn(console, "error").mockImplementation(() => {});
+
+      const mockOrder = {
+        order_id: 1,
+        order_status: "pending",
+        order_date: new Date(),
+        order_total: 199.98,
+        first_name: "Johnny",
+        last_name: "Test",
+      };
+
+      const mockOrderDetails = {
         id: 1,
         status: "pending",
         subtotal: 199.98,
@@ -255,8 +259,8 @@ describe("Order Routes with authentication", () => {
           description: "Courier delivery",
           deliveryDays: {
             min: 1,
-            max: 3
-          }
+            max: 3,
+          },
         },
         shippingAddress: {
           name: "Johnny Test",
@@ -264,7 +268,7 @@ describe("Order Routes with authentication", () => {
           city: "Oradea",
           country: "Romania",
           postalCode: "123456",
-          phoneNumber: "+40771711988"
+          phoneNumber: "+40771711988",
         },
         billingAddress: {
           name: "Johnny Test",
@@ -272,8 +276,8 @@ describe("Order Routes with authentication", () => {
           city: "Oradea",
           country: "Romania",
           postalCode: "123456",
-          phoneNumber: "+40771711988"
-          },
+          phoneNumber: "+40771711988",
+        },
         products: [
           {
             productId: 1,
@@ -281,52 +285,52 @@ describe("Order Routes with authentication", () => {
             thumbnail: "test.jpg",
             quantity: 2,
             price: 99.99,
-            subtotal: "199.98"
-          }
-        ]
-    };
+            subtotal: "199.98",
+          },
+        ],
+      };
 
-        getAllOrders.mockResolvedValue({
-          orders: [mockOrder],
-          total: 1
-        });
-        getOrderDetails.mockResolvedValue(mockOrderDetails);
+      getAllOrders.mockResolvedValue({
+        orders: [mockOrder],
+        total: 1,
       });
-
-      afterEach(() => {
-        // Restore console.error 
-        vi.restoreAllMocks();
-      })
-
-      it("should update order status", async () => {
-        db.query.mockResolvedValue({ rowCount: 1 });
-  
-        const res = await request(app)
-          .patch("/orders/1")
-          .send({ status: "processing" })
-          .expect(302)
-          .expect("Location", "/admin/orders/1");
-  
-        expect(db.query).toHaveBeenCalledWith(
-          expect.stringContaining("UPDATE orders SET status = $1"),
-          ["processing", "1"]
-        );
-      });
-  
-      it("should handle update error", async () => {
-        db.query.mockRejectedValue(new Error("DB error"));
-  
-        const res = await request(app)
-          .patch("/orders/1")
-          .send({ status: "processing" })
-          .expect(302)
-          .expect("Location", "/admin/orders");
-
-          // Verify that the database query was called with the correct arguments
-          expect(db.query).toHaveBeenCalledWith(
-          expect.stringContaining("UPDATE orders SET status = $1"),
-          ["processing", "1"]
-          );
-      });
+      getOrderDetails.mockResolvedValue(mockOrderDetails);
     });
+
+    afterEach(() => {
+      // Restore console.error
+      vi.restoreAllMocks();
+    });
+
+    it("should update order status", async () => {
+      db.query.mockResolvedValue({ rowCount: 1 });
+
+      await request(app)
+        .patch("/orders/1")
+        .send({ status: "processing" })
+        .expect(302)
+        .expect("Location", "/admin/orders/1");
+
+      expect(db.query).toHaveBeenCalledWith(
+        expect.stringContaining("UPDATE orders SET status = $1"),
+        ["processing", "1"]
+      );
+    });
+
+    it("should handle update error", async () => {
+      db.query.mockRejectedValue(new Error("DB error"));
+
+      await request(app)
+        .patch("/orders/1")
+        .send({ status: "processing" })
+        .expect(302)
+        .expect("Location", "/admin/orders");
+
+      // Verify that the database query was called with the correct arguments
+      expect(db.query).toHaveBeenCalledWith(
+        expect.stringContaining("UPDATE orders SET status = $1"),
+        ["processing", "1"]
+      );
+    });
+  });
 });
