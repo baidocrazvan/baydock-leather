@@ -17,6 +17,7 @@ export async function getCartData(userId) {
         p.thumbnail,
         p.is_active,
         c.quantity,
+        c.selected_size,
         (p.price * c.quantity) AS total_price
         FROM carts c 
         JOIN products p ON c.product_id = p.id
@@ -61,6 +62,7 @@ export async function getCartData(userId) {
       .map((item) => ({
         ...item,
         quantity: Math.min(item.quantity, item.stock),
+        selected_size: item.selected_size,
       }));
 
     // Calculate cart total
@@ -106,7 +108,7 @@ export async function getCartData(userId) {
 }
 
 // Add or update cart item with transaction
-export async function updateCartItem(userId, productId, quantity) {
+export async function updateCartItem(userId, productId, quantity, size = null) {
   // Get a client from pool
   const client = await db.connect();
   try {
@@ -121,32 +123,34 @@ export async function updateCartItem(userId, productId, quantity) {
     if (!stockResult.rows[0]) throw new Error("Product not found");
     const stock = stockResult.rows[0].stock;
 
-    // Check if product is already in cart
+    // Check if product (if applicable with same size) is already in cart
     const cartResult = await client.query(
       // Use FOR UPDATE again to prevent race condition
-      `SELECT quantity FROM carts WHERE user_id = $1 AND product_id = $2 FOR UPDATE`,
-      [userId, productId]
+      `SELECT quantity FROM carts
+       WHERE user_id = $1 AND product_id = $2 and selected_size = $3 FOR UPDATE`,
+      [userId, productId, size]
     );
 
     const existingItem = cartResult.rows[0];
     let totalQuantity = quantity;
 
     if (existingItem) {
-      // If product already exists in cart, add it's quantity from cart to recently chosen quantity
+      // If same product with same size exists in cart, update quantity
       totalQuantity += existingItem.quantity;
       if (totalQuantity > stock)
         throw new Error("Not enough products in stock");
 
       await client.query(
-        `UPDATE carts SET quantity = $1 WHERE user_id = $2 AND product_id = $3`,
-        [totalQuantity, userId, productId]
+        `UPDATE carts SET quantity = $1
+         WHERE user_id = $2 AND product_id = $3 and selected_size = $4`,
+        [totalQuantity, userId, productId, size]
       );
     } else {
       if (quantity > stock) throw new Error("Not enough products in stock");
 
       await client.query(
-        `INSERT INTO carts (user_id, product_id, quantity) VALUES ($1, $2, $3)`,
-        [userId, productId, quantity]
+        `INSERT INTO carts (user_id, product_id, quantity, selected_size) VALUES ($1, $2, $3, $4)`,
+        [userId, productId, quantity, size]
       );
     }
 
@@ -162,7 +166,12 @@ export async function updateCartItem(userId, productId, quantity) {
 }
 
 // Update product quantity from inside the cart using transaction
-export async function updateCartQuantity(userId, productId, newQuantity) {
+export async function updateCartQuantity(
+  userId,
+  productId,
+  newQuantity,
+  size = null
+) {
   const client = await db.connect(); // For transaction
   try {
     await client.query("BEGIN");
@@ -172,10 +181,11 @@ export async function updateCartQuantity(userId, productId, newQuantity) {
     // Check that the item we plan on updating exists and get it's stock
     const cartItem = await client.query(
       `SELECT c.*, p.stock 
-            FROM carts c
-            JOIN products p ON c.product_id = p.id
-            WHERE c.user_id = $1 AND c.product_id = $2`,
-      [userId, productId]
+        FROM carts c
+        JOIN products p ON c.product_id = p.id
+        WHERE c.user_id = $1 AND c.product_id = $2
+        AND c.selected_size IS NOT DISTINCT FROM $3`,
+      [userId, productId, size]
     );
     if (cartItem.rows.length === 0) {
       throw new Error("Product not found in cart.");
@@ -189,8 +199,9 @@ export async function updateCartQuantity(userId, productId, newQuantity) {
 
     // Update quantity
     await client.query(
-      `UPDATE carts SET quantity = $1 WHERE user_id = $2 AND product_id = $3`,
-      [newQuantity, userId, productId]
+      `UPDATE carts SET quantity = $1
+       WHERE user_id = $2 AND product_id = $3 AND selected_size IS NOT DISTINCT FROM $4`,
+      [newQuantity, userId, productId, size]
     );
 
     await client.query("COMMIT");

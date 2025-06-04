@@ -119,6 +119,9 @@
                         <tr>
                           <td>
                             <%= item.name %>
+                            <% if (item.selected_size) { %>
+                              <div class="item-size">Size: <%= item.selected_size %></div>
+                            <% } %>
                             <strong>×&nbsp;<%= item.quantity %></strong>
                           </td>
                           <td>
@@ -138,7 +141,7 @@
                       </tr>
                       <tr>
                         <th>Total</th>
-                        <td><span id="order-total">€<%= orderTotal %></span></td>
+                        <td><span id="order-total">€<%= orderTotal.toFixed(2) %></span></td>
                       </tr>
                     </tfoot>
                   </table>

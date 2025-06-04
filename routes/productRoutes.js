@@ -8,6 +8,7 @@ import {
   getProductById,
   getProductsByCategory,
   getProductsBySearch,
+  createProduct,
 } from "../services/productService.js";
 
 const router = express.Router();
@@ -143,10 +144,6 @@ router.post(
         category,
         stock,
       } = req.body;
-      const thumbnail = `/images/products/${req.files.thumbnail[0].filename}`; // Thumbnail path
-      const images = req.files.images.map(
-        (file) => `/images/products/${file.filename}`
-      ); // Array of images paths
 
       // Check if category value is valid
       const validCategories = [
@@ -161,22 +158,23 @@ router.post(
         req.flash("error", "Invalid product category");
         return res.redirect("/admin/add-product");
       }
-      // Save the product to db
-      await db.query(
-        `
-        INSERT INTO products (name, description, detailed_description, price, category, stock, images, thumbnail)
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
-        [
-          name,
-          description,
-          detailed_description,
-          price,
-          category,
-          stock,
-          images,
-          thumbnail,
-        ]
-      );
+
+      // Prepare product data
+      const productData = {
+        name,
+        description,
+        detailed_description,
+        price,
+        category,
+        stock,
+        thumbnail: `images/products/${req.files.thumbnail[0].filename}`,
+        images: req.files.images.map(
+          (file) => `/images/products/${file.filename}`
+        ),
+      };
+
+      // Create product with service function
+      await createProduct(productData);
 
       req.flash("success", "Product added successfully");
       return res.redirect("/admin/dashboard");

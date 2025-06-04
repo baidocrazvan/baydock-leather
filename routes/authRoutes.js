@@ -93,7 +93,13 @@ router.post("/login", loginLimiter, validateLogin, (req, res, next) => {
         if (req.session.cart && req.session.cart.length > 0) {
           const userId = req.user.id;
           for (const item of req.session.cart) {
-            await updateCartItem(userId, item.productId, item.quantity);
+            // Pass size to updateCartItem if it exists
+            await updateCartItem(
+              userId,
+              item.productId,
+              item.quantity,
+              item.size || null // Include size if it exists
+            );
           }
 
           req.session.cart = []; // Clear the guest cart after merging

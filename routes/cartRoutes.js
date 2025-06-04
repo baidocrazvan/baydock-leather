@@ -41,6 +41,7 @@ router.get("/", async (req, res) => {
           cartItems.push({
             ...productData,
             quantity: item.quantity,
+            selected_size: item.size,
             total_price: (productData.price * item.quantity).toFixed(2),
           });
           cartSubtotal += productData.price * item.quantity;
@@ -48,7 +49,8 @@ router.get("/", async (req, res) => {
       }
       cartSubtotal = cartSubtotal.toFixed(2);
     }
-
+    console.log("CartItems: ", cartItems);
+    console.log("CartSubtotal: ", cartSubtotal);
     return res.render("cart/cart.ejs", {
       user: req.user,
       cartItems,
@@ -103,6 +105,7 @@ router.post("/:id", async (req, res) => {
   try {
     const productId = req.params.id;
     const quantity = parseInt(req.body.quantity);
+    const size = req.body.size;
     if (isNaN(quantity)) throw new Error("Invalid quantity");
 
     // Validate quantity
@@ -112,19 +115,58 @@ router.post("/:id", async (req, res) => {
       // Authenticated user : add product to database cart
       // If the product is already in the cart, add the new quantity to existing quantity, otherwise just add product to cart
       const userId = req.user.id;
-      await updateCartItem(userId, productId, quantity);
+
+      // First check if this a product that requires a size
+      const product = await db.query(
+        `SELECT category FROM products WHERE id = $1`,
+        [productId]
+      );
+
+      const requiresSize = ["belts", "watchstraps"].includes(
+        product.rows[0]?.category
+      );
+
+      if (requiresSize && !size) {
+        throw new Error("Size selection is required for this product");
+      }
+
+      await updateCartItem(
+        userId,
+        productId,
+        quantity,
+        requiresSize ? size : null
+      );
       req.flash("success", "Product added to cart!");
     } else {
       // Guest user: Add product to session cart
       req.session.cart = req.session.cart || [];
+
+      const product = await db.query(
+        `SELECT category FROM products WHERE id = $1`,
+        [productId]
+      );
+
+      const requiresSize = ["belts", "watchstraps"].includes(
+        product.rows[0]?.category
+      );
+
+      if (requiresSize && !size) {
+        throw new Error("Size selection is required for this product");
+      }
+
       const existingItem = req.session.cart.find(
-        (item) => item.productId === productId
+        (item) =>
+          item.productId === productId && (!requiresSize || item.size === size)
       );
 
       if (existingItem) {
         existingItem.quantity += quantity;
       } else {
-        req.session.cart.push({ productId, quantity });
+        req.session.cart.push({
+          productId,
+          quantity,
+          ...(requiresSize && { size }),
+        }); // Only include size if required
       }
 
       req.flash("success", "Product added to cart!");
@@ -141,25 +183,54 @@ router.post("/:id", async (req, res) => {
 // Update the quantity of a product already in cart
 router.patch("/", async (req, res) => {
   try {
-    const { productId, quantity } = req.body;
+    const { productId, quantity, size } = req.body;
 
     if (req.isAuthenticated()) {
       // Authenticated user: update quantity of product in database
       const userId = req.user.id;
-      await updateCartQuantity(userId, productId, quantity);
+
+      // Check if this product requires size
+      const product = await db.query(
+        `SELECT category FROM products WHERE id = $1`,
+        [productId]
+      );
+      const requiresSize = ["belts", "watchstraps"].includes(
+        product.rows[0]?.category
+      );
+
+      if (requiresSize && !size) {
+        throw new Error("Size selection is required for this product");
+      }
+
+      await updateCartQuantity(
+        userId,
+        productId,
+        quantity,
+        requiresSize ? size : null
+      );
       req.flash("success", "Cart updated!");
     } else {
       // Guest user: Update quantity in session cart
       req.session.cart = req.session.cart || [];
-      const item = req.session.cart.find(
-        (item) => item.productId === productId
+
+      const product = await db.query(
+        `SELECT category FROM products WHERE id = $1`,
+        [productId]
+      );
+      const requiresSize = ["belts", "watchstraps"].includes(
+        product.rows[0]?.category
       );
 
-      if (item) {
-        item.quantity = quantity;
+      const itemIndex = req.session.cart.findIndex(
+        (item) =>
+          item.productId === productId && (!requiresSize || item.size === size)
+      );
+
+      if (itemIndex !== -1) {
+        req.session.cart[itemIndex].quantity = quantity;
         req.flash("success", "Cart updated!");
       } else {
-        req.flash("error", "Product not found inside cart.");
+        req.flash("error", "Product not found in cart.");
       }
     }
 
@@ -175,32 +246,39 @@ router.patch("/", async (req, res) => {
 router.delete("/delete/:id", async (req, res) => {
   try {
     const productId = req.params.id;
+    const size = req.body.size;
 
     if (req.isAuthenticated()) {
       const userId = req.user.id;
 
       //Check that the item exists inside the cart
       const cartItem = await db.query(
-        `SELECT * FROM carts WHERE user_id = $1 AND product_id = $2`,
-        [userId, productId]
+        `SELECT * FROM carts
+        WHERE user_id = $1 AND product_id = $2
+        AND selected_size IS NOT DISTINCT FROM $3`,
+        [userId, productId, size]
       );
 
       if (cartItem.rows.length === 0) {
         req.flash("error", "The specified product is not inside your cart.");
-        res.redirect("/cart");
+        return res.redirect("/cart");
       }
 
       // Delete the product from user's cart
       await db.query(
-        `DELETE FROM carts WHERE user_id = $1 AND product_id = $2`,
-        [userId, productId]
+        `DELETE FROM carts 
+        WHERE user_id = $1 AND product_id = $2
+        AND selected_size IS NOT DISTINCT FROM $3`,
+        [userId, productId, size]
       );
       req.flash("success", "Item removed from cart.");
     } else {
       // Guest user: Remove product from session cart
       req.session.cart = req.session.cart || [];
       const index = req.session.cart.findIndex(
-        (item) => item.productId === productId
+        (item) =>
+          item.productId === productId &&
+          (item.size === size || (!item.size && !size))
       );
 
       if (index !== -1) {
@@ -215,7 +293,7 @@ router.delete("/delete/:id", async (req, res) => {
   } catch (err) {
     console.error("DELETE /cart/:id error:", err);
     req.flash("error", "We couldn't remove this item. Please try again.");
-    res.redirect("/cart");
+    return res.redirect("/cart");
   }
 });
 

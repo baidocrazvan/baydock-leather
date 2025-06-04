@@ -28,7 +28,12 @@
                     <% order.products.forEach( product => { %>
                     <tr>
                         <td data-label="ID:"><%= product.productId %></td>
-                        <td data-label="Product:"><%= product.name %></td>
+                        <td data-label="Product:">
+                            <%= product.name %>
+                            <% if (product.size) { %>
+                                <div class="product-size">Size: <%= product.size %></div>
+                            <% } %>
+                        </td>
                         <td data-label="Quantity:"><%= product.quantity %></td>
                         <td data-label="Price:">€<%= product.price %></td>
                         <td data-label="Subtotal:">€<%= product.subtotal %></td>

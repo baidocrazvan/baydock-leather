@@ -7,7 +7,7 @@ export async function calculateOrderPrice(userId) {
         FROM carts c
         JOIN products p ON c.product_id = p.id
         WHERE c.user_id = $1`,
-    [userId],
+    [userId]
   );
   return result.rows[0].total_price;
 }
@@ -50,7 +50,7 @@ export async function getAllOrders(searchTerm = "", limit = 10, offset = 0) {
     const countQuery = `SELECT COUNT(*) FROM orders${searchTerm ? ` WHERE id::TEXT LIKE $1` : ""}`;
     const countResult = await db.query(
       countQuery,
-      searchTerm ? [`%${searchTerm}%`] : [],
+      searchTerm ? [`%${searchTerm}%`] : []
     );
 
     return {
@@ -71,7 +71,7 @@ export async function getRecentUserOrders(userId) {
         WHERE o.user_id = $1
         ORDER BY o.created_at DESC
         LIMIT 5`,
-    [userId],
+    [userId]
   );
   return result.rows;
 }
@@ -100,7 +100,7 @@ export async function getUserOrders(userId, { limit = 10, offset = 0 } = {}) {
     // Get total count
     const countResult = await db.query(
       "SELECT COUNT(*) FROM orders WHERE user_id = $1",
-      [userId],
+      [userId]
     );
 
     return {
@@ -121,7 +121,7 @@ export async function createOrder(
   shippingAddressId,
   billingAddressId,
   paymentMethod,
-  shippingMethodId,
+  shippingMethodId
 ) {
   const result = await db.query(
     `INSERT INTO orders (user_id, subtotal, shipping_cost, total_price, shipping_address_id, billing_address_id, payment_method, shipping_method_id)
@@ -136,7 +136,7 @@ export async function createOrder(
       billingAddressId,
       paymentMethod,
       shippingMethodId,
-    ],
+    ]
   );
   // Return order id
   return result.rows[0].id;
@@ -144,42 +144,80 @@ export async function createOrder(
 
 // Create entry inside order_items table for each item ordered
 export async function addOrderItems(orderId, userId) {
-  // Get id, quantity and price of items inside the cart
-  const cartItems = await db.query(
-    `SELECT c.product_id, c.quantity, p.price
+  const client = await db.connect();
+  try {
+    await client.query("BEGIN");
+
+    // Get id, quantity and price of items inside the cart
+    const cartItems = await db.query(
+      `SELECT c.product_id, c.quantity, c.selected_size, p.price
         FROM carts c
         JOIN products p ON c.product_id = p.id
         WHERE c.user_id = $1`,
-    [userId],
-  );
-
-  for (const item of cartItems.rows) {
-    await db.query(
-      `INSERT INTO order_items (order_id, product_id, quantity, price)
-            VALUES ($1, $2, $3, $4)`,
-      [orderId, item.product_id, item.quantity, item.price],
+      [userId]
     );
+
+    for (const item of cartItems.rows) {
+      await db.query(
+        `INSERT INTO order_items (order_id, product_id, quantity, price, selected_size)
+        VALUES ($1, $2, $3, $4, $5)`,
+        [
+          orderId,
+          item.product_id,
+          item.quantity,
+          item.price,
+          item.selected_size,
+        ]
+      );
+    }
+
+    await client.query("COMMIT");
+  } catch (err) {
+    await client.query("ROLLBACK");
+    throw err;
+  } finally {
+    client.release();
   }
 }
 
 // Update stock inside products table after an order has been placed
 export async function updateProductStock(userId) {
-  const cartItems = await db.query(
-    `SELECT product_id, quantity FROM carts WHERE user_id = $1`,
-    [userId],
-  );
+  const client = await db.connect();
+  try {
+    await client.query("BEGIN");
+    const cartItems = await db.query(
+      `SELECT product_id, quantity FROM carts WHERE user_id = $1`,
+      [userId]
+    );
 
-  for (const item of cartItems.rows) {
-    await db.query(`UPDATE products SET stock = stock - $1 WHERE id = $2`, [
-      item.quantity,
-      item.product_id,
-    ]);
+    for (const item of cartItems.rows) {
+      await db.query(`UPDATE products SET stock = stock - $1 WHERE id = $2`, [
+        item.quantity,
+        item.product_id,
+      ]);
+    }
+    await client.query("COMMIT");
+  } catch (err) {
+    await client.query("ROLLBACK");
+    throw err;
+  } finally {
+    client.release();
   }
 }
 
 // Clear user's cart
 export async function clearCart(userId) {
-  await db.query(`DELETE FROM carts WHERE user_id = $1`, [userId]);
+  const client = await db.connect();
+  try {
+    await client.query("BEGIN");
+    await db.query(`DELETE FROM carts WHERE user_id = $1`, [userId]);
+    await client.query("COMMIT");
+  } catch (err) {
+    await client.query("ROLLBACK");
+    throw err;
+  } finally {
+    client.release();
+  }
 }
 
 // Get a specific order's complete information
@@ -232,6 +270,7 @@ export async function getOrderDetails(orderId, userId = null) {
             p.id AS product_id,
             p.name AS product_name,
             p.thumbnail,
+            oi.selected_size,
             oi.quantity,
             oi.price AS product_price
         FROM
@@ -248,7 +287,7 @@ export async function getOrderDetails(orderId, userId = null) {
             products p ON oi.product_id = p.id
         WHERE
             o.id = $1`,
-    [orderId],
+    [orderId]
   );
 
   if (result.rows.length === 0) {
@@ -300,6 +339,7 @@ export async function getOrderDetails(orderId, userId = null) {
       thumbnail: row.thumbnail,
       quantity: row.quantity,
       price: row.product_price,
+      size: row.selected_size,
       subtotal: (row.quantity * row.product_price).toFixed(2),
     })),
   };

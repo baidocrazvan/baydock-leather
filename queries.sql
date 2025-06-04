@@ -20,6 +20,7 @@ CREATE TABLE products (
   detailed_description TEXT,
   price NUMERIC(6,2) NOT NULL,
   category VARCHAR(50) NOT NULL,
+  size_options JSONB,
   stock INTEGER CHECK (stock >= 0) NOT NULL, -- CHECK constraint because stock cannot be negative --
   images TEXT[] NOT NULL,
   thumbnail TEXT NOT NULL,
@@ -32,6 +33,7 @@ CREATE TABLE carts (
   user_id INTEGER REFERENCES users(id),
   product_id INTEGER REFERENCES products(id),
   quantity INTEGER CHECK (quantity > 0),
+  selected_size VARCHAR(20);
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -60,7 +62,8 @@ CREATE TABLE order_items (
   order_id INTEGER REFERENCES orders(id),
   product_id INTEGER REFERENCES products(id),
   quantity INTEGER NOT NULL,
-  price NUMERIC(6,2) NOT NULL
+  price NUMERIC(6,2) NOT NULL,
+  selected_size VARCHAR(20)
 );
 
 CREATE TABLE shipping_addresses (

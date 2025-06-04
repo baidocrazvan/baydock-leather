@@ -34,17 +34,25 @@
                                 </div>
                                 <div class="cart-item__content">
                                     <a class="item-title" href="/products/<%= item.id %>"><%= item.name %></a>
+                                    <% if (item.selected_size) { %>
+                                        <p class="item-size">Size: <%= item.selected_size %></p>
+                                    <% } %>
                                     <p class="item-price"><%= item.quantity %> x <span><%= item.price %>€</span></p>
 
                                     <form action="/cart/delete/<%= item.id %>?_method=DELETE" method="POST" class="item-delete">
                                         <input type="hidden" name="productId" value="<%= item.id %>">
                                         <button type="submit" class="delete-from-cart-btn">Delete item from cart</button>
+                                        <% if (item.selected_size) { %>
+                                            <input type="hidden" name="size" value="<%= item.selected_size %>">
+                                        <% } %>
                                     </form>
                                 </div>
                                 <div class="cart-item__quantity">
                                     <form action="/cart?_method=PATCH" method="POST" class="item-update">
                                         <input type="hidden" name="productId" value="<%= item.id %>">
-
+                                        <% if (item.selected_size) { %>
+                                            <input type="hidden" name="size" value="<%= item.selected_size %>">
+                                        <% } %>
                                         <div class="quantity-control-group">
                                             <button type="submit" class="update-icon-btn" aria-label="Update quantity" hidden>
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
