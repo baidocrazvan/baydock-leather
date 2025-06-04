@@ -164,7 +164,7 @@ router.post("/new-order", authenticate, async (req, res) => {
     await addOrderItems(orderId, userId);
 
     // Update product stock
-    await updateProductStock(userId);
+    await updateProductStock(userId, client);
 
     // Clear the cart
     await clearCart(userId);
@@ -177,8 +177,18 @@ router.post("/new-order", authenticate, async (req, res) => {
     // Rollback transaction if err
     await client.query("ROLLBACK");
     console.error("Error creating order: ", err);
-    req.flash("error", "Failed to create order. Please try again.");
-    return res.redirect("/cart/checkout");
+
+    // Handle stock violation
+    if (err.code === "23514" && err.constraint === "products_stock_check") {
+      req.flash(
+        "error",
+        "Some items in your cart exceed available stock. Please adjust quantities."
+      );
+    } else {
+      req.flash("error", "Failed to create order. Please try again.");
+    }
+
+    return res.redirect("/cart");
   } finally {
     // Release client back to the pool
     client.release();

@@ -181,27 +181,23 @@ export async function addOrderItems(orderId, userId) {
 }
 
 // Update stock inside products table after an order has been placed
-export async function updateProductStock(userId) {
-  const client = await db.connect();
+export async function updateProductStock(userId, client) {
   try {
-    await client.query("BEGIN");
-    const cartItems = await db.query(
+    const cartItems = await client.query(
+      // Use transaction client
       `SELECT product_id, quantity FROM carts WHERE user_id = $1`,
       [userId]
     );
 
     for (const item of cartItems.rows) {
-      await db.query(`UPDATE products SET stock = stock - $1 WHERE id = $2`, [
-        item.quantity,
-        item.product_id,
-      ]);
+      await client.query(
+        `UPDATE products SET stock = stock - $1 WHERE id = $2`,
+        [item.quantity, item.product_id]
+      );
     }
-    await client.query("COMMIT");
   } catch (err) {
-    await client.query("ROLLBACK");
+    console.error("Error updating product stock:", err);
     throw err;
-  } finally {
-    client.release();
   }
 }
 
