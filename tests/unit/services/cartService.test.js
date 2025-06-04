@@ -23,19 +23,19 @@ describe("Cart Service", () => {
 
     it("should reject non-number quantities", () => {
       expect(() => validateQuantity("cat")).toThrow(
-        "Quantity must be a number.",
+        "Quantity must be a number."
       );
       expect(() => validateQuantity("null")).toThrow(
-        "Quantity must be a number.",
+        "Quantity must be a number."
       );
     });
 
     it("Should reject zero and negative numbers", () => {
       expect(() => validateQuantity(0)).toThrow(
-        "Quantity must be greater than zero",
+        "Quantity must be greater than zero"
       );
       expect(() => validateQuantity(-5)).toThrow(
-        "Quantity must be greater than zero",
+        "Quantity must be greater than zero"
       );
     });
   });
@@ -96,7 +96,7 @@ describe("Cart Service", () => {
       expect(mockClient.query).toHaveBeenCalledWith("BEGIN");
       expect(mockClient.query).toHaveBeenCalledWith(
         expect.stringContaining("FROM carts"),
-        [mockUserId],
+        [mockUserId]
       );
       expect(mockClient.query).toHaveBeenCalledWith("COMMIT");
     });
@@ -222,13 +222,13 @@ describe("Cart Service", () => {
       const result = await updateCartItem(
         mockUserId,
         mockProductId,
-        mockQuantity,
+        mockQuantity
       );
       expect(result).toEqual({ message: "Product added to cart" });
       expect(client.query).toHaveBeenCalledWith("BEGIN");
       expect(client.query).toHaveBeenCalledWith(
         "SELECT stock FROM products WHERE id = $1 FOR UPDATE",
-        [mockProductId],
+        [mockProductId]
       );
       expect(client.query).toHaveBeenCalledWith("COMMIT");
     });
@@ -249,13 +249,13 @@ describe("Cart Service", () => {
       const result = await updateCartItem(
         mockUserId,
         mockProductId,
-        mockQuantity,
+        mockQuantity
       );
 
       expect(result).toEqual({ message: "Product added to cart" });
       expect(client.query).toHaveBeenCalledWith(
-        "UPDATE carts SET quantity = $1 WHERE user_id = $2 AND product_id = $3",
-        [3, mockUserId, mockProductId], // 1 existing + 2 new
+        expect.stringContaining("UPDATE carts SET quantity = $1"),
+        [3, mockUserId, mockProductId, null]
       );
     });
 
@@ -282,7 +282,7 @@ describe("Cart Service", () => {
       db.connect.mockResolvedValue(client);
 
       await expect(
-        updateCartItem(mockUserId, mockProductId, mockQuantity),
+        updateCartItem(mockUserId, mockProductId, mockQuantity)
       ).rejects.toThrow("DB error");
       expect(client.query).toHaveBeenCalledWith("ROLLBACK");
     });
@@ -308,19 +308,19 @@ describe("Cart Service", () => {
       await updateCartQuantity(mockUserId, mockProductId, mockNewQuantity);
 
       expect(client.query).toHaveBeenCalledWith(
-        "UPDATE carts SET quantity = $1 WHERE user_id = $2 AND product_id = $3",
-        [mockNewQuantity, mockUserId, mockProductId],
+        expect.stringContaining("UPDATE carts SET quantity = $1"),
+        [mockNewQuantity, mockUserId, mockProductId, null]
       );
       expect(client.query).toHaveBeenCalledWith("COMMIT");
     });
 
     it("should reject zero or negative quantities", async () => {
       await expect(
-        updateCartQuantity(mockUserId, mockProductId, 0),
+        updateCartQuantity(mockUserId, mockProductId, 0)
       ).rejects.toThrow("Quantity must be greater than zero.");
 
       await expect(
-        updateCartQuantity(mockUserId, mockProductId, -1),
+        updateCartQuantity(mockUserId, mockProductId, -1)
       ).rejects.toThrow("Quantity must be greater than zero.");
     });
 
@@ -335,7 +335,7 @@ describe("Cart Service", () => {
       db.connect.mockResolvedValue(client);
 
       await expect(
-        updateCartQuantity(mockUserId, mockProductId, mockNewQuantity),
+        updateCartQuantity(mockUserId, mockProductId, mockNewQuantity)
       ).rejects.toThrow("Product not found in cart.");
     });
 
@@ -350,7 +350,7 @@ describe("Cart Service", () => {
       db.connect.mockResolvedValue(client);
 
       await expect(
-        updateCartQuantity(mockUserId, mockProductId, 3),
+        updateCartQuantity(mockUserId, mockProductId, 3)
       ).rejects.toThrow("Only  2 units available in stock.");
     });
   });

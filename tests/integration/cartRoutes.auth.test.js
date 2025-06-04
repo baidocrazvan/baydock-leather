@@ -106,37 +106,43 @@ describe("Cart routes", () => {
 
   describe("POST /:id ", () => {
     it("should add a product to the database cart", async () => {
-      updateCartItem.mockResolvedValue({ message: "Product added to cart" });
+      // Mock product as a size-required category
+      db.query.mockResolvedValueOnce({ rows: [{ category: "belts" }] });
+      await request(app)
+        .post("/cart/1")
+        .send({ quantity: 2, size: "100cm" })
+        .expect(302);
 
-      await request(app).post("/cart/1").send({ quantity: 2 }).expect(302);
-
-      // Ensure user ID, product ID, and quantity are passed to service function
-      expect(updateCartItem).toHaveBeenCalledWith(1, "1", 2);
+      // Ensure user ID, product ID, quantity and size are passed to service function
+      expect(updateCartItem).toHaveBeenCalledWith(1, "1", 2, "100cm");
     });
   });
 
   describe("PATCH / ", () => {
     it("should update the quantity of a product in the database cart", async () => {
-      updateCartQuantity.mockResolvedValue();
+      db.query.mockResolvedValueOnce({ rows: [{ category: "belts" }] });
 
       await request(app)
         .patch("/cart")
-        .send({ productId: "1", quantity: 3 })
+        .send({ productId: "1", quantity: 3, size: "100cm" })
         .expect(302);
 
-      expect(updateCartQuantity).toHaveBeenCalledWith(1, "1", 3);
+      expect(updateCartQuantity).toHaveBeenCalledWith(1, "1", 3, "100cm");
     });
   });
 
   describe("DELETE /delete/:id ", () => {
     it("should remove a product from the database cart", async () => {
-      db.query.mockResolvedValueOnce({ rows: [{ product_id: "1" }] });
+      db.query.mockResolvedValueOnce({
+        rows: [{ product_id: "1", category: "wallets" }],
+      });
 
       await request(app).delete("/cart/delete/1").expect(302);
-
       expect(db.query).toHaveBeenCalledWith(
-        `DELETE FROM carts WHERE user_id = $1 AND product_id = $2`,
-        [1, "1"]
+        `DELETE FROM carts 
+        WHERE user_id = $1 AND product_id = $2
+        AND selected_size IS NOT DISTINCT FROM $3`,
+        [1, "1", undefined] // Undefined if the product is from a category that does not requires size
       );
     });
   });

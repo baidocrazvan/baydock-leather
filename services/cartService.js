@@ -127,7 +127,7 @@ export async function updateCartItem(userId, productId, quantity, size = null) {
     const cartResult = await client.query(
       // Use FOR UPDATE again to prevent race condition
       `SELECT quantity FROM carts
-       WHERE user_id = $1 AND product_id = $2 and selected_size = $3 FOR UPDATE`,
+       WHERE user_id = $1 AND product_id = $2 AND selected_size = $3 FOR UPDATE`,
       [userId, productId, size]
     );
 
@@ -142,7 +142,7 @@ export async function updateCartItem(userId, productId, quantity, size = null) {
 
       await client.query(
         `UPDATE carts SET quantity = $1
-         WHERE user_id = $2 AND product_id = $3 and selected_size = $4`,
+         WHERE user_id = $2 AND product_id = $3 AND selected_size = $4`,
         [totalQuantity, userId, productId, size]
       );
     } else {

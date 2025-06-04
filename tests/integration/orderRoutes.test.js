@@ -223,7 +223,7 @@ describe("Order Routes with authentication", () => {
         1
       );
       expect(addOrderItems).toHaveBeenCalledWith(1, 1);
-      expect(updateProductStock).toHaveBeenCalledWith(1);
+      expect(updateProductStock).toHaveBeenCalledWith(1, expect.any(Object));
       expect(clearCart).toHaveBeenCalledWith(1);
     });
   });

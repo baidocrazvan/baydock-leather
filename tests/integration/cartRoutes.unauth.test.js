@@ -106,7 +106,7 @@ describe("Cart routes", () => {
         .expect(302);
 
       const res = await testSession.get("/cart").expect(200);
-      expect(res.text).toContain("Product not found inside cart.");
+      expect(res.text).toContain("Product not found in cart.");
     });
   });
 

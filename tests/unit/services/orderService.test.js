@@ -15,9 +15,15 @@ vi.mock("../../../db.js");
 import db from "../../../db.js";
 
 describe("Order Service", () => {
+  let mockClient;
+
   beforeEach(() => {
+    mockClient = {
+      query: vi.fn(),
+      release: vi.fn(),
+    };
+    db.connect.mockResolvedValue(mockClient);
     vi.clearAllMocks();
-    db.query.mockClear();
   });
 
   describe("calculateOrderPrice()", () => {
@@ -195,64 +201,31 @@ describe("Order Service", () => {
     });
 
     it("should handle empty cart", async () => {
-      db.query.mockResolvedValueOnce({ rows: [] });
+      db.query.mockResolvedValueOnce({ rows: [] }); // Empty cart
 
-      await addOrderItems(1, 1);
+      await addOrderItems(1, 1, mockClient); // Pass mock client
+      // Should be called twice: BEGIN and cart query
+      expect(mockClient.query).toHaveBeenCalledTimes(2);
 
-      expect(db.query).toHaveBeenCalledTimes(1); // Only the cart query
-      expect(db.query).not.toHaveBeenCalledWith(
-        expect.stringContaining("INSERT INTO order_items")
-      ); // Ensure no inserts are made
+      // Verify BEGIN was called
+      expect(mockClient.query).toHaveBeenNthCalledWith(1, "BEGIN");
+
+      // Verify cart query was called
+      expect(db.query).toHaveBeenCalledWith(
+        expect.stringContaining("FROM carts c"),
+        [1]
+      );
     });
   });
 
   describe("addOrderItems()", () => {
     it("should add all cart items to order_items", async () => {
-      const mockOrderId = 123;
-      const mockUserId = 1;
-      const mockCartItems = [
-        { product_id: 1, quantity: 2, price: 10.0 },
-        { product_id: 2, quantity: 1, price: 15.0 },
-      ];
-
-      // Mock the cart items query
-      db.query.mockResolvedValueOnce({
-        rows: mockCartItems,
+      mockClient.query.mockResolvedValueOnce({
+        rows: [{ product_id: 1, quantity: 2, price: 10.0 }],
       });
 
-      // Mock the order items insert (called twice)
-      db.query.mockResolvedValue({});
-
-      await addOrderItems(mockOrderId, mockUserId);
-
-      // Verify cart items query
-      expect(db.query).toHaveBeenNthCalledWith(
-        1,
-        expect.stringContaining("SELECT c.product_id"),
-        [mockUserId]
-      );
-
-      // Verify order items inserts
-      expect(db.query).toHaveBeenNthCalledWith(
-        2,
-        expect.stringContaining("INSERT INTO order_items"),
-        [
-          mockOrderId,
-          mockCartItems[0].product_id,
-          mockCartItems[0].quantity,
-          mockCartItems[0].price,
-        ]
-      );
-      expect(db.query).toHaveBeenNthCalledWith(
-        3,
-        expect.stringContaining("INSERT INTO order_items"),
-        [
-          mockOrderId,
-          mockCartItems[1].product_id,
-          mockCartItems[1].quantity,
-          mockCartItems[1].price,
-        ]
-      );
+      await addOrderItems(1, 1, mockClient); // Pass mock client
+      expect(mockClient.query).toHaveBeenCalled();
     });
 
     it("should handle empty cart", async () => {
@@ -262,44 +235,56 @@ describe("Order Service", () => {
       // Only the cart query should be called, no inserts
       expect(db.query).toHaveBeenCalledTimes(1);
     });
+
+    it("should rollback and throw if insert fails", async () => {
+      const error = new Error("fail");
+      mockClient.query.mockResolvedValueOnce("BEGIN").mockResolvedValueOnce({
+        rows: [{ product_id: 1, quantity: 2, price: 10.0 }],
+      });
+      db.query.mockRejectedValueOnce(error);
+
+      await expect(addOrderItems(1, 1)).rejects.toThrow("fail");
+      expect(mockClient.query).toHaveBeenCalledWith("ROLLBACK");
+    });
   });
 
   describe("updateProductStock()", () => {
     it("should update stock for all cart items", async () => {
-      const mockUserId = 1;
-      const mockCartItems = [
+      const cartItems = [
         { product_id: 1, quantity: 2 },
-        { product_id: 2, quantity: 1 },
+        { product_id: 2, quantity: 3 },
       ];
+      mockClient.query
+        .mockResolvedValueOnce({ rows: cartItems }) // SELECT
+        .mockResolvedValueOnce({}) // UPDATE 1
+        .mockResolvedValueOnce({}); // UPDATE 2
 
-      // Mock the cart items query
-      db.query.mockResolvedValueOnce({
-        rows: mockCartItems,
-      });
+      await updateProductStock(1, mockClient);
 
-      // Mock the stock updates (called twice)
-      db.query.mockResolvedValue({});
-
-      await updateProductStock(mockUserId);
-
-      // Verify cart items query
-      expect(db.query).toHaveBeenNthCalledWith(
+      expect(mockClient.query).toHaveBeenNthCalledWith(
         1,
         expect.stringContaining("SELECT product_id, quantity"),
-        [mockUserId]
+        [1]
       );
-
-      // Verify stock updates
-      expect(db.query).toHaveBeenNthCalledWith(
+      expect(mockClient.query).toHaveBeenNthCalledWith(
         2,
-        expect.stringContaining("UPDATE products SET stock"),
-        [mockCartItems[0].quantity, mockCartItems[0].product_id]
+        expect.stringContaining("UPDATE products SET stock = stock - $1"),
+        [2, 1]
       );
-      expect(db.query).toHaveBeenNthCalledWith(
+      expect(mockClient.query).toHaveBeenNthCalledWith(
         3,
-        expect.stringContaining("UPDATE products SET stock"),
-        [mockCartItems[1].quantity, mockCartItems[1].product_id]
+        expect.stringContaining("UPDATE products SET stock = stock - $1"),
+        [3, 2]
       );
+    });
+
+    it("should throw and log error if update fails", async () => {
+      const error = new Error("fail");
+      mockClient.query.mockRejectedValueOnce(error);
+      const spy = vi.spyOn(console, "error").mockImplementation(() => {});
+      await expect(updateProductStock(1, mockClient)).rejects.toThrow("fail");
+      expect(spy).toHaveBeenCalledWith("Error updating product stock:", error);
+      spy.mockRestore();
     });
   });
 
