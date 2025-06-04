@@ -49,19 +49,3 @@
 </aside>
 
 <div id="admin-overlay"></div>
-
-<script>
-  // Toggle sidebar
-  document
-    .getElementById("admin-sidebar-toggle")
-    .addEventListener("click", function () {
-      document.body.classList.toggle("admin-sidebar-open");
-    });
-
-  // Close sidebar when clicking overlay
-  document
-    .getElementById("admin-overlay")
-    .addEventListener("click", function () {
-      document.body.classList.remove("admin-sidebar-open");
-    });
-</script>

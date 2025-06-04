@@ -102,6 +102,24 @@ if (searchModal) {
   });
 }
 
+// Admin navbar toggle
+document.addEventListener("DOMContentLoaded", function () {
+  const sidebarToggle = document.getElementById("admin-sidebar-toggle");
+  const overlay = document.getElementById("admin-overlay");
+
+  if (sidebarToggle) {
+    sidebarToggle.addEventListener("click", function () {
+      document.body.classList.toggle("admin-sidebar-open");
+    });
+  }
+
+  if (overlay) {
+    overlay.addEventListener("click", function () {
+      document.body.classList.remove("admin-sidebar-open");
+    });
+  }
+});
+
 // Confirmation for forms and links
 document.addEventListener("DOMContentLoaded", () => {
   // Handle forms

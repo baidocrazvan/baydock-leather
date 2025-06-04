@@ -5,7 +5,6 @@ $border-radius: u.rem(8);
 $box-shadow: 0 u.rem(4) u.rem(6) rgba(0, 0, 0, 0.1);
 $transition: all 0.3s ease;
 
-
 .checkout-page {
   width: 90%;
   max-width: 1200px;
@@ -25,7 +24,8 @@ $transition: all 0.3s ease;
     font-weight: 500;
   }
 
-  input, select {
+  input,
+  select {
     width: 100%;
     padding: 0.75rem;
     border: 1px solid $medium-gray;
@@ -69,26 +69,26 @@ $transition: all 0.3s ease;
 
   .address-summary {
     margin-top: 1rem;
-    
+
     .address-card {
       background: #e9e9e9;
       padding: 1rem;
       border-radius: $border-radius;
       border: 1px solid $medium-gray;
-      
+
       p {
         margin: 0.25rem 0;
         line-height: 1.4;
-        
+
         &:first-child {
           margin-top: 0;
         }
-        
+
         &:last-child {
           margin-bottom: 0;
         }
       }
-      
+
       strong {
         color: var(--text-color);
       }
@@ -136,14 +136,23 @@ $transition: all 0.3s ease;
   }
 
   // Form sections
-  .payment-options, .checkout, .shipping-methods {
+  .payment-options,
+  .checkout,
+  .shipping-methods {
     background: var(--background-color);
     padding: 0 1.5rem 1.5rem 1.5rem;
     border-radius: $border-radius;
     box-shadow: $box-shadow;
+
+    .item-size {
+      font-size: 0.9rem;
+      color: #666;
+      margin: 0.25rem 0;
+    }
   }
 
-  .address-selection, .new-address {
+  .address-selection,
+  .new-address {
     margin-bottom: 1.5rem;
   }
 
@@ -153,7 +162,8 @@ $transition: all 0.3s ease;
     border-collapse: collapse;
     margin: 1rem 0;
 
-    th, td {
+    th,
+    td {
       padding: 0.75rem;
       text-align: left;
       border-bottom: 1px solid $medium-gray;
@@ -165,13 +175,15 @@ $transition: all 0.3s ease;
     }
 
     tfoot {
-      th, td {
+      th,
+      td {
         border-top: 2px solid $medium-gray;
         font-weight: 600;
       }
 
       tr:last-child {
-        th, td {
+        th,
+        td {
           font-size: 1.1rem;
           color: var(--text-color);
           border-bottom: none;
@@ -200,114 +212,114 @@ $transition: all 0.3s ease;
     gap: 1rem;
 
     .terms-checkbox {
-        margin-top: 1rem;
-        align-items: center;
-    
-        input[type="checkbox"] {
-            width: auto; 
-            margin: 0 0.5rem 0 0; 
-            padding: 0;
-            flex-shrink: 0; // Prevent checkbox from shrinking
-        }
-    
-        label {
-            margin: 0;
-            font-size: 0.9rem;
-            display: inline; 
-            cursor: pointer;
-        }
-    
-        a {
-          text-decoration: underline;
-        }
+      margin-top: 1rem;
+      align-items: center;
+
+      input[type="checkbox"] {
+        width: auto;
+        margin: 0 0.5rem 0 0;
+        padding: 0;
+        flex-shrink: 0; // Prevent checkbox from shrinking
       }
-    
-      .privacy-notice {
-        span {
-          color: var(--grey-text-color);
-          font-size: u.rem(12);
-          font-weight: 500;
-          line-height: 1.4;
-          display: block;
-          margin-top: 0.5rem;
-          text-align: center;
-        }
-    
-        a {
-          text-decoration: underline;
-        }
+
+      label {
+        margin: 0;
+        font-size: 0.9rem;
+        display: inline;
+        cursor: pointer;
       }
+
+      a {
+        text-decoration: underline;
+      }
+    }
+
+    .privacy-notice {
+      span {
+        color: var(--grey-text-color);
+        font-size: u.rem(12);
+        font-weight: 500;
+        line-height: 1.4;
+        display: block;
+        margin-top: 0.5rem;
+        text-align: center;
+      }
+
+      a {
+        text-decoration: underline;
+      }
+    }
 
     .add-to-cart-btn {
-        margin-top: u.rem(6);
-        padding: u.rem(6);
-        border: none;
-        background: lighten(#121212, 20%);
-        color: var(--background-color);
-        font-family: "Poppins", sans-serif;
-        font-size: u.rem(11);
-        font-weight: 500;
-        height: u.rem(32);
-        width: u.rem(96);
-        border-radius: 7px;
-        transition: ease-in 0.2s;
-        cursor: pointer;
+      margin-top: u.rem(6);
+      padding: u.rem(6);
+      border: none;
+      background: lighten(#121212, 20%);
+      color: var(--background-color);
+      font-family: "Poppins", sans-serif;
+      font-size: u.rem(11);
+      font-weight: 500;
+      height: u.rem(32);
+      width: u.rem(96);
+      border-radius: 7px;
+      transition: ease-in 0.2s;
+      cursor: pointer;
 
-        &:hover {
-            background: darken(#121212, 20%);
-        }
+      &:hover {
+        background: darken(#121212, 20%);
       }
+    }
   }
 }
 
 // Shipping banners
 .free-shipping-banner {
-    background: #e1f5e1;
-    padding: 10px;
-    margin: 15px 0;
-    border-left: 4px solid #4CAF50;
-  }
+  background: #e1f5e1;
+  padding: 10px;
+  margin: 15px 0;
+  border-left: 4px solid #4caf50;
+}
 
-  .shipping-notice {
-    background: #fff8e1;
-    padding: 10px;
-    margin: 15px 0;
-    border-left: 4px solid #FFC107;
-  }
+.shipping-notice {
+  background: #fff8e1;
+  padding: 10px;
+  margin: 15px 0;
+  border-left: 4px solid #ffc107;
+}
 
 // Desktop styles
 @media (min-width: 900px) {
-    .checkout-page {
-        display: grid;
-        grid-template-columns: 1.25fr 1fr;
-        gap: 2rem;
-        
-        .checkout-address {
-          position: sticky;
-          top: 1rem;
-        }
-        
-        // Group right column content
-        .right-column-group {
-          display: grid;
-          grid-template-rows: auto auto auto; 
-          gap: 0; 
-          align-content: start; 
-          
-          .checkout, 
-          .payment-options, 
-          .order-submission,
-          .shipping-methods {
-            margin: 0 0 1rem 0; 
-          }
-          
-          .order-submission {
-            justify-content: flex-end;
-            
-            button {
-              padding: 0.75rem 2rem;
-            }
-          }
+  .checkout-page {
+    display: grid;
+    grid-template-columns: 1.25fr 1fr;
+    gap: 2rem;
+
+    .checkout-address {
+      position: sticky;
+      top: 1rem;
+    }
+
+    // Group right column content
+    .right-column-group {
+      display: grid;
+      grid-template-rows: auto auto auto;
+      gap: 0;
+      align-content: start;
+
+      .checkout,
+      .payment-options,
+      .order-submission,
+      .shipping-methods {
+        margin: 0 0 1rem 0;
+      }
+
+      .order-submission {
+        justify-content: flex-end;
+
+        button {
+          padding: 0.75rem 2rem;
         }
       }
+    }
   }
+}
