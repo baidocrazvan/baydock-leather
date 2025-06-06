@@ -38,6 +38,7 @@ describe("Cart routes", () => {
     },
     isAdmin: (req, res, next) => next(),
     redirectIfAuthenticated: (req, res, next) => next(),
+    isDemo: (req, res, next) => next(),
   }));
 
   const mockCartItems = [

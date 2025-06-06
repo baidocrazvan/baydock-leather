@@ -412,23 +412,28 @@ document.addEventListener("DOMContentLoaded", function () {
 // Flash message handler
 document.addEventListener("DOMContentLoaded", function () {
   // Handle all flash messages (user, admin, cart)
-  const handleFlashMessages = (selector) => {
+  const handleFlashMessages = (selector, autoDismiss = true) => {
     document.querySelectorAll(selector).forEach((flash) => {
       // Close button functionality
-      const closeBtn = flash.querySelector(`${selector}__close`);
+      const closeBtn =
+        flash.querySelector(`${selector}__close`) ||
+        flash.querySelector(".flash__close");
       if (closeBtn) {
         closeBtn.addEventListener("click", () => dismissFlash(flash));
       }
 
-      // Auto-dismiss after 5 seconds
-      setTimeout(() => dismissFlash(flash), 5000);
+      // Auto-dismiss after 5 seconds if set to true
+      if (autoDismiss) {
+        setTimeout(() => dismissFlash(flash), 5000);
+      }
     });
   };
 
-  // Initialize all flash message types
-  handleFlashMessages(".flash");
-  handleFlashMessages(".admin-flash");
-  handleFlashMessages(".cart-notification");
+  // Dismiss after 5 seconds for all except .flash-info
+  handleFlashMessages(".flash", true);
+  handleFlashMessages(".admin-flash", true);
+  handleFlashMessages(".cart-notification", true);
+  handleFlashMessages(".flash-info", false);
 });
 
 // Dismiss function
@@ -713,11 +718,9 @@ const validateRegisterInputs = () => {
   }
 
   if (confirmPasswordValue === "") {
-    console.log(confirmPasswordValue);
     setError(confirmPassword, "Confirmation password is required");
     isValid = false;
   } else if (passwordValue !== confirmPasswordValue) {
-    console.log(confirmPasswordValue);
     setError(confirmPassword, "Confirmation password does not match password");
     isValid = false;
   } else {

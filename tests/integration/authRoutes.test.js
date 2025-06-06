@@ -23,6 +23,7 @@ vi.mock("../../middleware/middleware.js", () => ({
   },
   isAdmin: (req, res, next) => next(),
   redirectIfAuthenticated: (req, res, next) => next(),
+  isDemo: (req, res, next) => next(),
 }));
 
 vi.mock("../../services/emailService.js", () => ({
@@ -318,7 +319,8 @@ describe("Auth Routes", () => {
 
       expect(sendConfirmationEmail).toHaveBeenCalledWith(
         "test@example.com",
-        expect.any(String)
+        expect.any(String),
+        expect.any(Object)
       );
     });
 

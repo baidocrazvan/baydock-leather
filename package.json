@@ -14,7 +14,6 @@
     "method-override": "^3.0.0",
     "multer": "^1.4.5-lts.1",
     "nodemailer": "^7.0.3",
-    "normalize.css": "^8.0.1",
     "passport": "^0.7.0",
     "passport-local": "^1.0.0",
     "patch-package": "^8.0.0",
@@ -29,7 +28,9 @@
   "type": "module",
   "scripts": {
     "postinstall": "patch-package",
-    "dev": "node --watch index.js",
+    "start:dev": "cross-env NODE_ENV=development node --watch index.js",
+    "start:prod": "cross-env NODE_ENV=production node --watch index.js",
+    "start:test": "cross-env NODE_ENV=test node --watch index.js",
     "test": "vitest",
     "test:unit": "vitest run tests/unit",
     "test:integration": "vitest run tests/integration",
@@ -41,6 +42,7 @@
   "devDependencies": {
     "@eslint/js": "^9.28.0",
     "@vitest/coverage-v8": "^3.1.1",
+    "cross-env": "^7.0.3",
     "eslint": "^9.28.0",
     "eslint-config-prettier": "^10.1.5",
     "eslint-plugin-prettier": "^5.4.1",

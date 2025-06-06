@@ -2,7 +2,7 @@ import express from "express";
 import db from "../db.js";
 import bcrypt from "bcryptjs";
 import rateLimit from "express-rate-limit";
-import { authenticate } from "../middleware/middleware.js";
+import { authenticate, isDemo } from "../middleware/middleware.js";
 import { getActiveUserAddresses } from "../services/addressService.js";
 import { getRecentUserOrders } from "../services/orderService.js";
 import { validateChangePassword } from "../middleware/validationMiddleware.js";
@@ -61,6 +61,7 @@ const passwordChangeLimiter = rateLimit({
 
 router.post(
   "/update-password",
+  isDemo,
   authenticate,
   passwordChangeLimiter,
   validateChangePassword,
@@ -85,6 +86,18 @@ router.post(
 
       if (password !== confirmPassword) {
         req.flash("error", "New passwords do not match");
+        return res.redirect("/user/update-password");
+      }
+
+      const isSamePassword = await bcrypt.compare(
+        password,
+        user.rows[0].password
+      );
+      if (isSamePassword) {
+        req.flash(
+          "error",
+          "New password cannot be the same as current password"
+        );
         return res.redirect("/user/update-password");
       }
 

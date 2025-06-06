@@ -1,0 +1,190 @@
+@use "../util/" as u;
+
+.about-page {
+  padding: 1rem;
+  color: var(--text-color);
+  line-height: 1.6;
+  background: var(--body-fill-color);
+
+  h1,
+  h2,
+  h3 {
+    color: var(--text-color);
+    margin-bottom: 1rem;
+    font-weight: 600;
+  }
+
+  h1 {
+    font-size: 2rem;
+    text-align: center;
+  }
+
+  h2 {
+    font-size: 1.5rem;
+    border-bottom: 1px solid var(--line-color);
+    padding-bottom: 0.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  h3 {
+    font-size: 1.2rem;
+    color: var(--grey-text-color);
+  }
+
+  p {
+    margin-bottom: 1rem;
+    color: var(--grey-text-color);
+  }
+
+  code {
+    background: rgba(0, 0, 0, 0.05);
+    padding: 0.2rem 0.4rem;
+    border-radius: 3px;
+    font-family: monospace;
+    color: var(--text-color);
+    font-size: 0.9em;
+  }
+}
+
+// Hero Section
+.about-title {
+  text-align: center;
+  margin-bottom: 2rem;
+  padding: 2rem 1rem;
+  background: var(--text-color);
+  color: white;
+  border-radius: 4px;
+
+  h1 {
+    color: white;
+    margin-bottom: 0.5rem;
+  }
+
+  .subtitle {
+    font-size: 1.1rem;
+    opacity: 0.9;
+    color: rgba(255, 255, 255, 0.85);
+  }
+}
+
+.about-card {
+  background: var(--background-color);
+  border-radius: 4px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  border: 1px solid var(--line-color);
+
+  &.important-note {
+    border-left: 3px solid var(--icon-color);
+    background-color: rgba(0, 0, 0, 0.02);
+  }
+
+  &.tech-stack {
+    .tech-columns {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+  }
+
+  &.demo-accounts {
+    .account-cards {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .account-card {
+      padding: 1rem;
+      border-radius: 4px;
+      background: var(--body-fill-color);
+      border: 1px solid var(--line-color);
+
+      &.admin {
+        border-left: 3px solid var(--icon-color);
+      }
+
+      &.user {
+        border-left: 3px solid var(--text-color);
+      }
+    }
+  }
+
+  &.links {
+    .link-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+  }
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 1.5rem;
+  border-radius: 4px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  text-align: center;
+
+  .btn-tertiary:hover {
+    border: 1px solid #121212;
+  }
+}
+
+// Desktop Styles
+@media (min-width: u.rem(768)) {
+  .about-page {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+
+    h1 {
+      font-size: 2.25rem;
+    }
+  }
+
+  .about-title {
+    padding: 2.5rem 1rem;
+  }
+
+  .about-card {
+    padding: 2rem;
+
+    &.tech-stack {
+      .tech-columns {
+        flex-direction: row;
+        justify-content: space-between;
+
+        > div {
+          flex: 1;
+        }
+      }
+    }
+
+    &.demo-accounts {
+      .account-cards {
+        flex-direction: row;
+
+        .account-card {
+          flex: 1;
+        }
+      }
+    }
+
+    &.links {
+      .link-buttons {
+        flex-direction: row;
+
+        .btn {
+          flex: 1;
+        }
+      }
+    }
+  }
+}

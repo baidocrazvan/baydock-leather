@@ -2,7 +2,7 @@ import express from "express";
 import db from "../db.js";
 import multer from "multer";
 import path from "path";
-import { authenticate, isAdmin } from "../middleware/middleware.js";
+import { authenticate, isAdmin, isDemo } from "../middleware/middleware.js";
 import {
   getAllProducts,
   getProductById,
@@ -65,7 +65,7 @@ router.get("/", async (req, res) => {
             : "Oops. Seems like there are no items to display yet. Please come back later.",
       });
     }
-    console.log("Received query params:", req.query);
+
     res.render("products/list.ejs", {
       products: products,
       currentCategory: category,
@@ -128,6 +128,7 @@ router.get("/:id", async (req, res) => {
 // Add a new product (admin)
 router.post(
   "/",
+  isDemo,
   authenticate,
   isAdmin,
   upload.fields([
@@ -189,6 +190,7 @@ router.post(
 // PATCH for partial update a product (admin)
 router.patch(
   "/:id",
+  isDemo,
   authenticate,
   isAdmin,
   upload.fields([
@@ -223,17 +225,14 @@ router.patch(
     const mappedQuery = fields
       .map((field, index) => `${field} = $${index + 1}`)
       .join(", ");
-    console.log(`Generated: ${mappedQuery}`);
 
     const query = {
       text: `UPDATE products SET ${mappedQuery} WHERE id = $${fields.length + 1} RETURNING *`,
       values: [...fields.map((field) => req.body[field]), id],
     };
-    console.log(`Query: ${query.text} and ${query.values}`);
 
     try {
       const result = await db.query(query);
-      console.log(result.rows);
 
       if (result.rows.length === 0) {
         req.flash("error", "Product not found");
@@ -251,7 +250,7 @@ router.patch(
 );
 
 //Delete a product (admin)
-router.delete("/:id", authenticate, isAdmin, async (req, res) => {
+router.delete("/:id", isDemo, authenticate, isAdmin, async (req, res) => {
   const id = parseInt(req.params.id);
   try {
     await db.query(`UPDATE products SET is_active = FALSE WHERE id = $1`, [id]);
@@ -265,17 +264,25 @@ router.delete("/:id", authenticate, isAdmin, async (req, res) => {
 });
 
 // Re-activate a product
-router.post("/:id/reactivate", authenticate, isAdmin, async (req, res) => {
-  const id = parseInt(req.params.id);
-  try {
-    await db.query(`UPDATE products SET is_active = TRUE WHERE id = $1`, [id]);
-    req.flash("success", "Product reactivated successfully");
-    res.redirect("/admin/products");
-  } catch (err) {
-    console.error("Product reactivation error:", err);
-    req.flash("error", "Error reactivating product");
-    res.redirect("/admin/products");
+router.post(
+  "/:id/reactivate",
+  isDemo,
+  authenticate,
+  isAdmin,
+  async (req, res) => {
+    const id = parseInt(req.params.id);
+    try {
+      await db.query(`UPDATE products SET is_active = TRUE WHERE id = $1`, [
+        id,
+      ]);
+      req.flash("success", "Product reactivated successfully");
+      res.redirect("/admin/products");
+    } catch (err) {
+      console.error("Product reactivation error:", err);
+      req.flash("error", "Error reactivating product");
+      res.redirect("/admin/products");
+    }
   }
-});
+);
 
 export default router;

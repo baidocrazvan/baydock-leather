@@ -24,6 +24,7 @@ vi.mock("../../middleware/middleware.js", () => ({
   },
   isAdmin: (req, res, next) => next(),
   redirectIfAuthenticated: (req, res, next) => next(),
+  isDemo: (req, res, next) => next(),
 }));
 
 // Mock bcrypt
@@ -229,6 +230,9 @@ describe("User Routes", () => {
 
     describe("POST /update-password", () => {
       it("should update password with valid current password", async () => {
+        bcrypt.compare
+          .mockResolvedValueOnce(true) // CurrentPassword check
+          .mockResolvedValueOnce(false); // New password check
         await request(app)
           .post("/user/update-password")
           .send({

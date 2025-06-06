@@ -6,30 +6,42 @@ import fs from "fs";
 const template = fs.readFileSync("views/emails/confirmation.ejs", "utf-8");
 const resetTemplate = fs.readFileSync(
   "views/emails/password-reset.ejs",
-  "utf-8",
+  "utf-8"
 );
 
 // Create transporter
-const transporter = nodemailer.createTransport({
-  host: process.env.EMAIL_HOST,
-  port: process.env.EMAIL_PORT,
-  secure: false, // Only for Mailtrap
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASSWORD,
-  },
-  tls: {
-    rejectUnauthorized: false,
-  },
-});
-
+let transporter;
+if (process.env.NODE_ENV === "development") {
+  transporter = nodemailer.createTransport({
+    host: process.env.EMAIL_HOST,
+    port: process.env.EMAIL_PORT,
+    secure: false, // Only for Mailtrap
+    auth: {
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASSWORD,
+    },
+    tls: {
+      rejectUnauthorized: false,
+    },
+  });
+}
 export function generateConfirmationToken() {
   return uuidv4();
 }
 
-export async function sendConfirmationEmail(email, token) {
+export async function sendConfirmationEmail(email, token, req) {
   const confirmationLink = `${process.env.BASE_URL}/auth/confirm?token=${token}`;
-
+  console.log("START sendConfirmationEmail", process.env.NODE_ENV);
+  console.log("NODE_ENV value is: >" + process.env.NODE_ENV + "<");
+  if (process.env.NODE_ENV === "production") {
+    console.log("IN PRODUCTION IF BLOCK");
+    req.flash(
+      "info",
+      `<p class="demo">Demo: Confirm your account <a class="confirmation-link" href=${confirmationLink}>here</a></p>`
+    );
+    return;
+  }
+  console.log("AFTER PRODUCTION IF BLOCK");
   try {
     await transporter.sendMail({
       from: process.env.EMAIL_FROM,
@@ -43,7 +55,14 @@ export async function sendConfirmationEmail(email, token) {
   }
 }
 
-export async function sendResetEmail(email, resetLink) {
+export async function sendResetEmail(email, resetLink, req) {
+  if (process.env.NODE_ENV === "production") {
+    req.flash(
+      "info",
+      `<p class="demo">Demo: Confirm your account <a class="confirmation-link" href=${resetLink}>here</a></p>`
+    );
+    return;
+  }
   try {
     await transporter.sendMail({
       from: process.env.EMAIL_FROM,

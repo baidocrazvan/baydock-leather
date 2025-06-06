@@ -21,3 +21,11 @@ export const redirectIfAuthenticated = (req, res, next) => {
   }
   next();
 };
+
+export const isDemo = (req, res, next) => {
+  if (req.user.email === "admin@demo.com") {
+    req.flash("error", "This action is disabled in demo mode");
+    return res.redirect("/admin/dashboard");
+  }
+  next();
+};

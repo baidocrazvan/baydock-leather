@@ -23,6 +23,7 @@ vi.mock("../../middleware/middleware.js", () => ({
   },
   isAdmin: (req, res, next) => next(),
   redirectIfAuthenticated: (req, res, next) => next(),
+  isDemo: (req, res, next) => next(),
 }));
 
 describe("Address routes", () => {

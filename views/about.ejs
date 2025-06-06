@@ -1,0 +1,88 @@
+<%- include("./partials/header"); %>
+
+<main class="about-page">
+    <section class="about-title">
+        <h1>About This Project</h1>
+        <p class="subtitle">Server-rendered e-commerce app for leather products.</p>
+    </section>
+
+    <section class="about-content">
+        <div class="about-card">
+            <h2>Project Overview</h2>
+            <p>Hello there! 👋 This is a fully functional demo of a leather e-commerce store built with modern web technologies.</p>
+            <p>It has all the important features that you'd expect: secure auth with email confirmation, cart/checkout flow, address management, order history, product filtering and much more. </p>
+            <p>This is the demo version which has had email confirmation replaced with flash notifications, so that you won't get spam in your real email. Some admin features have also been limited for this demo version.</p>
+            
+        </div>
+
+        <div class="about-card tech-stack">
+            <h2>Tech Stack</h2>
+            <div class="tech-columns">
+                <div>
+                    <h3>Backend</h3>
+                    <ul>
+                        <li>Node.js</li>
+                        <li>Express</li>
+                        <li>PostgreSQL</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3>Frontend</h3>
+                    <ul>
+                        <li>EJS Templates</li>
+                        <li>SCSS</li>
+                        <li>JavaScript</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3>Features</h3>
+                    <ul>
+                        <li>User authentication</li>
+                        <li>Admin dashboard</li>
+                        <li>Cart/checkout flow</li>
+                        <li>Address management</li>
+                        <li>Order history</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="about-card important-note">
+            <h2>Important Note</h2>
+            <p>This is a portfolio project - orders aren't real, and most information links are placeholders leading to this page.</p>
+            <p>All passwords are encrypted with bcrypt, and the database is periodically wiped. No real personal data is stored permanently.</p>
+            <p>Feel free to use fake details if you create an account. You will receive the confirmation link without needing access to the email you provide.</p>
+        </div>
+
+        <div class="about-card demo-accounts">
+            <h2>Demo Accounts</h2>
+            <p>Want to explore without creating an account? Use these credentials:</p>
+            <div class="account-cards">
+                <div class="account-card admin">
+                    <h3>Admin Account</h3>
+                    <p>Email: <code>admin@demo.com</code></p>
+                    <p>Password: <code>AdminDemo123</code></p>
+                </div>
+                <div class="account-card user">
+                    <h3>User Account</h3>
+                    <p>Email: <code>user@demo.com</code></p>
+                    <p>Password: <code>UserDemo123</code></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="about-card links">
+            <h2>More Information</h2>
+            <div class="link-buttons">
+                <a href="https://github.com/baidocrazvan" class="btn btn-primary">
+                    <i class="fab fa-github"></i> View Code & Documentation
+                </a>
+                <a href="#" class="btn btn-tertiary" disabled>
+                    <i class="fas fa-briefcase"></i> My Portfolio (Coming Soon)
+                </a>
+            </div>
+        </div>
+    </section>
+</main>
+
+<%- include("./partials/footer"); %>

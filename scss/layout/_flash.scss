@@ -1,79 +1,102 @@
 @use "../util/" as u;
 
-.flash {
-    padding: 1rem;
-    margin: 0 auto;
-    max-width: 1200px;
-    text-align: center;
-    position: relative;
-    border-radius: 4px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    animation: slideIn 0.3s ease-out;
-    z-index: 1000;
+.flash,
+.flash-info {
+  padding: 1rem;
+  margin: 0 auto;
+  max-width: 1200px;
+  text-align: center;
+  position: relative;
+  border-radius: 4px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  animation: slideIn 0.3s ease-out;
+  z-index: 1000;
 }
 
-  // Progress bar towards auto-dismissal
-    .flash::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    height: 3px;
-    background: hsla(0, 0%, 0%, 0.1);
-    animation: progress 5s linear forwards;
-  }
-  
-  .flash__close {
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    padding: 0.25rem;
-    margin-left: 0.5rem;
+.flash-info {
+  justify-content: unset;
+  gap: 0.3rem;
+}
+
+// Progress bar towards auto-dismissal
+.flash::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  background: hsla(0, 0%, 0%, 0.1);
+  animation: progress 5s linear forwards;
+}
+
+.flash__close {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0.25rem;
+  margin-left: 0.5rem;
+  display: flex;
+  align-items: center;
+  color: inherit;
+  opacity: 0.7;
+  transition: opacity 0.2s;
+}
+
+.flash__close:hover {
+  opacity: 1;
+}
+
+.flash__close svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.flash-error {
+  background: #ffebee;
+  color: #c62828;
+  border-left: 4px solid #c62828;
+}
+
+.flash-success {
+  background: #e8f5e9;
+  color: #2e7d32;
+  border-left: 4px solid #2e7d32;
+}
+
+.flash-info {
+  background: #ffffff;
+  color: #000000;
+  border-left: 4px solid #b3b3b3;
+}
+
+@media (min-width: 992px) {
+  .flash-container {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
     display: flex;
-    align-items: center;
-    color: inherit;
-    opacity: 0.7;
-    transition: opacity 0.2s;
+    flex-direction: column;
+    gap: 1rem; // space between messages
+    z-index: 1000;
+    min-width: 250px;
+    max-width: 350px;
+    width: auto;
   }
 
-  .flash__close:hover {
-    opacity: 1;
+  .flash,
+  .flash-info {
+    position: relative;
+    width: 100%;
+    margin: 0;
+    text-align: left;
+    overflow: hidden;
   }
+}
 
-  .flash__close svg {
-    width: 1rem;
-    height: 1rem;
-  }
-
-  .flash-error {
-    background: #ffebee;
-    color: #c62828;
-    border-left: 4px solid #c62828;
-  }
-  
-  .flash-success {
-    background: #e8f5e9;
-    color: #2e7d32;
-    border-left: 4px solid #2e7d32;
-  }
-
-  @media (min-width: 992px) {
-    .flash {
-      position: fixed;
-      top: 1rem;
-      right: 1rem;
-      min-width: 250px;
-      max-width: 350px;
-      width: auto;
-      margin: 0;
-      text-align: left;
-    }
-  }
-
-  .admin-flash {
+.admin-flash {
   padding: 1rem;
   top: var(--header-height);
   margin: 0 auto 1rem;
@@ -89,7 +112,7 @@
   z-index: 1000;
 
   &::after {
-    content: '';
+    content: "";
     position: absolute;
     bottom: 0;
     left: 0;
@@ -157,14 +180,14 @@
   justify-content: space-between;
   animation: slideIn 0.3s ease-out;
   z-index: 1000;
-  
+
   background: #f5f5f5;
   color: #333;
   border-left: 4px solid #666;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
   &::after {
-    content: '';
+    content: "";
     position: absolute;
     bottom: 0;
     left: 0;
@@ -188,11 +211,11 @@
     align-items: center;
     color: #888;
     transition: color 0.2s;
-    
+
     &:hover {
       color: #333;
     }
-    
+
     svg {
       width: 1rem;
       height: 1rem;
@@ -202,10 +225,19 @@
 
 // Animation for when flash is dismissed
 .flash.hide,
+.flash-info.hide,
 .admin-flash.hide,
 .cart-notification.hide {
   animation: slideOut 0.3s ease-in forwards !important;
   pointer-events: none; // Prevent interaction during dismissal
+}
+
+.demo {
+  margin: 0;
+  .confirmation-link {
+    text-decoration: underline;
+    font-size: 500;
+  }
 }
 
 @keyframes slideIn {
@@ -227,6 +259,10 @@
 }
 
 @keyframes progress {
-  from { width: 100% }
-  to { width: 0% }
+  from {
+    width: 100%;
+  }
+  to {
+    width: 0%;
+  }
 }

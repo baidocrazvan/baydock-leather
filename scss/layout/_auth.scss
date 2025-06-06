@@ -1,160 +1,157 @@
 @use "../util/" as u;
 
 .page-title-wrapper {
-    padding: 3.75rem 0;
-    text-align: center;
-    h1 {
-        font-size: u.rem(28);
-        font-weight: 700;
-        margin: 0 auto;
-    }
+  padding: 3.75rem 0;
+  text-align: center;
+  h1 {
+    font-size: u.rem(28);
+    font-weight: 700;
+    margin: 0 auto;
+  }
 }
 
 .auth-container {
-    max-width: 90%;
-    margin: 0 auto u.rem(40) auto;
-    .block-title {
-        font-size: u.rem(22);
-        line-height: 1.2;
-        margin: u.rem(15) 0;
-    }
+  max-width: 90%;
+  margin: 0 auto u.rem(40) auto;
+  .block-title {
+    font-size: u.rem(22);
+    line-height: 1.2;
+    margin: u.rem(15) 0;
+  }
 
-    .block-note {
-        font-size: u.rem(12);
-        margin: 0 0 u.rem(12);
-        color: var(--icon-color);
-    }
+  .block-note {
+    font-size: u.rem(12);
+    margin: 0 0 u.rem(12);
+    color: var(--icon-color);
+  }
 
-    .form-fieldset {
-        border: none;
-        margin: 0;
-        padding: 0;
-        .input-control {
-
-            .form-label {
-                font-size: u.em(13);
-                font-weight: 500;
-            }
-
-            input {
-                border-color: rgba(0, 0, 0, .09);
-                height: auto;
-                padding: 8px 12px;
-                font-size: u.rem(12);
-            }
-        }
-        
-    }
-
-    .form-actions {
-        .forgot-password {
-            font-size: u.rem(13);
-            font-weight: 500;
-            line-height: 21px;
-            text-decoration: none;
-            color: var(--text-color)
-        }
-
-        .submit-button {
-            display: block;
-            width: 100%;
-            text-align: center;
-            margin: 0;
-            font-family: "Open Sans", sans-serif;
-            font-weight: 700;
-            font-size: u.rem(16);
-            line-height: 21px;
-            padding: 16px 24px;
-            border-radius: 8px;
-            letter-spacing: 0.35px;
-            cursor: pointer;
-            border: none;
-            margin: u.rem(22) 0;
-            transition: all 0.3s ease;
-        }
-
-        .register-button {
-            display: block;
-            width: 100%;
-            text-align: center;
-            margin: 0;
-            font-family: "Open Sans", sans-serif;
-            font-weight: 700;
-            font-size: 1rem;
-            line-height: 21px;
-            padding: 16px 24px;
-            border-radius: 8px;
-            letter-spacing: 0.35px;
-            margin: u.rem(22) 0;
-        }
-    }
-
-    .resend-confirmation {
-        border-left: 4px solid rgb(53, 53, 53); 
-        padding: 12px 16px;
-        margin: 16px 0;
-        border-radius: 4px;
-        font-size: u.rem(13);
-        display: flex;
-        align-items: center;
-        justify-content: flex-start;
-        flex-wrap: wrap;
-        gap: 1rem;
-
-        form {
-            display: inline-flex;
-        }
-
-        button[type="submit"] {
-            font-weight: 600;
-            text-decoration: none;
-            cursor: pointer;
-            padding: 0.5rem 0.75rem;
-            border: none;
-            border-radius: u.rem(8);
-            font-size: u.rem(13);
-            transition: all 0.3s ease;
-        }
-    }
-
-    .input-reminder {
-        margin-top: u.rem(26);
-        line-height: 21px;
-        align-items: center;
-        a:hover {
-            cursor: pointer;
-            text-decoration: underline;
-        }
-    }
-
+  .form-fieldset {
+    border: none;
+    margin: 0;
+    padding: 0;
     .input-control {
-        display: flex;
-        flex-direction: column;
+      .form-label {
+        font-size: u.em(13);
+        font-weight: 500;
+      }
+
+      input {
+        border-color: rgba(0, 0, 0, 0.09);
+        height: auto;
+        padding: 8px 12px;
+        font-size: u.rem(12);
+      }
     }
-    
-    .input-control input {
-        border: 2px solid #f0f0f0;
-        border-radius: 4px;
-        display: block;
-        font-size: 12px;
-        padding: 10px;
-        width: 100%;
+  }
+
+  .form-actions {
+    .forgot-password {
+      font-size: u.rem(13);
+      font-weight: 500;
+      line-height: 21px;
+      text-decoration: none;
+      color: var(--text-color);
     }
-    
-    .input-control input:focus {
-        outline: 0;
+
+    .submit-button {
+      display: block;
+      width: 100%;
+      text-align: center;
+      margin: 0;
+      font-family: "Open Sans", sans-serif;
+      font-weight: 700;
+      font-size: u.rem(16);
+      line-height: 21px;
+      padding: 16px 24px;
+      border-radius: 8px;
+      letter-spacing: 0.35px;
+      cursor: pointer;
+      border: none;
+      margin: u.rem(22) 0;
+      transition: all 0.3s ease;
     }
-    
-    
-    .input-control .error {
-        color: #ff3860;
-        margin-top: u.rem(8);
-        margin-bottom: u.rem(8);
-        font-size: u.rem(10);
+
+    .register-button {
+      display: block;
+      width: 100%;
+      text-align: center;
+      margin: 0;
+      font-family: "Open Sans", sans-serif;
+      font-weight: 700;
+      font-size: 1rem;
+      line-height: 21px;
+      padding: 16px 24px;
+      border-radius: 8px;
+      letter-spacing: 0.35px;
+      margin: u.rem(22) 0;
     }
+  }
+
+  .resend-confirmation {
+    border-left: 4px solid rgb(53, 53, 53);
+    padding: 12px 16px;
+    margin: 16px 0;
+    border-radius: 4px;
+    font-size: u.rem(13);
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    gap: 1rem;
+
+    form {
+      display: inline-flex;
+    }
+
+    button[type="submit"] {
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+      padding: 0.5rem 0.75rem;
+      border: none;
+      border-radius: u.rem(8);
+      font-size: u.rem(13);
+      transition: all 0.3s ease;
+    }
+  }
+
+  .input-reminder {
+    margin-top: u.rem(26);
+    line-height: 21px;
+    align-items: center;
+    a:hover {
+      cursor: pointer;
+      text-decoration: underline;
+    }
+  }
+
+  .input-control {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .input-control input {
+    border: 2px solid #f0f0f0;
+    border-radius: 4px;
+    display: block;
+    font-size: 12px;
+    padding: 10px;
+    width: 100%;
+  }
+
+  .input-control input:focus {
+    outline: 0;
+  }
+
+  .input-control .error {
+    color: #ff3860;
+    margin-top: u.rem(8);
+    margin-bottom: u.rem(8);
+    font-size: u.rem(10);
+  }
 }
 
-.forgot-pass-container, 
+.forgot-pass-container,
 .reset-pass-container,
 .change-pass-container,
 .confirm-email-container {
@@ -208,30 +205,65 @@
   }
 
   .input-control .error {
-        color: #ff3860;
-        margin-top: u.rem(8);
-        margin-bottom: u.rem(8);
-        font-size: u.rem(10);
-        margin-bottom: 1rem;  
+    color: #ff3860;
+    margin-top: u.rem(8);
+    margin-bottom: u.rem(8);
+    font-size: u.rem(10);
+    margin-bottom: 1rem;
+  }
+}
+
+.demo-banner {
+  margin: 2rem 0 0 0;
+  padding: 1rem 1.5rem;
+  background: #f7f7fa;
+  border-left: 4px solid #121212;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(25, 118, 210, 0.05);
+  color: #222;
+  font-size: 1rem;
+  line-height: 1.5;
+  max-width: 100%;
+
+  p {
+    display: flex;
+    align-items: center;
+    margin: 0 0 0.5rem 0;
+    font-weight: 600;
+    font-size: 1.05rem;
+    .bi-info-circle {
+      margin-right: u.rem(4);
     }
+  }
+
+  ul {
+    margin: 0;
+    padding-left: 1.2rem;
+    list-style: disc;
+
+    li {
+      margin-bottom: 0.25rem;
+      font-family: monospace;
+      font-size: 0.98rem;
+      border-radius: 3px;
+      padding: 0.2rem 0.5rem;
+      display: inline-block;
+    }
+  }
 }
 
 @media (min-width: u.rem(600)) {
-    .auth-container {
-        width: clamp(300px, 50vw, 600px);
-    }
+  .auth-container {
+    width: clamp(300px, 50vw, 600px);
+  }
 
-    .register-container {
-        width: clamp(600px, 50vw, 900px);
-    }
+  .register-container {
+    width: clamp(600px, 50vw, 900px);
+  }
 
-    #registerForm {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: u.rem(25);
-    }
-
+  #registerForm {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: u.rem(25);
+  }
 }
-
-
-

@@ -329,6 +329,79 @@
   }
 }
 
+.empty-cart-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.empty-cart {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 3rem 1rem;
+  margin: 2rem auto;
+  max-width: u.rem(400);
+  color: var(--grey-text-color);
+  border-radius: u.rem(8);
+  background: var(--background-color);
+
+  &__icon {
+    width: 64px;
+    height: 64px;
+    margin-bottom: 1.5rem;
+
+    svg {
+      width: 100%;
+      height: 100%;
+      stroke-width: 1.5;
+      color: var(--icon-color);
+    }
+  }
+
+  &__title {
+    font-size: u.rem(20);
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--text-color);
+  }
+
+  &__message {
+    font-size: u.rem(14);
+    margin-bottom: 1.5rem;
+    line-height: 1.5;
+  }
+
+  &__button {
+    padding: u.rem(12) u.rem(24);
+    font-size: u.rem(14);
+    border-radius: u.rem(8);
+    width: auto;
+    display: inline-block;
+    text-decoration: none;
+    transition: ease-in 0.3s;
+  }
+
+  @include u.breakpoint(large) {
+    padding: 4rem 1rem;
+
+    &__icon {
+      width: 80px;
+      height: 80px;
+    }
+
+    &__title {
+      font-size: u.rem(24);
+    }
+
+    &__message {
+      font-size: u.rem(16);
+    }
+  }
+}
+
 @include u.breakpoint(large) {
   .cart-wrapper {
     width: 90%;

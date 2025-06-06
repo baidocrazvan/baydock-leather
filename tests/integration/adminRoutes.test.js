@@ -32,6 +32,7 @@ describe("Admin Routes", () => {
     },
     isAdmin: (req, res, next) => next(),
     redirectIfAuthenticated: (req, res, next) => next(),
+    isDemo: (req, res, next) => next(),
   }));
 
   const mockProduct = {

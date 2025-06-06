@@ -1,6 +1,6 @@
 import express from "express";
 import db from "../db.js";
-import { authenticate, isAdmin } from "../middleware/middleware.js";
+import { authenticate, isAdmin, isDemo } from "../middleware/middleware.js";
 import { getProductById } from "../services/productService.js";
 import { getOrderDetails, getAllOrders } from "../services/orderService.js";
 import { getAllUsers, getUserDetails } from "../services/userService.js";
@@ -165,6 +165,7 @@ router.get("/create", authenticate, isAdmin, async (req, res) => {
 // POST protected register an admin account
 router.post(
   "/create",
+  isDemo,
   validateAdminRegister,
   authenticate,
   isAdmin,
@@ -195,7 +196,7 @@ router.post(
           // Hash password using bcrypt
           bcrypt.hash(password, saltRounds, async (err, hash) => {
             if (err) {
-              console.log("Error hashing password:", err);
+              console.error("Error hashing password:", err);
               req.flash("Error hashing password. Try registering again later");
               return res.redirect("/admin/create");
             } else {

@@ -33,7 +33,7 @@ router.post(
       // Check if user has existing addresses
       const existingAddresses = await db.query(
         "SELECT id FROM shipping_addresses WHERE user_id = $1 AND is_active = TRUE",
-        [userId],
+        [userId]
       );
       // If not, set both default and billing values to true
       const isShipping = existingAddresses.rows.length === 0;
@@ -55,7 +55,7 @@ router.post(
           county,
           postalCode,
           phoneNumber,
-        ],
+        ]
       );
 
       req.flash("success", "Address added successfully");
@@ -67,12 +67,12 @@ router.post(
     } catch (err) {
       console.error(
         "POST error /shipping-address when adding shipping adress: ",
-        err,
+        err
       );
       req.flash("error", "Unable to add address");
       return res.redirect("/");
     }
-  },
+  }
 );
 
 // GET Render page for editing a specific shipping address
@@ -121,8 +121,7 @@ router.put(
 
       const isShipping = is_shipping === "on" || current_is_shipping === "true";
       const isBilling = is_billing === "on" || current_is_billing === "true";
-      console.log("isShipping: ", isShipping);
-      console.log("isBilling: ", isBilling);
+
       // Grab a client from pg pool and use transaction to update address
       const client = await db.connect();
       try {
@@ -134,7 +133,7 @@ router.put(
             `UPDATE shipping_addresses 
             SET is_shipping = false 
             WHERE user_id = $1 AND is_shipping = true AND id != $2`,
-            [req.user.id, req.params.id],
+            [req.user.id, req.params.id]
           );
         }
 
@@ -144,7 +143,7 @@ router.put(
             `UPDATE shipping_addresses 
             SET is_billing = false 
             WHERE user_id = $1 AND is_billing = true AND id != $2`,
-            [req.user.id, req.params.id],
+            [req.user.id, req.params.id]
           );
         }
         // Update the address
@@ -175,7 +174,7 @@ router.put(
             isBilling,
             req.params.id,
             req.user.id,
-          ],
+          ]
         );
 
         await client.query("COMMIT");
@@ -192,7 +191,7 @@ router.put(
       req.flash("error", "Failed to update address");
       return res.redirect("/user/addresses");
     }
-  },
+  }
 );
 
 // PATCH route for changing default shipping/billing address at checkout
@@ -204,21 +203,21 @@ router.patch("/shipping-address/default", authenticate, async (req, res) => {
     // Set all addresses to non-default
     await db.query(
       `UPDATE shipping_addresses SET is_shipping = false, is_billing = false WHERE user_id = $1`,
-      [userId],
+      [userId]
     );
 
     // Set new shipping default if different from current default shipping address
     if (shippingAddressId) {
       await db.query(
         `UPDATE shipping_addresses SET is_shipping = true WHERE id = $1 AND user_id = $2`,
-        [shippingAddressId, userId],
+        [shippingAddressId, userId]
       );
     }
 
     if (billingAddressId) {
       await db.query(
         `UPDATE shipping_addresses SET is_billing = true WHERE id = $1 AND user_id = $2`,
-        [billingAddressId, userId],
+        [billingAddressId, userId]
       );
     }
 
@@ -239,7 +238,7 @@ router.delete("/shipping-address/:id", authenticate, async (req, res) => {
     const result = await db.query(
       `UPDATE shipping_addresses SET is_active = FALSE, deleted_at = NOW()
       WHERE id = $1 AND user_id = $2`,
-      [addressId, userId],
+      [addressId, userId]
     );
 
     if (result.rowCount === 0) {

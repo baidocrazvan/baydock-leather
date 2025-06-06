@@ -1,101 +1,89 @@
-<%- include("../partials/header"); %> <!-- Include the shared header and navbar -->
+<%- include("../partials/header"); %>
+<!-- Include the shared header and navbar -->
 
-<main> 
-    <div class="page-title-wrapper">
-        <h1>
-            <span>Create new account</span>
-        </h1>
-    </div>
-    
-    <div class="register-container auth-container">
-        <form action="/auth/register" method="post" id="registerForm">
-            <div class="account-fieldset">
-                <div class="block-title"><strong>Account information</strong></div>
-                <fieldset class="form-fieldset">
-                    <div class="input-control">
-                        <label for="username" class="form-label">Email:</label>
-                        <input
-                        id="email"
-                        type="email"
-                        name="email"
-                        class="form-input"
-                        />
-                        <div class="error"></div>
-                    </div>
+<main>
+  <div class="page-title-wrapper">
+    <h1>
+      <span>Create new account</span>
+    </h1>
+  </div>
 
-                    <div class="input-control">
-                        <label for="password" class="form-label">Password</label>
-                        <input
-                        id="password"
-                        type="password"
-                        name="password"
-                        class="form-input"
-                        />
-                        <div class="error"></div>
-                    </div>
+  <div class="register-container auth-container">
+    <form action="/auth/register" method="post" id="registerForm">
+      <div class="account-fieldset">
+        <div class="block-title"><strong>Account information</strong></div>
+        <fieldset class="form-fieldset">
+          <div class="input-control">
+            <label for="username" class="form-label">Email:</label>
+            <input id="email" type="email" name="email" class="form-input" />
+            <div class="error"></div>
+          </div>
 
-                    <div class="input-control">
-                        <label for="cpassword" class="form-label">Confirm Password</label>
-                        <input
-                        id="cpassword"
-                        type="password"
-                        name="cpassword"
-                        class="form-input"
-                        />
-                        <div class="error"></div>
-                    </div>
-                </fieldset>
-            </div>
+          <div class="input-control">
+            <label for="password" class="form-label">Password</label>
+            <input
+              id="password"
+              type="password"
+              name="password"
+              class="form-input"
+            />
+            <div class="error"></div>
+          </div>
 
-            <div class="personal-fieldset">
-                <div class="block-title"><strong>Personal information</strong></div>
-                <fieldset class="form-fieldset">
-                    <div class="input-control">
-                        <label for="firstName" class="form-label">First name:</label>
-                        <input
-                        id="firstName"
-                        type="text"
-                        name="firstName"
-                        class="form-input"
-                        />
-                        <div class="error"></div>
-                    </div>
+          <div class="input-control">
+            <label for="cpassword" class="form-label">Confirm Password</label>
+            <input
+              id="cpassword"
+              type="password"
+              name="cpassword"
+              class="form-input"
+            />
+            <div class="error"></div>
+          </div>
+        </fieldset>
+      </div>
 
-                    <div class="input-control">
-                        <label for="lastName" class="form-label">Last name:</label>
-                        <input
-                        id="lastName" 
-                        type="text"
-                        name="lastName"
-                        class="form-input"
-                        />
-                        <div class="error"></div>
-                    </div>
+      <div class="personal-fieldset">
+        <div class="block-title"><strong>Personal information</strong></div>
+        <fieldset class="form-fieldset">
+          <div class="input-control">
+            <label for="firstName" class="form-label">First name:</label>
+            <input
+              id="firstName"
+              type="text"
+              name="firstName"
+              class="form-input"
+            />
+            <div class="error"></div>
+          </div>
 
-                    <div class="input-reminder">
-                        <span>
-                            <a href="/auth/login">Already have an account? Log in.</a>
-                        </span>
-                    </div> 
-                </fieldset>
-            </div>
-        
-        
-        
-            <div class="form-actions">
-                <button type="submit" class="submit-button btn-primary">REGISTER</button>
-            </div>
-        
-    
-        </form>
-    </div>
-    
-    <% if (error.length) { %>
-        <div class="alert register-error">
-          <%= error %>
-        </div>
-      <% } %>
+          <div class="input-control">
+            <label for="lastName" class="form-label">Last name:</label>
+            <input
+              id="lastName"
+              type="text"
+              name="lastName"
+              class="form-input"
+            />
+            <div class="error"></div>
+          </div>
+
+          <div class="input-reminder">
+            <span>
+              <a href="/auth/login">Already have an account? Log in.</a>
+            </span>
+          </div>
+        </fieldset>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="submit-button btn-primary">
+          REGISTER
+        </button>
+      </div>
+    </form>
+  </div>
 </main>
 
-
-<%- include("../partials/footer"); %> <!-- Include the shared footer -->
+<%- include("../partials/footer"); %>
+<!-- Include the shared footer -->

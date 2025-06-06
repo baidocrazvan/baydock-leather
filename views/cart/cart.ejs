@@ -2,90 +2,89 @@
 
 <main>
     <div class="cart-wrapper">
-        <div class="cart-title-wrapper">
-            <span class="cart-title">Shopping Cart</span>
-        </div>
-       <% if (cartMessage) { %>
+        <% if (cartMessage) { %>
             <div class="cart-notification" id="cartNotification">
                 <div class="cart-notification__content">
                 <%= cartMessage %>
                 </div>
                 <button class="cart-notification__close" aria-label="Close notification">
-                <svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+                    <svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
                 </button>
             </div>
         <% } %>
 
+        <% if (cartItems.length) { %>
+        <div class="cart-title-wrapper">
+            <span class="cart-title">Shopping Cart</span>
+        </div>
+
         <div class="cart-contents">
             
-                <% if (!cartItems.length) { %>
-                    <p>Your cart is currently empty.</p>
-                <% } else { %>
-                    <div class="main-display-wrapper">
-                        <div class="cart-columns">
-                            <p class="title-column">PRODUCT</p>
-                            <p class="quantity-column">QUANTITY</p>
+            <div class="main-display-wrapper">
+                <div class="cart-columns">
+                    <p class="title-column">PRODUCT</p>
+                    <p class="quantity-column">QUANTITY</p>
+                </div>
+                <% cartItems.forEach(item => { %>
+                    
+                    <div class="cart-item">
+                        <div class="cart-item__thumbnail">
+                            <img src="<%= item.thumbnail %>">
                         </div>
-                        <% cartItems.forEach(item => { %>
-                            
-                            <div class="cart-item">
-                                <div class="cart-item__thumbnail">
-                                    <img src="<%= item.thumbnail %>">
-                                </div>
-                                <div class="cart-item__content">
-                                    <a class="item-title" href="/products/<%= item.id %>"><%= item.name %></a>
-                                    <% if (item.selected_size) { %>
-                                        <p class="item-size">Size: <%= item.selected_size %></p>
-                                    <% } %>
-                                    <p class="item-price"><%= item.quantity %> x <span><%= item.price %>€</span></p>
+                        <div class="cart-item__content">
+                            <a class="item-title" href="/products/<%= item.id %>"><%= item.name %></a>
+                            <% if (item.selected_size) { %>
+                                <p class="item-size">Size: <%= item.selected_size %></p>
+                            <% } %>
+                            <p class="item-price"><%= item.quantity %> x <span><%= item.price %>€</span></p>
 
-                                    <form action="/cart/delete/<%= item.id %>?_method=DELETE" method="POST" class="item-delete">
-                                        <input type="hidden" name="productId" value="<%= item.id %>">
-                                        <button type="submit" class="delete-from-cart-btn">Delete item from cart</button>
-                                        <% if (item.selected_size) { %>
-                                            <input type="hidden" name="size" value="<%= item.selected_size %>">
-                                        <% } %>
-                                    </form>
-                                </div>
-                                <div class="cart-item__quantity">
-                                    <form action="/cart?_method=PATCH" method="POST" class="item-update">
-                                        <input type="hidden" name="productId" value="<%= item.id %>">
-                                        <% if (item.selected_size) { %>
-                                            <input type="hidden" name="size" value="<%= item.selected_size %>">
-                                        <% } %>
-                                        <div class="quantity-control-group">
-                                            <button type="submit" class="update-icon-btn" aria-label="Update quantity" hidden>
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                                                    <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
-                                                    <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"/>
-                                                </svg>
-                                            </button>
-                                            <div class="quantity-selector">
-                                                <button type="button" class="quantity-btn minus">-</button>
-                                                <input 
-                                                type="number"
-                                                name="quantity"
-                                                class="quantity-input"
-                                                value="<%= item.quantity %>"
-                                                min="1"
-                                                max="<%= item.stock || 10 %>" 
-                                                >
-                                                <button type="button" class="quantity-btn plus">+</button>
-                                            </div>
-                                        </div>
-                                        
-                                    </form>
-                                </div>
-                            </div>
-                        <% }) %>
-                        <div class="cart-actions">
-                            <button class="continue-shopping-btn btn-tertiary"><a href="/products/">← CONTINUE SHOPPING</a></button>
-                            <form action="/cart/delete?_method=DELETE" method="POST" class="clear-cart">
-                                <button type="submit" class="delete-from-cart-btn btn-secondary">CLEAR CART</button>
+                            <form action="/cart/delete/<%= item.id %>?_method=DELETE" method="POST" class="item-delete">
+                                <input type="hidden" name="productId" value="<%= item.id %>">
+                                <button type="submit" class="delete-from-cart-btn">Delete item from cart</button>
+                                <% if (item.selected_size) { %>
+                                    <input type="hidden" name="size" value="<%= item.selected_size %>">
+                                <% } %>
                             </form>
                         </div>
-                    
+                        <div class="cart-item__quantity">
+                            <form action="/cart?_method=PATCH" method="POST" class="item-update">
+                                <input type="hidden" name="productId" value="<%= item.id %>">
+                                <% if (item.selected_size) { %>
+                                    <input type="hidden" name="size" value="<%= item.selected_size %>">
+                                <% } %>
+                                <div class="quantity-control-group">
+                                    <button type="submit" class="update-icon-btn" aria-label="Update quantity" hidden>
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                            <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
+                                            <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"/>
+                                        </svg>
+                                    </button>
+                                    <div class="quantity-selector">
+                                        <button type="button" class="quantity-btn minus">-</button>
+                                        <input 
+                                        type="number"
+                                        name="quantity"
+                                        class="quantity-input"
+                                        value="<%= item.quantity %>"
+                                        min="1"
+                                        max="<%= item.stock || 10 %>" 
+                                        >
+                                        <button type="button" class="quantity-btn plus">+</button>
+                                    </div>
+                                </div>
+                                
+                            </form>
+                        </div>
                     </div>
+                <% }) %>
+                <div class="cart-actions">
+                    <button class="continue-shopping-btn btn-tertiary"><a href="/products/">← CONTINUE SHOPPING</a></button>
+                    <form action="/cart/delete?_method=DELETE" method="POST" class="clear-cart">
+                        <button type="submit" class="delete-from-cart-btn btn-secondary">CLEAR CART</button>
+                    </form>
+                </div>
+            
+            </div>
 
             <div class="secondary-display-wrapper">
                 <div class="cart-totals">
@@ -176,9 +175,29 @@
                 </div>
                 
 
-            <% } %>
+            
             </div>
         </div>
+        <% } else { %>
+            <div class="empty-cart-container">
+                <div class="cart-title-wrapper">
+                <span class="cart-title">
+                    Shopping Cart
+                </span>
+                </div>
+                
+                <div class="empty-cart">
+                <div class="empty-cart__icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-bag" viewBox="0 0 16 16">
+                        <path d="M8 1a2.5 2.5 0 0 1 2.5 2.5V4h-5v-.5A2.5 2.5 0 0 1 8 1m3.5 3v-.5a3.5 3.5 0 1 0-7 0V4H1v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4zM2 5h12v9a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1z"/>
+                    </svg>
+                </div>
+                <h3 class="empty-cart__title">Your cart is empty</h3>
+                <p class="empty-cart__message">Looks like you haven't added anything to your cart yet</p>
+                <a href="/products/" class="btn-primary empty-cart__button">Continue Shopping</a>
+                </div>
+            </div>
+        <% } %>
     </div>
 </main>
 

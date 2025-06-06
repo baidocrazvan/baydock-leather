@@ -49,8 +49,7 @@ router.get("/", async (req, res) => {
       }
       cartSubtotal = cartSubtotal.toFixed(2);
     }
-    console.log("CartItems: ", cartItems);
-    console.log("CartSubtotal: ", cartSubtotal);
+
     return res.render("cart/cart.ejs", {
       user: req.user,
       cartItems,

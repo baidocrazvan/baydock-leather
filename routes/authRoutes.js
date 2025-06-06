@@ -252,7 +252,7 @@ router.post(
 
       // Send confirmation email
       try {
-        await sendConfirmationEmail(email, user.confirmation_token);
+        await sendConfirmationEmail(email, user.confirmation_token, req);
         req.flash(
           "success",
           "Registration successfull! Please check your email to confirm your account."
@@ -380,7 +380,7 @@ router.post("/resend-confirmation", resendLimiter, async (req, res) => {
       [newToken, expires, email]
     );
 
-    await sendConfirmationEmail(email, newToken);
+    await sendConfirmationEmail(email, newToken, req);
     req.flash("success", "New confirmation email sent!");
     return res.redirect("/auth/login");
   } catch (err) {
@@ -445,6 +445,11 @@ router.post(
         return res.redirect("/auth/forgot-password");
       }
 
+      if (req.body.email.endsWith("@demo.com")) {
+        req.flash("error", "Password resets disabled for demo accounts");
+        return res.redirect("/auth/forgot-password");
+      }
+
       const token = generateConfirmationToken();
       const dbExpires = await db.query(
         `SELECT (NOW() + INTERVAL '10 minutes') AS expires`
@@ -459,7 +464,7 @@ router.post(
       );
 
       const resetLink = `${process.env.BASE_URL}/auth/reset-password?token=${token}`;
-      await sendResetEmail(email, resetLink);
+      await sendResetEmail(email, resetLink, req);
 
       req.flash("success", "Password reset link sent to your email");
       res.redirect("/auth/login");
