@@ -24,17 +24,12 @@
                     <div class="error"></div>
                 </div>
             
-                <div class="input-control">
-                    <label for="password" class="form-label">Password</label>
-                    <input
-                    id="password"
-                    type="password"
-                    name="password"
-                    class="form-input"
-                    />
-                    <div class="error"></div>
-                </div>
-            
+                <%- include ("../partials/password-field", {
+                    id: "password",
+                    name: "password",
+                    label: "Password",
+                    required: true
+                }) %>
             </fieldset>
 
             <div class="form-actions">

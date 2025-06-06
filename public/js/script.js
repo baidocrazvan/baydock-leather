@@ -548,392 +548,430 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 });
 
+// Password visibility toggle
+document.addEventListener("DOMContentLoaded", function () {
+  document.querySelectorAll(".password-toggle").forEach((btn) => {
+    btn.addEventListener("click", togglePasswordVisibility);
+  });
+
+  function togglePasswordVisibility(e) {
+    const wrapper = e.currentTarget.closest(".password-wrapper");
+    const input = wrapper.querySelector(".form-input");
+    const eyeIcon = wrapper.querySelector(".eye-icon");
+    const eyeSlashIcon = wrapper.querySelector(".eye-slash-icon");
+    const isShowing = input.type === "text";
+
+    // Toggle input type
+    input.type = isShowing ? "password" : "text";
+
+    // Toggle icons
+    eyeIcon.style.display = isShowing ? "block" : "none";
+    eyeSlashIcon.style.display = isShowing ? "none" : "block";
+
+    // Update ARIA
+    e.currentTarget.setAttribute(
+      "aria-label",
+      isShowing ? "Show password" : "Hide password"
+    );
+  }
+});
+
 // =====================
 // FORM VALIDATION
 // =====================
 
-// Validate login form before submission
+// Validate each login form before submission
+document.addEventListener("DOMContentLoaded", function () {
+  const loginForm = document.getElementById("loginForm");
+  const registerForm = document.getElementById("registerForm");
+  const addressForm = document.getElementById("addressForm");
+  const passwordForm = document.getElementById("passwordForm");
+  const forgotPasswordForm = document.getElementById("forgotPasswordForm");
+  const resetPasswordForm = document.getElementById("resetPasswordForm");
+  const email = document.getElementById("email");
+  const password = document.getElementById("password");
+  const confirmPassword = document.getElementById("cpassword");
+  const firstName = document.getElementById("firstName");
+  const lastName = document.getElementById("lastName");
+  const address = document.getElementById("address");
+  const city = document.getElementById("city");
+  const county = document.getElementById("county");
+  const phoneNumber = document.getElementById("phoneNumber");
+  const postalCode = document.getElementById("postalCode");
 
-const loginForm = document.getElementById("loginForm");
-const registerForm = document.getElementById("registerForm");
-const addressForm = document.getElementById("addressForm");
-const passwordForm = document.getElementById("passwordForm");
-const forgotPasswordForm = document.getElementById("forgotPasswordForm");
-const resetPasswordForm = document.getElementById("resetPasswordForm");
-const email = document.getElementById("email");
-const password = document.getElementById("password");
-const confirmPassword = document.getElementById("cpassword");
-const firstName = document.getElementById("firstName");
-const lastName = document.getElementById("lastName");
-const address = document.getElementById("address");
-const city = document.getElementById("city");
-const county = document.getElementById("county");
-const phoneNumber = document.getElementById("phoneNumber");
-const postalCode = document.getElementById("postalCode");
+  if (loginForm) {
+    loginForm.addEventListener("submit", (e) => {
+      if (!validateLoginInputs()) {
+        e.preventDefault(); // Only prevent if validation fails
+      }
+    });
+  }
 
-if (loginForm) {
-  loginForm.addEventListener("submit", (e) => {
-    if (!validateLoginInputs()) {
-      e.preventDefault(); // Only prevent if validation fails
+  if (registerForm) {
+    registerForm.addEventListener("submit", (e) => {
+      if (!validateRegisterInputs()) {
+        e.preventDefault();
+      }
+    });
+  }
+
+  if (passwordForm) {
+    passwordForm.addEventListener("submit", (e) => {
+      if (!validatePasswordInputs()) {
+        e.preventDefault();
+      }
+    });
+  }
+
+  if (forgotPasswordForm) {
+    forgotPasswordForm.addEventListener("submit", (e) => {
+      if (!validateEmailInputs()) {
+        e.preventDefault();
+      }
+    });
+  }
+
+  if (resetPasswordForm) {
+    resetPasswordForm.addEventListener("submit", (e) => {
+      if (!validateResetInputs()) {
+        e.preventDefault();
+      }
+    });
+  }
+
+  if (addressForm) {
+    addressForm.addEventListener("submit", (e) => {
+      if (!validateAddressInputs()) {
+        e.preventDefault();
+      }
+    });
+  }
+
+  const setError = (element, message) => {
+    const inputControl = element.closest(".input-control");
+    const errorDisplay = inputControl.querySelector(".error");
+
+    errorDisplay.innerText = message;
+
+    inputControl.classList.add("error");
+    inputControl.classList.remove("success");
+  };
+
+  const setSuccess = (element) => {
+    const inputControl = element.closest(".input-control");
+    const errorDisplay = inputControl.querySelector(".error");
+
+    if (errorDisplay.textContent !== "") {
+      errorDisplay.innerText = "";
+      inputControl.classList.remove("error");
     }
-  });
-}
+  };
 
-if (registerForm) {
-  registerForm.addEventListener("submit", (e) => {
-    if (!validateRegisterInputs()) {
-      e.preventDefault();
+  const isValidEmail = (email) => {
+    const re = /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/;
+    return re.test(email);
+  };
+
+  const isValidPassword = (password) => {
+    const re = /(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}/;
+    return re.test(password);
+  };
+
+  const isValidName = (name) => {
+    const re = /^[A-Za-zÀ-ÖØ-öø-ÿ\s'-]{2,50}$/;
+    return re.test(name);
+  };
+
+  const isValidPhoneNumber = (phoneNumber) => {
+    const re = /^\+40\d{1,10}$/;
+    return re.test(phoneNumber);
+  };
+
+  const isValidPostalCode = (postalCode) => {
+    const re = /^\d{6}$/;
+    return re.test(postalCode);
+  };
+
+  const validateLoginInputs = () => {
+    const emailValue = email.value.trim();
+    const passwordValue = password.value.trim();
+    let isValid = true;
+
+    if (emailValue === "") {
+      setError(email, "Email is required");
+      isValid = false;
+    } else if (!isValidEmail(emailValue)) {
+      setError(email, "Email address is invalid");
+      isValid = false;
+    } else {
+      setSuccess(email);
     }
-  });
-}
 
-if (passwordForm) {
-  passwordForm.addEventListener("submit", (e) => {
-    if (!validatePasswordInputs()) {
-      e.preventDefault();
+    if (passwordValue === "") {
+      setError(password, "Password is required");
+      isValid = false;
+    } else {
+      setSuccess(password);
     }
-  });
-}
 
-if (forgotPasswordForm) {
-  forgotPasswordForm.addEventListener("submit", (e) => {
-    if (!validateEmailInputs()) {
-      e.preventDefault();
+    return isValid;
+  };
+
+  const validateRegisterInputs = () => {
+    const emailValue = email.value;
+    const passwordValue = password.value;
+    const confirmPasswordValue = confirmPassword.value;
+    const firstNameValue = firstName.value;
+    const lastNameValue = lastName.value;
+    let isValid = true;
+
+    if (emailValue === "") {
+      setError(email, "Email is required");
+      isValid = false;
+    } else if (!isValidEmail(emailValue)) {
+      setError(email, "Email address is invalid");
+      isValid = false;
+    } else {
+      setSuccess(email);
     }
-  });
-}
 
-if (resetPasswordForm) {
-  resetPasswordForm.addEventListener("submit", (e) => {
-    if (!validateResetInputs()) {
-      e.preventDefault();
+    if (passwordValue === "") {
+      setError(password, "Password is required");
+      isValid = false;
+    } else if (passwordValue.length < 8) {
+      setError(password, "Password must be atleast 8 characters long");
+      isValid = false;
+    } else if (!isValidPassword(passwordValue)) {
+      setError(password, "Password must contain an uppercase and a number");
+      isValid = false;
+    } else {
+      setSuccess(password);
     }
-  });
-}
 
-if (addressForm) {
-  addressForm.addEventListener("submit", (e) => {
-    if (!validateAddressInputs()) {
-      e.preventDefault();
+    if (confirmPasswordValue === "") {
+      setError(confirmPassword, "Confirmation password is required");
+      isValid = false;
+    } else if (passwordValue !== confirmPasswordValue) {
+      setError(
+        confirmPassword,
+        "Confirmation password does not match password"
+      );
+      isValid = false;
+    } else {
+      setSuccess(confirmPassword);
     }
-  });
-}
 
-const setError = (element, message) => {
-  const inputControl = element.parentElement;
-  const errorDisplay = inputControl.querySelector(".error");
+    if (firstNameValue === "") {
+      setError(firstName, "First name is required");
+      isValid = false;
+    } else if (firstNameValue.length < 2) {
+      setError(firstName, "First name needs to be at least 2 characters long.");
+      isValid = false;
+    } else if (!isValidName(firstNameValue)) {
+      setError(firstName, "Names cannot contain numbers or symbols");
+      isValid = false;
+    } else {
+      setSuccess(firstName);
+    }
 
-  errorDisplay.innerText = message;
+    if (lastNameValue === "") {
+      setError(lastName, "Last name is required");
+      isValid = false;
+    } else if (lastNameValue.length < 2) {
+      setError(lastName, "Last name needs to be at least 2 characters long.");
+      isValid = false;
+    } else if (!isValidName(lastNameValue)) {
+      setError(firstName, "Names cannot contain numbers or symbols");
+      isValid = false;
+    } else {
+      setSuccess(lastName);
+    }
 
-  inputControl.classList.add("error");
-  inputControl.classList.remove("success");
-};
+    return isValid;
+  };
 
-const setSuccess = (element) => {
-  const inputControl = element.parentElement;
-  const errorDisplay = inputControl.querySelector(".error");
+  const validateAddressInputs = () => {
+    const firstNameValue = firstName.value.trim();
+    const lastNameValue = lastName.value.trim();
+    const addressValue = address.value.trim();
+    const cityValue = city.value.trim();
+    const countyValue = county.value.trim();
+    const phoneNumberValue = phoneNumber.value.trim();
+    const postalCodeValue = postalCode.value.trim();
+    let isValid = true;
 
-  if (errorDisplay.textContent !== "") {
-    errorDisplay.innerText = "";
-    inputControl.classList.remove("error");
-  }
-};
+    if (firstNameValue === "") {
+      setError(firstName, "First name is required");
+      isValid = false;
+    } else if (firstNameValue.length < 2) {
+      setError(firstName, "First name needs to be at least 2 characters long.");
+      isValid = false;
+    } else if (!isValidName(firstNameValue)) {
+      setError(firstName, "Names cannot contain numbers or symbols");
+      isValid = false;
+    } else {
+      setSuccess(firstName);
+    }
 
-const isValidEmail = (email) => {
-  const re = /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/;
-  return re.test(email);
-};
+    if (lastNameValue === "") {
+      setError(lastName, "Last name is required");
+      isValid = false;
+    } else if (lastNameValue.length < 2) {
+      setError(lastName, "Last name needs to be at least 2 characters long.");
+      isValid = false;
+    } else if (!isValidName(lastNameValue)) {
+      setError(lastName, "Names cannot contain numbers or symbols");
+      isValid = false;
+    } else {
+      setSuccess(lastName);
+    }
 
-const isValidPassword = (password) => {
-  const re = /(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}/;
-  return re.test(password);
-};
+    if (addressValue === "") {
+      setError(address, "Address is required");
+      isValid = false;
+    } else if (addressValue.length < 2) {
+      setError(address, "Address needs to be longer than 2 characters");
+      isValid = false;
+    } else if (addressValue > 50) {
+      setError(address, "Address cannot be longer than 50 characters");
+      isValid = false;
+    } else {
+      setSuccess(address);
+    }
 
-const isValidName = (name) => {
-  const re = /^[A-Za-zÀ-ÖØ-öø-ÿ\s'-]{2,50}$/;
-  return re.test(name);
-};
+    if (cityValue === "") {
+      setError(city, "City name is required");
+      isValid = false;
+    } else if (cityValue.length < 2) {
+      setError(city, "City name needs to be longer than 2 characters");
+      isValid = false;
+    } else if (cityValue.length > 32) {
+      setError(city, "City name cannot exceed 32 characters");
+      isValid = false;
+    } else {
+      setSuccess(city);
+    }
 
-const isValidPhoneNumber = (phoneNumber) => {
-  const re = /^\+40\d{1,10}$/;
-  return re.test(phoneNumber);
-};
+    if (countyValue === "") {
+      setError(county, "County name is required");
+      isValid = false;
+    } else if (countyValue.length < 2) {
+      setError(county, "County name needs to be longer than 2 characters");
+      isValid = false;
+    } else if (countyValue.length > 32) {
+      setError(county, "County name cannot exceed 32 characters");
+      isValid = false;
+    } else {
+      setSuccess(county);
+    }
 
-const isValidPostalCode = (postalCode) => {
-  const re = /^\d{6}$/;
-  return re.test(postalCode);
-};
+    if (phoneNumberValue === "") {
+      setError(phoneNumber, "Valid mobile phone number is required");
+      isValid = false;
+    } else if (!isValidPhoneNumber(phoneNumberValue)) {
+      setError(
+        phoneNumber,
+        "Phone number must start with +40 and be a valid Romanian mobile phone number"
+      );
+      isValid = false;
+    } else {
+      setSuccess(phoneNumber);
+    }
 
-const validateLoginInputs = () => {
-  const emailValue = email.value.trim();
-  const passwordValue = password.value.trim();
-  let isValid = true;
+    if (postalCodeValue === "") {
+      setError(postalCode, "Postal code is required");
+      isValid = false;
+    } else if (!isValidPostalCode(postalCodeValue)) {
+      setError(postalCode, "Valid 6-character postal code is required");
+      isValid = false;
+    } else {
+      setSuccess(postalCode);
+    }
 
-  if (emailValue === "") {
-    setError(email, "Email is required");
-    isValid = false;
-  } else if (!isValidEmail(emailValue)) {
-    setError(email, "Email address is invalid");
-    isValid = false;
-  } else {
-    setSuccess(email);
-  }
+    return isValid;
+  };
 
-  if (passwordValue === "") {
-    setError(password, "Password is required");
-    isValid = false;
-  } else {
-    setSuccess(password);
-  }
+  const validatePasswordInputs = () => {
+    const passwordValue = password.value;
+    const confirmPasswordValue = confirmPassword.value;
+    let isValid = true;
 
-  return isValid;
-};
+    if (passwordValue === "") {
+      setError(password, "Password is required");
+      isValid = false;
+    } else if (passwordValue.length < 8) {
+      setError(password, "Password must be atleast 8 characters long");
+      isValid = false;
+    } else if (!isValidPassword(passwordValue)) {
+      setError(password, "Password must contain an uppercase and a number");
+      isValid = false;
+    } else {
+      setSuccess(password);
+    }
 
-const validateRegisterInputs = () => {
-  const emailValue = email.value;
-  const passwordValue = password.value;
-  const confirmPasswordValue = confirmPassword.value;
-  const firstNameValue = firstName.value;
-  const lastNameValue = lastName.value;
-  let isValid = true;
+    if (confirmPasswordValue === "") {
+      setError(confirmPassword, "Confirmation password is required");
+      isValid = false;
+    } else if (passwordValue !== confirmPasswordValue) {
+      setError(
+        confirmPassword,
+        "Confirmation password does not match password"
+      );
+      isValid = false;
+    } else {
+      setSuccess(confirmPassword);
+    }
 
-  if (emailValue === "") {
-    setError(email, "Email is required");
-    isValid = false;
-  } else if (!isValidEmail(emailValue)) {
-    setError(email, "Email address is invalid");
-    isValid = false;
-  } else {
-    setSuccess(email);
-  }
+    return isValid;
+  };
 
-  if (passwordValue === "") {
-    setError(password, "Password is required");
-    isValid = false;
-  } else if (passwordValue.length < 8) {
-    setError(password, "Password must be atleast 8 characters long");
-    isValid = false;
-  } else if (!isValidPassword(passwordValue)) {
-    setError(password, "Password must contain an uppercase and a number");
-    isValid = false;
-  } else {
-    setSuccess(password);
-  }
+  const validateEmailInputs = () => {
+    const emailValue = email.value;
+    let isValid = true;
+    if (emailValue === "") {
+      setError(email, "Email is required");
+      isValid = false;
+    } else if (!isValidEmail(emailValue)) {
+      setError(email, "Email address is invalid");
+      isValid = false;
+    } else {
+      setSuccess(email);
+    }
 
-  if (confirmPasswordValue === "") {
-    setError(confirmPassword, "Confirmation password is required");
-    isValid = false;
-  } else if (passwordValue !== confirmPasswordValue) {
-    setError(confirmPassword, "Confirmation password does not match password");
-    isValid = false;
-  } else {
-    setSuccess(confirmPassword);
-  }
+    return isValid;
+  };
 
-  if (firstNameValue === "") {
-    setError(firstName, "First name is required");
-    isValid = false;
-  } else if (firstNameValue.length < 2) {
-    setError(firstName, "First name needs to be at least 2 characters long.");
-    isValid = false;
-  } else if (!isValidName(firstNameValue)) {
-    setError(firstName, "Names cannot contain numbers or symbols");
-    isValid = false;
-  } else {
-    setSuccess(firstName);
-  }
+  const validateResetInputs = () => {
+    const passwordValue = password.value;
+    const confirmPasswordValue = confirmPassword.value;
+    let isValid = true;
 
-  if (lastNameValue === "") {
-    setError(lastName, "Last name is required");
-    isValid = false;
-  } else if (lastNameValue.length < 2) {
-    setError(lastName, "Last name needs to be at least 2 characters long.");
-    isValid = false;
-  } else if (!isValidName(lastNameValue)) {
-    setError(firstName, "Names cannot contain numbers or symbols");
-    isValid = false;
-  } else {
-    setSuccess(lastName);
-  }
+    if (passwordValue === "") {
+      setError(password, "Password is required");
+      isValid = false;
+    } else if (passwordValue.length < 8) {
+      setError(password, "Password must be atleast 8 characters long");
+      isValid = false;
+    } else if (!isValidPassword(passwordValue)) {
+      setError(password, "Password must contain an uppercase and a number");
+      isValid = false;
+    } else {
+      setSuccess(password);
+    }
 
-  return isValid;
-};
+    if (confirmPasswordValue === "") {
+      setError(confirmPassword, "Confirmation password is required");
+      isValid = false;
+    } else if (passwordValue !== confirmPasswordValue) {
+      setError(
+        confirmPassword,
+        "Confirmation password does not match password"
+      );
+      isValid = false;
+    } else {
+      setSuccess(confirmPassword);
+    }
 
-const validateAddressInputs = () => {
-  const firstNameValue = firstName.value.trim();
-  const lastNameValue = lastName.value.trim();
-  const addressValue = address.value.trim();
-  const cityValue = city.value.trim();
-  const countyValue = county.value.trim();
-  const phoneNumberValue = phoneNumber.value.trim();
-  const postalCodeValue = postalCode.value.trim();
-  let isValid = true;
-
-  if (firstNameValue === "") {
-    setError(firstName, "First name is required");
-    isValid = false;
-  } else if (firstNameValue.length < 2) {
-    setError(firstName, "First name needs to be at least 2 characters long.");
-    isValid = false;
-  } else if (!isValidName(firstNameValue)) {
-    setError(firstName, "Names cannot contain numbers or symbols");
-    isValid = false;
-  } else {
-    setSuccess(firstName);
-  }
-
-  if (lastNameValue === "") {
-    setError(lastName, "Last name is required");
-    isValid = false;
-  } else if (lastNameValue.length < 2) {
-    setError(lastName, "Last name needs to be at least 2 characters long.");
-    isValid = false;
-  } else if (!isValidName(lastNameValue)) {
-    setError(lastName, "Names cannot contain numbers or symbols");
-    isValid = false;
-  } else {
-    setSuccess(lastName);
-  }
-
-  if (addressValue === "") {
-    setError(address, "Address is required");
-    isValid = false;
-  } else if (addressValue.length < 2) {
-    setError(address, "Address needs to be longer than 2 characters");
-    isValid = false;
-  } else if (addressValue > 50) {
-    setError(address, "Address cannot be longer than 50 characters");
-    isValid = false;
-  } else {
-    setSuccess(address);
-  }
-
-  if (cityValue === "") {
-    setError(city, "City name is required");
-    isValid = false;
-  } else if (cityValue.length < 2) {
-    setError(city, "City name needs to be longer than 2 characters");
-    isValid = false;
-  } else if (cityValue.length > 32) {
-    setError(city, "City name cannot exceed 32 characters");
-    isValid = false;
-  } else {
-    setSuccess(city);
-  }
-
-  if (countyValue === "") {
-    setError(county, "County name is required");
-    isValid = false;
-  } else if (countyValue.length < 2) {
-    setError(county, "County name needs to be longer than 2 characters");
-    isValid = false;
-  } else if (countyValue.length > 32) {
-    setError(county, "County name cannot exceed 32 characters");
-    isValid = false;
-  } else {
-    setSuccess(county);
-  }
-
-  if (phoneNumberValue === "") {
-    setError(phoneNumber, "Valid mobile phone number is required");
-    isValid = false;
-  } else if (!isValidPhoneNumber(phoneNumberValue)) {
-    setError(
-      phoneNumber,
-      "Phone number must start with +40 and be a valid Romanian mobile phone number"
-    );
-    isValid = false;
-  } else {
-    setSuccess(phoneNumber);
-  }
-
-  if (postalCodeValue === "") {
-    setError(postalCode, "Postal code is required");
-    isValid = false;
-  } else if (!isValidPostalCode(postalCodeValue)) {
-    setError(postalCode, "Valid 6-character postal code is required");
-    isValid = false;
-  } else {
-    setSuccess(postalCode);
-  }
-
-  return isValid;
-};
-
-const validatePasswordInputs = () => {
-  const passwordValue = password.value;
-  const confirmPasswordValue = confirmPassword.value;
-  let isValid = true;
-
-  if (passwordValue === "") {
-    setError(password, "Password is required");
-    isValid = false;
-  } else if (passwordValue.length < 8) {
-    setError(password, "Password must be atleast 8 characters long");
-    isValid = false;
-  } else if (!isValidPassword(passwordValue)) {
-    setError(password, "Password must contain an uppercase and a number");
-    isValid = false;
-  } else {
-    setSuccess(password);
-  }
-
-  if (confirmPasswordValue === "") {
-    setError(confirmPassword, "Confirmation password is required");
-    isValid = false;
-  } else if (passwordValue !== confirmPasswordValue) {
-    setError(confirmPassword, "Confirmation password does not match password");
-    isValid = false;
-  } else {
-    setSuccess(confirmPassword);
-  }
-
-  return isValid;
-};
-
-const validateEmailInputs = () => {
-  const emailValue = email.value;
-  let isValid = true;
-  if (emailValue === "") {
-    setError(email, "Email is required");
-    isValid = false;
-  } else if (!isValidEmail(emailValue)) {
-    setError(email, "Email address is invalid");
-    isValid = false;
-  } else {
-    setSuccess(email);
-  }
-
-  return isValid;
-};
-
-const validateResetInputs = () => {
-  const passwordValue = password.value;
-  const confirmPasswordValue = confirmPassword.value;
-  let isValid = true;
-
-  if (passwordValue === "") {
-    setError(password, "Password is required");
-    isValid = false;
-  } else if (passwordValue.length < 8) {
-    setError(password, "Password must be atleast 8 characters long");
-    isValid = false;
-  } else if (!isValidPassword(passwordValue)) {
-    setError(password, "Password must contain an uppercase and a number");
-    isValid = false;
-  } else {
-    setSuccess(password);
-  }
-
-  if (confirmPasswordValue === "") {
-    setError(confirmPassword, "Confirmation password is required");
-    isValid = false;
-  } else if (passwordValue !== confirmPasswordValue) {
-    setError(confirmPassword, "Confirmation password does not match password");
-    isValid = false;
-  } else {
-    setSuccess(confirmPassword);
-  }
-
-  return isValid;
-};
+    return isValid;
+  };
+});

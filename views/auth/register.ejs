@@ -14,32 +14,24 @@
         <div class="block-title"><strong>Account information</strong></div>
         <fieldset class="form-fieldset">
           <div class="input-control">
-            <label for="username" class="form-label">Email:</label>
+            <label for="email" class="form-label">Email:</label>
             <input id="email" type="email" name="email" class="form-input" />
             <div class="error"></div>
           </div>
 
-          <div class="input-control">
-            <label for="password" class="form-label">Password</label>
-            <input
-              id="password"
-              type="password"
-              name="password"
-              class="form-input"
-            />
-            <div class="error"></div>
-          </div>
+          <%- include ("../partials/password-field", {
+                    id: "password",
+                    name: "password",
+                    label: "Password",
+                    required: true
+                }) %>
 
-          <div class="input-control">
-            <label for="cpassword" class="form-label">Confirm Password</label>
-            <input
-              id="cpassword"
-              type="password"
-              name="cpassword"
-              class="form-input"
-            />
-            <div class="error"></div>
-          </div>
+          <%- include ("../partials/password-field", {
+                    id: "cpassword",
+                    name: "cpassword",
+                    label: "Confirm Password",
+                    required: true
+                }) %>
         </fieldset>
       </div>
 
