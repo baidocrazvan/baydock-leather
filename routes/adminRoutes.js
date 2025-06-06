@@ -5,6 +5,7 @@ import { getProductById } from "../services/productService.js";
 import { getOrderDetails, getAllOrders } from "../services/orderService.js";
 import { getAllUsers, getUserDetails } from "../services/userService.js";
 import { validateAdminRegister } from "../middleware/validationMiddleware.js";
+import { sendAdminWelcomeEmail } from "../services/emailService.js";
 import bcrypt from "bcryptjs";
 
 const saltRounds = 10;
@@ -185,32 +186,41 @@ router.post(
         return res.redirect("/admin/create");
       } else {
         // Check if email already exists
-        const checkResult = await db.query(
-          `SELECT * FROM users WHERE email = $1`,
+        const existingUser = await db.query(
+          `SELECT id FROM users WHERE email = $1`,
           [email]
         );
-        if (checkResult.rows.length > 0) {
-          req.flash("error", "Email already exists. Please log in.");
-          return res.redirect("/admin/create");
-        } else {
-          // Hash password using bcrypt
-          bcrypt.hash(password, saltRounds, async (err, hash) => {
-            if (err) {
-              console.error("Error hashing password:", err);
-              req.flash("Error hashing password. Try registering again later");
-              return res.redirect("/admin/create");
-            } else {
-              await db.query(
-                `INSERT INTO users (first_name, last_name, email, password, role) VALUES ($1, $2, $3, $4, $5)`,
-                [firstName, lastName, email, hash, role]
-              );
 
-              req.flash("success", "Registration successful.");
-              return res.redirect("/admin/dashboard");
-            }
-          });
+        if (existingUser.rows.length > 0) {
+          req.flash("error", "Email already registered.");
+          return res.redirect("/admin/create");
         }
+
+        // Create new admin (immediately confirmed)
+        await db.query(
+          `INSERT INTO users (
+          first_name, 
+          last_name, 
+          email, 
+          password, 
+          role,
+          is_confirmed
+        ) VALUES ($1, $2, $3, $4, $5, TRUE)`,
+          [
+            firstName,
+            lastName,
+            email,
+            await bcrypt.hash(password, saltRounds),
+            role,
+          ]
+        );
       }
+
+      // Send notification email
+      await sendAdminWelcomeEmail(email, firstName);
+
+      req.flash("success", "Admin account created successfully");
+      return res.redirect("/admin/dashboard");
     } catch (err) {
       console.error("Registration error:", err);
       req.flash("error", "Registration failed.");

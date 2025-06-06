@@ -8,6 +8,10 @@ const resetTemplate = fs.readFileSync(
   "views/emails/password-reset.ejs",
   "utf-8"
 );
+const adminConfirmTemplate = fs.readFileSync(
+  "views/emails/admin-confirm.ejs",
+  "utf-8"
+);
 
 // Create transporter
 let transporter;
@@ -31,17 +35,15 @@ export function generateConfirmationToken() {
 
 export async function sendConfirmationEmail(email, token, req) {
   const confirmationLink = `${process.env.BASE_URL}/auth/confirm?token=${token}`;
-  console.log("START sendConfirmationEmail", process.env.NODE_ENV);
-  console.log("NODE_ENV value is: >" + process.env.NODE_ENV + "<");
+
   if (process.env.NODE_ENV === "production") {
-    console.log("IN PRODUCTION IF BLOCK");
     req.flash(
       "info",
       `<p class="demo">Demo: Confirm your account <a class="confirmation-link" href=${confirmationLink}>here</a></p>`
     );
     return;
   }
-  console.log("AFTER PRODUCTION IF BLOCK");
+
   try {
     await transporter.sendMail({
       from: process.env.EMAIL_FROM,
@@ -74,4 +76,15 @@ export async function sendResetEmail(email, resetLink, req) {
     console.error("Password reset email error:", err);
     throw new Error("Failed to send reset email");
   }
+}
+
+export async function sendAdminWelcomeEmail(email, name) {
+  const loginLink = `${process.env.BASE_URL}/auth/login`;
+  const mailOptions = {
+    from: process.env.EMAIL_FROM,
+    to: email,
+    subject: "Your Admin Account Has Been Created",
+    html: ejs.render(adminConfirmTemplate, { name, loginLink }),
+  };
+  await transporter.sendMail(mailOptions);
 }
