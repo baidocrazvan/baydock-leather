@@ -1,22 +1,24 @@
 @use "../util" as u;
 
 html {
-    box-sizing: border-box;
-    font-size: 100%;
+  box-sizing: border-box;
+  font-size: 100%;
 }
 
-*, *::before, *::after {
-    box-sizing: inherit;
+*,
+*::before,
+*::after {
+  box-sizing: inherit;
 }
 
 body {
-    margin: 0;
-    padding: 0;
-    background-color: var(--background-color);
-    color: var(--text-color);
+  margin: 0;
+  padding: 0;
+  background-color: var(--background-color);
+  color: var(--text-color);
 }
 
 main {
-    padding: 0 0 u.rem(40);
-    min-height: 85vh;
+  padding: 0 0 u.rem(40);
+  min-height: 85vh;
 }

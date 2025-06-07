@@ -1,11 +1,13 @@
 @use "../util/" as u;
 
-.add-products-container, .modify-products-container, .product-activation {
+.add-products-container,
+.modify-products-container,
+.product-activation {
   max-width: 90%;
   margin: 0 auto;
   background: var(--background-color);
   border-radius: u.rem(8);
-  
+
   h1 {
     font-size: 1rem;
     margin-bottom: 1.5rem;
@@ -19,9 +21,9 @@
     flex-direction: column;
     gap: 0.5rem;
     position: relative;
-    
+
     &::before {
-      content: '';
+      content: "";
       position: absolute;
       top: -1.5rem;
       left: 0;
@@ -39,25 +41,25 @@
     border-radius: u.rem(4);
     transition: all 0.2s ease;
     font-size: 1rem;
-    
+
     &:focus {
       outline: none;
       border-color: var(--text-color);
       box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
     }
-    
+
     &[type="file"] {
       padding: 0.5rem;
-      
+
       &::file-selector-button {
         padding: 0.5rem 1rem;
-        background:  lighten(#121212, 20%);
+        background: lighten(#121212, 20%);
         color: var(--background-color);
         border: none;
         border-radius: u.rem(4);
         cursor: pointer;
         transition: background 0.2s;
-        
+
         &:hover {
           background: var(--text-color);
         }
@@ -91,26 +93,27 @@
 
 .product-activation {
   form {
-      &::before {
+    &::before {
       display: none;
     }
   }
-  
 }
 
 // Tablet styles (min-width: 640px)
 @media (min-width: 640px) {
-  .add-products-container, .modify-products-container, .product-activation {
+  .add-products-container,
+  .modify-products-container,
+  .product-activation {
     margin: 1.5rem auto;
-    
+
     h1 {
       font-size: 1.7rem;
     }
-    
+
     form {
       gap: 1.25rem;
     }
-    
+
     input {
       padding: 0.85rem;
     }
@@ -119,26 +122,28 @@
 
 // Desktop styles (min-width: 1024px)
 @media (min-width: 1024px) {
-  .add-products-container, .modify-products-container, .product-activation {
+  .add-products-container,
+  .modify-products-container,
+  .product-activation {
     max-width: 800px;
     margin: 2rem auto;
-    
+
     h1 {
       font-size: 1.8rem;
       margin-bottom: 2rem;
     }
-    
+
     form {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
       gap: 1.5rem;
-      
+
       // Full-width elements
-      > *:nth-last-child(-n+3) {
+      > *:nth-last-child(-n + 3) {
         grid-column: 1 / -1;
       }
     }
-    
+
     button[type="submit"] {
       margin-top: 0;
     }
@@ -147,12 +152,15 @@
 
 // Small mobile adjustment (max-width: 360px)
 @media (max-width: 360px) {
-  .add-products-container, .modify-products-container, .product-activation {
+  .add-products-container,
+  .modify-products-container,
+  .product-activation {
     h1 {
       font-size: 1.3rem;
     }
-    
-    input, button {
+
+    input,
+    button {
       padding: 0.65rem;
     }
   }

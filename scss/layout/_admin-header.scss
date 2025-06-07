@@ -3,60 +3,58 @@
 /* Main header */
 
 #admin-header {
-	background-color: var(--background-color);
-	border-bottom: 1px solid var(--line-color);
-	height: var(--header-height);
-	position: fixed;
-	top: 0;
-	left: 0;
-	right: 0;
-	z-index: 1000;
+  background-color: var(--background-color);
+  border-bottom: 1px solid var(--line-color);
+  height: var(--header-height);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+}
+
+.admin-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 100%;
+  padding: 0 1.5rem;
+  position: relative;
+
+  &__toggle {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem;
+    position: absolute;
+    left: 1.5rem;
+
+    svg {
+      width: 1.5rem;
+      height: 1.5rem;
+      fill: var(--text-color);
+    }
+
+    #toggle-icon-close {
+      display: none;
+    }
   }
-  
-  .admin-nav {
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	height: 100%;
-	padding: 0 1.5rem;
-	position: relative;
-	
-	&__toggle {
-	  background: none;
-	  border: none;
-	  cursor: pointer;
-	  padding: 0.5rem;
-	  position: absolute;
-      left: 1.5rem;
-	  
-	  svg {
-		width: 1.5rem;
-		height: 1.5rem;
-		fill: var(--text-color);
-	  }
-	  
-	  #toggle-icon-close {
-		display: none;
-	  }
-	}
-	
-	&__brand {
-	  font-weight: bold;
-	  color: var(--text-color);
-	  position: absolute;
-      left: 50%;
-      transform: translateX(-50%);
-	  
-	  a {
-		color: inherit;
-		text-decoration: none;
-	  }
-	}
-	
-	
+
+  &__brand {
+    font-weight: bold;
+    color: var(--text-color);
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
   }
-  
-  #admin-sidebar {
+}
+
+#admin-sidebar {
   position: fixed;
   top: var(--header-height, 60px);
   left: 0;
@@ -71,13 +69,13 @@
 
 .admin-sidebar__nav {
   padding: 1rem 0;
-  
+
   ul {
     list-style: none;
     padding: 0;
     margin: 0;
   }
-  
+
   li {
     a {
       display: block;
@@ -85,12 +83,12 @@
       color: var(--grey-text-color, #666);
       text-decoration: none;
       transition: all 0.2s;
-      
+
       &:hover {
         background-color: var(--body-fill-color, #f5f5f5);
         color: var(--text-color, #333);
       }
-      
+
       &.active {
         background-color: var(--body-fill-color, #f5f5f5);
         color: var(--text-color, #333);
@@ -99,67 +97,67 @@
     }
   }
 }
-  
-  #admin-overlay {
-	position: fixed;
-	top: var(--header-height);
-	left: 0;
-	right: 0;
-	bottom: 0;
-	background-color: rgba(0,0,0,0.5);
-	opacity: 0;
-	visibility: hidden;
-	transition: all 0.3s;
-	z-index: 998;
-  }
-  
-  body.admin-sidebar-open {
-	#admin-sidebar {
-	  transform: translateX(0);
-	}
-	
-	#admin-overlay {
-	  opacity: 1;
-	  visibility: visible;
-	}
-	
-	#toggle-icon-menu {
-	  display: none;
-	}
-	
-	#toggle-icon-close {
-	  display: block;
-	}
-  }
-  
-  // Main content adjustment for admin pages
-  .admin-main {
-	margin-top: var(--header-height);
-	padding: 1.5rem;
-	
-	@media (min-width: 992px) {
-	  margin-left: 250px;
-	}
-  }
-  
-  @media (min-width: 992px) {
-	#admin-sidebar {
-	  transform: translateX(0);
-	}
 
-	.admin-nav {
-		&__brand {
-			left: calc(50% + 125px); // 50% + half of sidebar width
-    		transform: translateX(-50%);
-			margin: 0;
-		}
-	  }
-	
-	#admin-overlay {
-	  display: none;
-	}
-	
-	.admin-nav__toggle {
-	  display: none;
-	}
+#admin-overlay {
+  position: fixed;
+  top: var(--header-height);
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s;
+  z-index: 998;
+}
+
+body.admin-sidebar-open {
+  #admin-sidebar {
+    transform: translateX(0);
   }
+
+  #admin-overlay {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  #toggle-icon-menu {
+    display: none;
+  }
+
+  #toggle-icon-close {
+    display: block;
+  }
+}
+
+// Main content adjustment for admin pages
+.admin-main {
+  margin-top: var(--header-height);
+  padding: 1.5rem;
+
+  @media (min-width: 992px) {
+    margin-left: 250px;
+  }
+}
+
+@media (min-width: 992px) {
+  #admin-sidebar {
+    transform: translateX(0);
+  }
+
+  .admin-nav {
+    &__brand {
+      left: calc(50% + 125px); // 50% + half of sidebar width
+      transform: translateX(-50%);
+      margin: 0;
+    }
+  }
+
+  #admin-overlay {
+    display: none;
+  }
+
+  .admin-nav__toggle {
+    display: none;
+  }
+}

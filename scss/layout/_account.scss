@@ -44,7 +44,6 @@ $error-color: #ff3333;
     border-radius: u.rem(12);
     overflow: hidden;
 
-
     .card-header {
       padding: 1.5rem 1rem;
       display: flex;
@@ -71,12 +70,12 @@ $error-color: #ff3333;
       }
 
       .manage-btn {
-      display: inline-block;
-      padding: 0.5rem 1rem;
-      border-radius: u.rem(6);
-      text-decoration: none;
-      font-size: 0.9rem;
-      transition: 0.3s ease;
+        display: inline-block;
+        padding: 0.5rem 1rem;
+        border-radius: u.rem(6);
+        text-decoration: none;
+        font-size: 0.9rem;
+        transition: 0.3s ease;
       }
     }
 
@@ -88,36 +87,37 @@ $error-color: #ff3333;
   // Account Info Card
   .account-info {
     .card-body {
-        padding: 1rem;
-        .button-group {
-          display: flex;
-          gap: 0; 
-          margin-top: 1rem;
-          flex-wrap: wrap; 
-          gap: 1rem;
+      padding: 1rem;
+      .button-group {
+        display: flex;
+        gap: 0;
+        margin-top: 1rem;
+        flex-wrap: wrap;
+        gap: 1rem;
 
-          @media (max-width: u.rem(499)) { 
+        @media (max-width: u.rem(499)) {
           justify-content: center;
         }
-    }
-
-    .info-item {
-      margin-bottom: 1rem;
-
-      .info-label {
-        display: block;
-        font-weight: 500;
-        color: var(--grey-text-color);
-        font-size: 0.9rem;
-        margin-bottom: 0.2rem;
       }
 
-      .info-value {
-        font-size: 1rem;
-      }
-    }
+      .info-item {
+        margin-bottom: 1rem;
 
-      .edit-btn, .logout-form {
+        .info-label {
+          display: block;
+          font-weight: 500;
+          color: var(--grey-text-color);
+          font-size: 0.9rem;
+          margin-bottom: 0.2rem;
+        }
+
+        .info-value {
+          font-size: 1rem;
+        }
+      }
+
+      .edit-btn,
+      .logout-form {
         margin-top: 0;
       }
 
@@ -136,7 +136,6 @@ $error-color: #ff3333;
         }
       }
 
-
       .logout-btn {
         display: inline-flex;
         margin-top: 1rem;
@@ -150,12 +149,12 @@ $error-color: #ff3333;
         font-size: 0.9rem;
         transition: 0.3s ease;
         cursor: pointer;
-        
+
         &:hover {
           background: rgba(#ff3333, 0.1);
         }
       }
-    }   
+    }
   }
 
   // Addresses Section
@@ -164,27 +163,29 @@ $error-color: #ff3333;
       display: grid;
       gap: 1.5rem;
       grid-template-columns: 1fr;
-  
+
       @media (min-width: u.rem(700)) {
         grid-template-columns: 1fr 1fr;
       }
     }
-  
+
     .address-card {
       background: var(--background-color);
       border-radius: u.rem(8);
       box-shadow: 0 u.rem(4) u.rem(12) rgba(0, 0, 0, 0.05);
       overflow: hidden;
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      transition:
+        transform 0.3s ease,
+        box-shadow 0.3s ease;
       border: 1px solid var(--line-color);
-  
+
       &.default {
         border-left: u.rem(4) solid var(--text-color);
       }
-  
+
       .address-content {
         padding: 1.5rem;
-  
+
         .address-details {
           h3 {
             display: flex;
@@ -194,25 +195,25 @@ $error-color: #ff3333;
             margin-bottom: 0.75rem;
             color: var(--grey-text-color);
           }
-  
+
           p {
             margin: 0.25rem 0;
             line-height: 1.5;
             font-size: 0.9rem;
-  
+
             &.phone {
               margin-top: 0.75rem;
               padding-top: 0.75rem;
               border-top: u.rem(1) solid var(--line-color);
             }
           }
-  
+
           .no-address {
             color: var(--grey-text-color);
             font-style: italic;
           }
         }
-  
+
         .default-badge {
           display: inline-flex;
           align-items: center;
@@ -226,13 +227,13 @@ $error-color: #ff3333;
           font-weight: 500;
         }
       }
-  
+
       .address-actions {
         display: flex;
         padding: 1rem;
         border-top: u.rem(1) solid var(--line-color);
         background: #f8f9fa;
-  
+
         .add-btn {
           display: inline-block;
           padding: 0.5rem 1rem;
@@ -255,7 +256,7 @@ $error-color: #ff3333;
       overflow-x: auto;
 
       @media (max-width: u.rem(502)) {
-      overflow-x: visible;
+        overflow-x: visible;
       }
     }
 
@@ -265,17 +266,29 @@ $error-color: #ff3333;
       font-size: 0.9rem;
 
       @media (min-width: u.rem(503)) {
-        th, td {
+        th,
+        td {
           text-align: center;
-          &:nth-child(1) { width: 15%; }  /* Order-ID column */
-          &:nth-child(2) { width: 25%; } /* Date column */
-          &:nth-child(3) { width: 20%; } /* Status column */ 
-          &:nth-child(4) { width: 20%; } /* Total column */
-          &:nth-child(5) { width: 15%; } /* Actions column */ 
+          &:nth-child(1) {
+            width: 15%;
+          } /* Order-ID column */
+          &:nth-child(2) {
+            width: 25%;
+          } /* Date column */
+          &:nth-child(3) {
+            width: 20%;
+          } /* Status column */
+          &:nth-child(4) {
+            width: 20%;
+          } /* Total column */
+          &:nth-child(5) {
+            width: 15%;
+          } /* Actions column */
         }
       }
 
-      th, td {
+      th,
+      td {
         padding: 1rem;
         border-bottom: u.rem(1) solid var(--line-color);
       }
@@ -290,60 +303,61 @@ $error-color: #ff3333;
         background: rgba(var(--text-color), 0.03);
       }
 
-    // Card layout table
-    @media (max-width: u.rem(502)) {
-      display: block;
-
-      td {
-        padding: 0.75rem 0;
-        font-size: 0.85rem;
-
-        &::before {
-          font-size: 0.85rem;
-        }
-      }
-      
-      thead {
-        display: none;
-      }
-      
-      tbody, tr, td {
+      // Card layout table
+      @media (max-width: u.rem(502)) {
         display: block;
-        width: 100%;
-      }
-      
-      tr {
-        margin-bottom: 1.5rem;
-        border: u.rem(1) solid var(--line-color);
-        border-radius: u.rem(8);
-        padding: 1rem;
-        position: relative;
-        
-        &:last-child {
-          margin-bottom: 0;
-        }
-      }
-      
-      td {
-        padding: 0.5rem 0;
-        border-bottom: none;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        
-        &::before {
-          content: attr(data-label);
-          font-weight: 600;
-          color: var(--text-color);
-          margin-right: 1rem;
-        }
-        
-        &:last-child {
-          border-bottom: none;
-        }
-      }
-    }
 
+        td {
+          padding: 0.75rem 0;
+          font-size: 0.85rem;
+
+          &::before {
+            font-size: 0.85rem;
+          }
+        }
+
+        thead {
+          display: none;
+        }
+
+        tbody,
+        tr,
+        td {
+          display: block;
+          width: 100%;
+        }
+
+        tr {
+          margin-bottom: 1.5rem;
+          border: u.rem(1) solid var(--line-color);
+          border-radius: u.rem(8);
+          padding: 1rem;
+          position: relative;
+
+          &:last-child {
+            margin-bottom: 0;
+          }
+        }
+
+        td {
+          padding: 0.5rem 0;
+          border-bottom: none;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+
+          &::before {
+            content: attr(data-label);
+            font-weight: 600;
+            color: var(--text-color);
+            margin-right: 1rem;
+          }
+
+          &:last-child {
+            border-bottom: none;
+          }
+        }
+      }
 
       .status-badge {
         display: inline-block;
@@ -352,7 +366,8 @@ $error-color: #ff3333;
         font-size: 0.8rem;
         font-weight: 500;
 
-        &.completed, &.delivered {
+        &.completed,
+        &.delivered {
           background: rgba($success-color, 0.1);
           color: $success-color;
         }
@@ -427,6 +442,5 @@ $error-color: #ff3333;
       display: flex;
       justify-content: center;
     }
-    
   }
 }

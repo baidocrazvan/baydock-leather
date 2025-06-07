@@ -31,7 +31,7 @@
   .role-badge {
     padding: 0.5rem 1rem;
     font-size: 0.9rem;
-}
+  }
 
   h2 {
     color: var(--text-color);
@@ -47,7 +47,7 @@
       color: var(--text-color);
       min-width: u.rem(120);
       display: inline-block;
-      font-weight:500
+      font-weight: 500;
     }
   }
 }
@@ -78,7 +78,7 @@
     border-bottom: 1px solid var(--line-color);
   }
 
-    .no-address {
+  .no-address {
     background: var(--background-color);
     padding: 2rem;
     border-radius: u.rem(8);
@@ -88,45 +88,47 @@
 }
 
 .address-card {
-    background: var(--background-color);
-    border-radius: u.rem(8);
-    box-shadow: 0 u.rem(4) u.rem(12) rgba(0, 0, 0, 0.05);
-    border: 1px solid var(--line-color);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  background: var(--background-color);
+  border-radius: u.rem(8);
+  box-shadow: 0 u.rem(4) u.rem(12) rgba(0, 0, 0, 0.05);
+  border: 1px solid var(--line-color);
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
 
-    &:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 u.rem(6) u.rem(16) rgba(0, 0, 0, 0.1);
-    }
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 u.rem(6) u.rem(16) rgba(0, 0, 0, 0.1);
+  }
 
-    &.default {
-      border-left: u.rem(4) solid var(--text-color);
-    }
+  &.default {
+    border-left: u.rem(4) solid var(--text-color);
+  }
 
-    .address-content {
-      padding: 1.5rem;
+  .address-content {
+    padding: 1.5rem;
 
-      .address-details {
-        h3 {
-          font-size: 1.1rem;
-          margin-bottom: 0.75rem;
-          color: var(--grey-text-color);
-        }
+    .address-details {
+      h3 {
+        font-size: 1.1rem;
+        margin-bottom: 0.75rem;
+        color: var(--grey-text-color);
+      }
 
-        p {
-          margin: 0.25rem 0;
-          line-height: 1.5;
-          font-size: 0.9rem;
+      p {
+        margin: 0.25rem 0;
+        line-height: 1.5;
+        font-size: 0.9rem;
 
-          &.phone {
-            margin-top: 0.75rem;
-            padding-top: 0.75rem;
-            border-top: u.rem(1) solid var(--line-color);
-          }
+        &.phone {
+          margin-top: 0.75rem;
+          padding-top: 0.75rem;
+          border-top: u.rem(1) solid var(--line-color);
         }
       }
     }
   }
+}
 
 .address-flags {
   margin-top: 1rem;
@@ -153,14 +155,27 @@
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 
   @media (min-width: u.rem(768)) {
-    th, td {
-        text-align: center;
-        &:nth-child(1) { width: 10%; }  /* ID column */
-        &:nth-child(2) { width: 15%; } /* Status column */
-        &:nth-child(3) { width: 30%; } /* Address column */
-        &:nth-child(4) { width: 20%; }/* Date column */ 
-        &:nth-child(5) { width: 15%; }/* Total column */ 
-        &:nth-child(6) { width: 10%; }/* Actions column */ 
+    th,
+    td {
+      text-align: center;
+      &:nth-child(1) {
+        width: 10%;
+      } /* ID column */
+      &:nth-child(2) {
+        width: 15%;
+      } /* Status column */
+      &:nth-child(3) {
+        width: 30%;
+      } /* Address column */
+      &:nth-child(4) {
+        width: 20%;
+      } /* Date column */
+      &:nth-child(5) {
+        width: 15%;
+      } /* Total column */
+      &:nth-child(6) {
+        width: 10%;
+      } /* Actions column */
     }
   }
 
@@ -203,19 +218,45 @@
   text-transform: capitalize;
   text-align: center;
   max-width: u.rem(100);
-  &-info { background: var(--text-color); color: white; }
-  &-active { background: #2e7d32; color: white;}
-  &-inactive { background: #dc3545; color: white; }
+  &-info {
+    background: var(--text-color);
+    color: white;
+  }
+  &-active {
+    background: #2e7d32;
+    color: white;
+  }
+  &-inactive {
+    background: #dc3545;
+    color: white;
+  }
 
   // Order status-specific colors
-  &-Pending { background: #FFB800; color: white; }
-  &-Processing { background: #2D7DD2; color: white; }
-  &-Shipped { background: #3A5EFF; color: white; }
-  &-Delivered { background: #00A854; color: white; }
-  &-Cancelled { background: #D93B4A; color: white; }
-  &-Refunded { background: #8A63E6; color: white;}
+  &-Pending {
+    background: #ffb800;
+    color: white;
+  }
+  &-Processing {
+    background: #2d7dd2;
+    color: white;
+  }
+  &-Shipped {
+    background: #3a5eff;
+    color: white;
+  }
+  &-Delivered {
+    background: #00a854;
+    color: white;
+  }
+  &-Cancelled {
+    background: #d93b4a;
+    color: white;
+  }
+  &-Refunded {
+    background: #8a63e6;
+    color: white;
+  }
 }
-
 
 .btn {
   display: inline-block;
@@ -231,9 +272,7 @@
     padding: 0.35rem 0.75rem;
     font-size: 0.875rem;
   }
-
 }
-
 
 @media (max-width: u.rem(768)) {
   .user-view-container {
@@ -256,42 +295,44 @@
         font-size: 0.85rem;
       }
     }
-    
+
     thead {
       display: none;
     }
-    
-    tbody, tr, td {
+
+    tbody,
+    tr,
+    td {
       display: block;
       width: 100%;
     }
-    
+
     tr {
       margin-bottom: 1.5rem;
       border: u.rem(1) solid var(--line-color);
       border-radius: u.rem(8);
       padding: 1rem;
       position: relative;
-      
+
       &:last-child {
         margin-bottom: 0;
       }
     }
-    
+
     td {
       padding: 0.5rem 0;
       border-bottom: none;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      
+
       &::before {
         content: attr(data-label);
         font-weight: 600;
         color: var(--text-color);
         margin-right: 1rem;
       }
-      
+
       &:last-child {
         border-bottom: none;
       }

@@ -1,70 +1,70 @@
 @use "../util/" as u;
 
 .checkbox-group {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    margin-top: 1rem;
-  }
-  
-  .checkbox-label {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    cursor: pointer;
-    font-size: 0.95rem;
-    color: var(--text-color);
-    user-select: none;
-    transition: color 0.3s ease;
-    position: relative;
-    padding-left: 1.75rem; // Space for checkbox
-  
-    &:hover {
-      color: var(--grey-text-color);
-    }
-  }
-  
-  .checkbox-input {
-    position: absolute;
-    left: 0;
-    width: 1.25rem;
-    height: 1.25rem;
-    margin: 0;
-    cursor: pointer;
-    appearance: none;
-    -webkit-appearance: none;
-    border: 1px solid var(--line-color);
-    border-radius: u.rem(4);
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  
-    &:checked {
-      background-color: var(--text-color);
-      border-color: var(--text-color);
-  
-      &::after {
-        content: "";
-        display: block;
-        width: 0.4rem;
-        height: 0.8rem;
-        border: solid var(--background-color);
-        border-width: 0 2px 2px 0;
-        transform: rotate(45deg);
-        margin-top: -2px;
-      }
-    }
-  
-    &:focus {
-      outline: 2px solid rgba(var(--text-color), 0.3);
-      outline-offset: 2px;
-    }
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 1rem;
+}
 
-    .default-note {
-      font-size: 0.85rem;
-      color: var(--text-color);
-      font-style: italic;
-      margin-top: 0.5rem;
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  cursor: pointer;
+  font-size: 0.95rem;
+  color: var(--text-color);
+  user-select: none;
+  transition: color 0.3s ease;
+  position: relative;
+  padding-left: 1.75rem; // Space for checkbox
+
+  &:hover {
+    color: var(--grey-text-color);
+  }
+}
+
+.checkbox-input {
+  position: absolute;
+  left: 0;
+  width: 1.25rem;
+  height: 1.25rem;
+  margin: 0;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  border: 1px solid var(--line-color);
+  border-radius: u.rem(4);
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:checked {
+    background-color: var(--text-color);
+    border-color: var(--text-color);
+
+    &::after {
+      content: "";
+      display: block;
+      width: 0.4rem;
+      height: 0.8rem;
+      border: solid var(--background-color);
+      border-width: 0 2px 2px 0;
+      transform: rotate(45deg);
+      margin-top: -2px;
     }
   }
+
+  &:focus {
+    outline: 2px solid rgba(var(--text-color), 0.3);
+    outline-offset: 2px;
+  }
+
+  .default-note {
+    font-size: 0.85rem;
+    color: var(--text-color);
+    font-style: italic;
+    margin-top: 0.5rem;
+  }
+}

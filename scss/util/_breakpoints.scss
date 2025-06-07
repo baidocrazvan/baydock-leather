@@ -6,20 +6,20 @@
 
 // breakpoints for min-width
 $breakpoints-up: (
-    "medium": f.em(600),
-    "large": f.em(900),
-    "xlarge": f.em(1440),
+  "medium": f.em(600),
+  "large": f.em(900),
+  "xlarge": f.em(1440),
 );
 
 @mixin breakpoint($size) {
-    @media (min-width: map-get($breakpoints-up, $size)){
-        @content;
-    }
+  @media (min-width: map-get($breakpoints-up, $size)) {
+    @content;
+  }
 }
 
 // breakpoints for max-widths 699.98px, 899.98px, 1439.98px
 $breakpoints-down: (
-    "small": f.em(599.98),
-    "medium": f.em(899.98),
-    "large": f.em(1439.98),
+  "small": f.em(599.98),
+  "medium": f.em(899.98),
+  "large": f.em(1439.98),
 );

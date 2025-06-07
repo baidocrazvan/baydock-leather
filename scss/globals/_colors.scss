@@ -1,20 +1,19 @@
 :root {
+  // Light theme (default)
+  --background-color: #ffffff;
+  --text-color: #121212;
+  --grey-text-color: rgb(53, 53, 53);
+  --icon-color: #666666;
+  --body-fill-color: hsl(0, 0%, 95%);
+  --header-height: 60px;
+  --line-color: #efe9e9;
 
-    // Light theme (default)
-    --background-color: #ffffff;
-    --text-color:#121212;
-    --grey-text-color:  rgb(53, 53, 53);
-    --icon-color: #666666;
-    --body-fill-color: hsl(0, 0%, 95%);
-    --header-height: 60px;
-    --line-color: #efe9e9;
-
-    // Dark theme variables
-    --dark-background-color: #121212;
-    --dark-text-color: #e0e0e0;
+  // Dark theme variables
+  --dark-background-color: #121212;
+  --dark-text-color: #e0e0e0;
 }
 
 :root[data-theme="dark"] {
-	--background-color: var(--dark-background-color);
-    --text-color: var(--dark-text-color)
+  --background-color: var(--dark-background-color);
+  --text-color: var(--dark-text-color);
 }

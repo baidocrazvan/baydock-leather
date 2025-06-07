@@ -50,8 +50,6 @@
         gap: 0.5rem;
         font-size: 1.3rem;
         color: var(--text-color);
-
-        
       }
     }
 
@@ -101,7 +99,9 @@
       border-radius: u.rem(8);
       box-shadow: 0 u.rem(4) u.rem(12) rgba(0, 0, 0, 0.05);
       overflow: hidden;
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      transition:
+        transform 0.3s ease,
+        box-shadow 0.3s ease;
       border: 1px solid var(--line-color);
 
       &:hover {
@@ -158,7 +158,8 @@
         border-top: u.rem(1) solid var(--line-color);
         background: #f8f9fa;
 
-        .edit-btn, .delete-btn {
+        .edit-btn,
+        .delete-btn {
           display: inline-flex;
           align-items: center;
           gap: 0.3rem;
@@ -212,7 +213,8 @@
         .address-actions {
           flex-direction: column;
 
-          a, button {
+          a,
+          button {
             width: 100%;
             justify-content: center;
           }

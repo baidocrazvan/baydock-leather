@@ -1,24 +1,24 @@
 @use "../util/" as u;
 
 a {
-    text-decoration: none;
-    color: var(--text-color)
+  text-decoration: none;
+  color: var(--text-color);
 }
 
 a:visited {
-    text-decoration: none;
-    color: var(--text-color);
+  text-decoration: none;
+  color: var(--text-color);
 }
 
 body {
-    font-family: "Poppins", sans-serif;
-    font-optical-sizing: auto;
-    font-weight: 400;
-    font-style: normal;
+  font-family: "Poppins", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
 }
 
 .btn-primary:visited,
 .btn-secondary:visited,
 .page-link.active:visited {
-    color: var(--background-color);
+  color: var(--background-color);
 }

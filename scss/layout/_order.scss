@@ -6,7 +6,6 @@
   margin: 0 auto;
   color: #333;
 
-  
   .order-header,
   .customer-info,
   .products-section,
@@ -15,10 +14,9 @@
     border-radius: u.rem(8);
     padding: 1.5rem;
     margin-bottom: 1.5rem;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
   }
 
-  
   .order-header {
     h2 {
       font-size: 1.8rem;
@@ -40,14 +38,13 @@
     }
   }
 
-  
   .address-card {
     margin-bottom: u.rem(30);
-    
+
     &:last-child {
       margin-bottom: 0;
     }
-    
+
     h3 {
       font-size: 1.2rem;
       margin-bottom: 1rem;
@@ -70,19 +67,31 @@
     width: 100%;
     border-collapse: collapse;
     margin: 1rem 0;
-    
+
     @media (min-width: u.rem(551)) {
-      th, td {
+      th,
+      td {
         text-align: center;
-        &:nth-child(1) { width: 10%; }  /* Product-ID column */
-        &:nth-child(2) { width: 45%; } /* Product name column */
-        &:nth-child(3) { width: 15%; } /* Quantity column */ 
-        &:nth-child(4) { width: 15%; } /* Price column */
-        &:nth-child(5) { width: 15%; } /* Subtotal column */ 
+        &:nth-child(1) {
+          width: 10%;
+        } /* Product-ID column */
+        &:nth-child(2) {
+          width: 45%;
+        } /* Product name column */
+        &:nth-child(3) {
+          width: 15%;
+        } /* Quantity column */
+        &:nth-child(4) {
+          width: 15%;
+        } /* Price column */
+        &:nth-child(5) {
+          width: 15%;
+        } /* Subtotal column */
       }
     }
 
-    th, td {
+    th,
+    td {
       font-size: u.rem(13);
       padding: 0.75rem;
       border-bottom: 1px solid #e0e0e0;
@@ -102,53 +111,52 @@
 
     @media (max-width: u.rem(550)) {
       display: block;
-      
+
       thead {
         display: none; // Hide headers on mobile
       }
-      
-      tbody, tr {
+
+      tbody,
+      tr {
         display: block;
         width: 100%;
       }
-      
+
       tr {
         margin-bottom: 1rem;
         border: 1px solid #e0e0e0;
         border-radius: u.rem(4);
         padding: u.rem(12);
-        
+
         &:last-child {
           margin-bottom: 0;
           border-bottom: 1px solid #e0e0e0;
         }
       }
-      
+
       td {
-        display: flex; 
+        display: flex;
         padding: u.rem(8) 0;
         border: none;
-        
+
         // Add labels using data-attributes
         &::before {
           content: attr(data-label);
           font-weight: 600;
           display: inline-block;
-          width: 40%; 
+          width: 40%;
           padding-right: u.rem(8);
           color: var(--text-color);
         }
-        
-        
+
         &:not(:empty)::after {
-          content: '';
+          content: "";
           flex: 1;
         }
       }
-    } 
+    }
   }
 
-  
   .order-summary {
     h4 {
       font-size: 1.3rem;
@@ -162,40 +170,38 @@
       border-bottom: 1px solid #f0f0f0;
       &:nth-last-of-type(2) {
         border-bottom: none;
-      } 
-    }
-
-      .total {
-        font-weight: bold;
-        font-size: 1.1rem;
-        border-top: 2px solid #e0e0e0;
-        border-bottom: none;
-        margin-bottom: 0.5rem;
-        padding-top: 1rem;
       }
     }
+
+    .total {
+      font-weight: bold;
+      font-size: 1.1rem;
+      border-top: 2px solid #e0e0e0;
+      border-bottom: none;
+      margin-bottom: 0.5rem;
+      padding-top: 1rem;
+    }
   }
+}
 
-  
-  .continue-shopping-btn {
-    display: block;
-    width: 100%;
-    padding: 1rem;
-    text-align: center;
-    border-radius: 8px;
-    font-weight: 600;
-    text-decoration: none;
-    transition: all ease-in 0.3s;
+.continue-shopping-btn {
+  display: block;
+  width: 100%;
+  padding: 1rem;
+  text-align: center;
+  border-radius: 8px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all ease-in 0.3s;
+}
 
-  }
-
-  .status-form {
+.status-form {
   margin-top: 2rem;
   padding: 1.5rem;
   border: 1px solid var(--line-color);
   border-radius: u.rem(8);
   background: white;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 
   label {
     display: block;
@@ -222,13 +228,10 @@
   }
 }
 
-
-
 @include u.breakpoint(large) {
   .order-container {
     max-width: 1200px;
 
-    
     .customer-info-and-summary {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -236,22 +239,20 @@
       align-items: start;
     }
 
-    
     .customer-info {
       grid-column: 1;
       margin-bottom: 0;
     }
 
-   
     .order-summary {
       grid-column: 2;
       margin-bottom: 0;
       max-width: none;
     }
 
-    
     .products-table {
-      th, td {
+      th,
+      td {
         padding: 1rem;
       }
     }
