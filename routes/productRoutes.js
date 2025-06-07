@@ -168,7 +168,7 @@ router.post(
         price,
         category,
         stock,
-        thumbnail: `images/products/${req.files.thumbnail[0].filename}`,
+        thumbnail: `/images/products/${req.files.thumbnail[0].filename}`,
         images: req.files.images.map(
           (file) => `/images/products/${file.filename}`
         ),
