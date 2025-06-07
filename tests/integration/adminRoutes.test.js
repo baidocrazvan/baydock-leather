@@ -316,13 +316,20 @@ describe("Admin Routes", () => {
 
       expect(db.query).toHaveBeenNthCalledWith(
         1,
-        "SELECT * FROM users WHERE email = $1",
+        "SELECT id FROM users WHERE email = $1",
         ["admin@example.com"]
       );
 
       expect(db.query).toHaveBeenNthCalledWith(
         2,
-        "INSERT INTO users (first_name, last_name, email, password, role) VALUES ($1, $2, $3, $4, $5)",
+        `INSERT INTO users (
+          first_name, 
+          last_name, 
+          email, 
+          password, 
+          role,
+          is_confirmed
+        ) VALUES ($1, $2, $3, $4, $5, TRUE)`,
         [
           "User",
           "Admin",
