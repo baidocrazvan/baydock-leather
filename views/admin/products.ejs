@@ -86,14 +86,14 @@
       <% if (pages > 1) { %>
         <div class="pagination">
           <% if (page > 1) { %>
-            <a href="/admin/dashboard?page=<%= page-1 %><%= search ? `&search=${search}` : '' %>" class="page-link">
+            <a href="/admin/products?page=<%= page-1 %><%= search ? `&search=${search}` : '' %>" class="page-link">
               <i>Previous</i> 
             </a>
           <% } %>
           
           <% for (let i = 1; i <= pages; i++) { %>
             <a 
-              href="/admin/dashboard?page=<%= i %><%= search ? `&search=${search}` : '' %>" 
+              href="/admin/products?page=<%= i %><%= search ? `&search=${search}` : '' %>" 
               class="page-link <%= i === page ? 'active' : '' %>"
             >
               <%= i %>
@@ -101,7 +101,7 @@
           <% } %>
           
           <% if (page < pages) { %>
-            <a href="/admin/dashboard?page=<%= page+1 %><%= search ? `&search=${search}` : '' %>" class="page-link">
+            <a href="/admin/products?page=<%= page+1 %><%= search ? `&search=${search}` : '' %>" class="page-link">
                <i>Next</i>
             </a>
           <% } %>
