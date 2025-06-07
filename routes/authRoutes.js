@@ -278,6 +278,10 @@ router.post(
 
 // GET email confirmation page
 router.get("/confirm", (req, res) => {
+  if (!req.query.token) {
+    req.flash("error", "Invalid confirmation link");
+    return res.redirect("/auth/register");
+  }
   res.render("auth/confirm.ejs", { token: req.query.token });
 });
 
@@ -478,6 +482,10 @@ router.post(
 
 // GET Reset Password Page
 router.get("/reset-password", (req, res) => {
+  if (!req.query.token) {
+    req.flash("error", "Invalid confirmation link");
+    return res.redirect("/auth/register");
+  }
   res.render("auth/reset-password.ejs", { token: req.query.token });
 });
 
