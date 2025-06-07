@@ -144,7 +144,7 @@ export async function createProduct(productData) {
       productData.stock,
       productData.images,
       productData.thumbnail,
-      sizeOptions,
+      sizeOptions ? JSON.stringify(sizeOptions) : null,
     ]
   );
 
