@@ -1,6 +1,6 @@
 import express from "express";
 import db from "../db.js";
-import { authenticate } from "../middleware/middleware.js";
+import { authenticate, isDemo } from "../middleware/middleware.js";
 import { getUserAddress } from "../services/addressService.js";
 import { validateAddress } from "../middleware/validationMiddleware.js";
 
@@ -15,6 +15,7 @@ router.get("/shipping-address", authenticate, async (req, res) => {
 router.post(
   "/shipping-address",
   authenticate,
+  isDemo,
   validateAddress,
   async (req, res) => {
     try {
@@ -100,6 +101,7 @@ router.get("/shipping-address/edit/:id", authenticate, async (req, res) => {
 router.put(
   "/shipping-address/edit/:id",
   authenticate,
+  isDemo,
   validateAddress,
   async (req, res) => {
     try {
@@ -195,64 +197,74 @@ router.put(
 );
 
 // PATCH route for changing default shipping/billing address at checkout
-router.patch("/shipping-address/default", authenticate, async (req, res) => {
-  const userId = req.user.id;
-  const { shippingAddressId, billingAddressId } = req.body;
+router.patch(
+  "/shipping-address/default",
+  authenticate,
+  isDemo,
+  async (req, res) => {
+    const userId = req.user.id;
+    const { shippingAddressId, billingAddressId } = req.body;
 
-  try {
-    // Set all addresses to non-default
-    await db.query(
-      `UPDATE shipping_addresses SET is_shipping = false, is_billing = false WHERE user_id = $1`,
-      [userId]
-    );
-
-    // Set new shipping default if different from current default shipping address
-    if (shippingAddressId) {
+    try {
+      // Set all addresses to non-default
       await db.query(
-        `UPDATE shipping_addresses SET is_shipping = true WHERE id = $1 AND user_id = $2`,
-        [shippingAddressId, userId]
+        `UPDATE shipping_addresses SET is_shipping = false, is_billing = false WHERE user_id = $1`,
+        [userId]
       );
-    }
 
-    if (billingAddressId) {
-      await db.query(
-        `UPDATE shipping_addresses SET is_billing = true WHERE id = $1 AND user_id = $2`,
-        [billingAddressId, userId]
-      );
-    }
+      // Set new shipping default if different from current default shipping address
+      if (shippingAddressId) {
+        await db.query(
+          `UPDATE shipping_addresses SET is_shipping = true WHERE id = $1 AND user_id = $2`,
+          [shippingAddressId, userId]
+        );
+      }
 
-    req.flash("success", "Default addresses have updated successfully.");
-    return res.redirect("/cart/checkout");
-  } catch (err) {
-    console.error("PATCH error updating default addresses at checkout", err);
-    req.flash("error", "Failed to update default addresses");
-    return res.redirect("/cart/checkout");
+      if (billingAddressId) {
+        await db.query(
+          `UPDATE shipping_addresses SET is_billing = true WHERE id = $1 AND user_id = $2`,
+          [billingAddressId, userId]
+        );
+      }
+
+      req.flash("success", "Default addresses have updated successfully.");
+      return res.redirect("/cart/checkout");
+    } catch (err) {
+      console.error("PATCH error updating default addresses at checkout", err);
+      req.flash("error", "Failed to update default addresses");
+      return res.redirect("/cart/checkout");
+    }
   }
-});
+);
 
 // Soft DELETE a shipping address
-router.delete("/shipping-address/:id", authenticate, async (req, res) => {
-  try {
-    const userId = req.user.id;
-    const addressId = req.params.id;
-    const result = await db.query(
-      `UPDATE shipping_addresses SET is_active = FALSE, deleted_at = NOW()
+router.delete(
+  "/shipping-address/:id",
+  authenticate,
+  isDemo,
+  async (req, res) => {
+    try {
+      const userId = req.user.id;
+      const addressId = req.params.id;
+      const result = await db.query(
+        `UPDATE shipping_addresses SET is_active = FALSE, deleted_at = NOW()
       WHERE id = $1 AND user_id = $2`,
-      [addressId, userId]
-    );
+        [addressId, userId]
+      );
 
-    if (result.rowCount === 0) {
-      req.flash("error", "Address not found");
-    } else {
-      req.flash("success", "Address removed");
+      if (result.rowCount === 0) {
+        req.flash("error", "Address not found");
+      } else {
+        req.flash("success", "Address removed");
+      }
+
+      return res.redirect("/user/addresses");
+    } catch (err) {
+      console.error("DELETE soft delete error while deleting address", err);
+      req.flash("error", "Error deleting specified address");
+      return res.redirect("/user/addresses");
     }
-
-    return res.redirect("/user/addresses");
-  } catch (err) {
-    console.error("DELETE soft delete error while deleting address", err);
-    req.flash("error", "Error deleting specified address");
-    return res.redirect("/user/addresses");
   }
-});
+);
 
 export default router;
