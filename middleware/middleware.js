@@ -23,9 +23,13 @@ export const redirectIfAuthenticated = (req, res, next) => {
 };
 
 export const isDemo = (req, res, next) => {
-  if (req.user.email === "admin@demo.com") {
+  const demoEmails = ["admin@demo.com", "user@demo.com"];
+
+  if (demoEmails.includes(req.user.email)) {
     req.flash("error", "This action is disabled in demo mode");
-    return res.redirect("/admin/dashboard");
+    return res.redirect(
+      req.user.role === "admin" ? "/admin/dashboard" : "/user/account"
+    );
   }
   next();
 };

@@ -61,8 +61,8 @@ const passwordChangeLimiter = rateLimit({
 
 router.post(
   "/update-password",
-  isDemo,
   authenticate,
+  isDemo,
   passwordChangeLimiter,
   validateChangePassword,
   async (req, res) => {

@@ -166,10 +166,10 @@ router.get("/create", authenticate, isAdmin, async (req, res) => {
 // POST protected register an admin account
 router.post(
   "/create",
-  isDemo,
-  validateAdminRegister,
   authenticate,
   isAdmin,
+  isDemo,
+  validateAdminRegister,
   async (req, res) => {
     const {
       lastName,

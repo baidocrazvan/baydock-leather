@@ -128,9 +128,9 @@ router.get("/:id", async (req, res) => {
 // Add a new product (admin)
 router.post(
   "/",
-  isDemo,
   authenticate,
   isAdmin,
+  isDemo,
   upload.fields([
     { name: "thumbnail", maxCount: 1 }, // Thumbnail (single file)
     { name: "images", maxCount: 10 }, // Other images (up to 10 files)
@@ -190,9 +190,9 @@ router.post(
 // PATCH for partial update a product (admin)
 router.patch(
   "/:id",
-  isDemo,
   authenticate,
   isAdmin,
+  isDemo,
   upload.fields([
     { name: "thumbnail", maxCount: 1 },
     { name: "images", maxCount: 10 },
@@ -250,7 +250,7 @@ router.patch(
 );
 
 //Delete a product (admin)
-router.delete("/:id", isDemo, authenticate, isAdmin, async (req, res) => {
+router.delete("/:id", authenticate, isAdmin, isDemo, async (req, res) => {
   const id = parseInt(req.params.id);
   try {
     await db.query(`UPDATE products SET is_active = FALSE WHERE id = $1`, [id]);
@@ -266,9 +266,9 @@ router.delete("/:id", isDemo, authenticate, isAdmin, async (req, res) => {
 // Re-activate a product
 router.post(
   "/:id/reactivate",
-  isDemo,
   authenticate,
   isAdmin,
+  isDemo,
   async (req, res) => {
     const id = parseInt(req.params.id);
     try {
