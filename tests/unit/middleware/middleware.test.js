@@ -74,7 +74,7 @@ describe("redirectIfAuthenticated middleware", () => {
 describe("isDemo middleware", () => {
   it("should block admin@demo.com and redirect with flash", () => {
     const req = {
-      user: { email: "admin@demo.com" },
+      user: { email: "admin@demo.com", role: "admin" },
       flash: vi.fn(),
     };
     const res = { redirect: vi.fn() };
@@ -92,7 +92,7 @@ describe("isDemo middleware", () => {
 
   it("should call next() for non-demo users", () => {
     const req = {
-      user: { email: "user@demo.com" },
+      user: { email: "realUser@example.com" },
       flash: vi.fn(),
     };
     const res = { redirect: vi.fn() };
