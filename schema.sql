@@ -1,69 +1,17 @@
+-- Create tables
 CREATE TABLE users (
   id SERIAL PRIMARY KEY,
-  first_name NOT NULL,
-  last_name NOT NULL,
+  first_name VARCHAR(50) NOT NULL,
+  last_name VARCHAR(50) NOT NULL,
   email VARCHAR(100) UNIQUE NOT NULL,
   is_confirmed BOOLEAN NOT NULL DEFAULT FALSE,
   confirmation_token VARCHAR(100),
-  confirmation_token_expires TIMESTAMP;
+  confirmation_token_expires TIMESTAMP,
   reset_token VARCHAR(100),
-  reset_token_expires TIMESTAMP;
-  password VARCHAR(255) UNIQUE NOT NULL,
+  reset_token_expires TIMESTAMP,
+  password VARCHAR(255) NOT NULL,
   role VARCHAR(20) NOT NULL CHECK (role IN ('user', 'admin')),
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-);
-
-CREATE TABLE products (
-  id SERIAL PRIMARY KEY,
-  name VARCHAR(100) UNIQUE NOT NULL,
-  description TEXT NOT NULL,
-  detailed_description TEXT,
-  price NUMERIC(6,2) NOT NULL,
-  category VARCHAR(50) NOT NULL,
-  size_options JSONB,
-  stock INTEGER CHECK (stock >= 0) NOT NULL, -- CHECK constraint because stock cannot be negative --
-  images TEXT[] NOT NULL,
-  thumbnail TEXT NOT NULL,
-  is_active BOOLEAN NOT NULL DEFAULT TRUE
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE TABLE carts (
-  id SERIAL PRIMARY KEY,
-  user_id INTEGER REFERENCES users(id),
-  product_id INTEGER REFERENCES products(id),
-  quantity INTEGER CHECK (quantity > 0),
-  selected_size VARCHAR(20);
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE TABLE pending_carts (
-  user_email VARCHAR(100) PRIMARY KEY,
-  cart_data JSONB NOT NULL,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE TABLE orders (
-  id SERIAL PRIMARY KEY,
-  user_id INTEGER REFERENCES users(id),
-  subtotal NUMERIC(6,2),
-  total_price NUMERIC(6,2),
-  shipping_address_id INTEGER REFERENCES shipping_addresses(id),
-  billing_address_id INTEGER REFERENCES shipping_addresses(id),
-  status VARCHAR(20) NOT NULL DEFAULT 'Pending',
-  payment_method VARCHAR(10) NOT NULL DEFAULT 'cash' CHECK (payment_method IN ('cash', 'card'),
-  shipping_method_id INTEGER REFERENCES shipping_methods(id),
-  shipping_cost NUMERIC(6,2) NOT NULL DEFAULT 0;
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE TABLE order_items (
-  id SERIAL PRIMARY KEY,
-  order_id INTEGER REFERENCES orders(id),
-  product_id INTEGER REFERENCES products(id),
-  quantity INTEGER NOT NULL,
-  price NUMERIC(6,2) NOT NULL,
-  selected_size VARCHAR(20)
 );
 
 CREATE TABLE shipping_addresses (
@@ -95,6 +43,60 @@ CREATE TABLE shipping_methods (
   max_days INTEGER,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE TABLE products (
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(100) UNIQUE NOT NULL,
+  description TEXT NOT NULL,
+  detailed_description TEXT,
+  price NUMERIC(6,2) NOT NULL,
+  category VARCHAR(50) NOT NULL,
+  size_options JSONB,
+  stock INTEGER CHECK (stock >= 0) NOT NULL, -- CHECK constraint because stock cannot be negative --
+  images TEXT[] NOT NULL,
+  thumbnail TEXT NOT NULL,
+  is_active BOOLEAN NOT NULL DEFAULT TRUE,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE carts (
+  id SERIAL PRIMARY KEY,
+  user_id INTEGER REFERENCES users(id),
+  product_id INTEGER REFERENCES products(id),
+  quantity INTEGER CHECK (quantity > 0),
+  selected_size VARCHAR(20),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE pending_carts (
+  user_email VARCHAR(100) PRIMARY KEY,
+  cart_data JSONB NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE orders (
+  id SERIAL PRIMARY KEY,
+  user_id INTEGER REFERENCES users(id),
+  subtotal NUMERIC(6,2),
+  total_price NUMERIC(6,2),
+  shipping_address_id INTEGER REFERENCES shipping_addresses(id),
+  billing_address_id INTEGER REFERENCES shipping_addresses(id),
+  status VARCHAR(20) NOT NULL DEFAULT 'Pending',
+  payment_method VARCHAR(10) NOT NULL DEFAULT 'cash' CHECK (payment_method IN ('cash', 'card')),
+  shipping_method_id INTEGER REFERENCES shipping_methods(id),
+  shipping_cost NUMERIC(6,2) NOT NULL DEFAULT 0,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE order_items (
+  id SERIAL PRIMARY KEY,
+  order_id INTEGER REFERENCES orders(id),
+  product_id INTEGER REFERENCES products(id),
+  quantity INTEGER NOT NULL,
+  price NUMERIC(6,2) NOT NULL,
+  selected_size VARCHAR(20)
+);
+
 
 -- Session table from connect-pg-simple docs --
 CREATE TABLE "session" (
