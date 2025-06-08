@@ -24,7 +24,10 @@ const router = express.Router();
 // GET login page
 router.get("/login", redirectIfAuthenticated, (req, res) => {
   const unconfirmedEmail = req.query.unconfirmedEmail || null;
-  res.render("auth/login.ejs", { unconfirmedEmail });
+  res.render("auth/login.ejs", {
+    unconfirmedEmail,
+    isProduction: process.env.NODE_ENV === "production",
+  });
 });
 
 // GET register page
