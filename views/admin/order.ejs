@@ -94,7 +94,7 @@
                     <span>Total:</span>
                     <span>€<%= order.total %></span>
                 </div>
-                <form class="status-form" action="/admin/orders/<%= order.id %>?_method=PATCH" method="POST">
+                <form class="status-form" action="/orders/<%= order.id %>?_method=PATCH" method="POST">
                     <label for="status">Change order status:</label>
                     <select name="status" id="status">
                         <% 
