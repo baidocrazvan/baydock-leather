@@ -93,19 +93,15 @@
                 
                 <h3 class="filter-title">Filter by price</h3>
                 <div class="price-slider">
-                    <div class="slider-track" 
-                    style="left: <%= (min_price || 0) / 10 %>%; 
-                           right: <%= 100 - (max_price || 1000) / 10 %>%"></div>
-                  <input type="range" min="0" max="500" value="<%= min_price || 0 %>" class="slider-thumb min-thumb">
-                  <input type="range" min="0" max="500" value="<%= max_price || 500 %>" class="slider-thumb max-thumb">
-                </div>
-                <div class="price-inputs">
-                  <div class="price-display">
-                    Price: <span class="min-price">€0</span>-<span class="max-price">€500</span>
-                  </div>
-                  <input type="hidden" name="min_price" value="<%= min_price || 0 %>">
-                  <input type="hidden" name="max_price" value="<%= max_price || 500 %>">
-                  <button type="submit" class="filter-button btn-secondary">Filter</button>
+                    <input type="range" id="min-range" min="0" max="200" value="<%= typeof min_price !== 'undefined' ? min_price : 0 %>" class="slider-thumb min-thumb" >
+                    <input type="range" id="max-range" min="0" max="200" value="<%= typeof max_price !== 'undefined' ? max_price : 200 %>" class="slider-thumb max-thumb" >
+                    <div class="slider-track"></div>
+                    </div>
+                    <div class="price-inputs">
+                    Price: <span class="min-price">€0</span> - <span class="max-price">€200</span>
+                    <input type="hidden" name="min_price" value="<%= typeof min_price !== 'undefined' ? min_price : 0 %>">
+                    <input type="hidden" name="max_price" value="<%= typeof max_price !== 'undefined' ? max_price : 200 %>">
+                    <button type="submit" class="filter-button btn-secondary">Filter</button>
                 </div>
             </form>
         </aside>

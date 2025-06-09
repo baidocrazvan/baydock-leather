@@ -72,8 +72,8 @@ router.get("/", async (req, res) => {
       currentSort: sort,
       currentOrder: order,
       search: search,
-      min_price: min_price || 0,
-      max_price: max_price || 500,
+      min_price: min_price ? Number(min_price) : 0,
+      max_price: max_price ? Number(max_price) : 200,
     });
   } catch (err) {
     console.error(err);

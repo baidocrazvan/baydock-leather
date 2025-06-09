@@ -165,6 +165,7 @@
         border-top: 1px solid #ddd;
         border-bottom: 1px solid #ddd;
         border-left: 1px solid #ddd;
+        margin-right: u.rem(2);
       }
 
       &.plus {
@@ -173,6 +174,7 @@
         border-top: 1px solid #ddd;
         border-bottom: 1px solid #ddd;
         border-right: 1px solid #ddd;
+        margin-left: u.rem(2);
       }
 
       &:hover {
@@ -199,6 +201,9 @@
         -webkit-appearance: none;
         margin: 0;
       }
+
+      /* Hide number input arrows in Firefox */
+      -moz-appearance: textfield;
     }
   }
 
