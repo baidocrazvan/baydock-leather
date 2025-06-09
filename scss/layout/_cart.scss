@@ -37,11 +37,14 @@
     display: grid;
     grid-template-columns: 1fr 2fr 1fr;
     min-height: u.rem(120);
+    align-items: center;
 
     &__thumbnail {
       padding: 0 u.rem(6) u.rem(14) 0;
       img {
         object-fit: contain;
+        min-height: u.rem(150);
+        max-height: u.rem(200);
         width: 100%;
       }
     }
@@ -439,7 +442,7 @@
 
         img {
           max-height: u.rem(150); // Constrain image height
-          width: auto;
+          width: 100%;
         }
       }
 
