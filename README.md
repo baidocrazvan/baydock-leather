@@ -2,7 +2,11 @@
 
 A stylish, full-featured web store for unique leather crafts. Users can register, log in, browse products, add to cart, place orders, and view order history. Admins can manage products, orders, and users.
 
-**Demo-ready with Docker, or run locally for development.**
+---
+
+## 🚀 Live Demo
+
+[View the live site on Render](https://baydock-leatherworks.onrender.com)
 
 ---
 
