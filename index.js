@@ -40,6 +40,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 const PgSession = pgSession(session);
 
 // Session and store initialization
+app.set("trust proxy", 1);
+
 app.use(
   session({
     store: new PgSession({
