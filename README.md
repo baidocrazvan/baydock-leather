@@ -87,10 +87,6 @@ A stylish, full-featured web store for unique leather crafts. Users can register
 
 ![Admin Dashboard](screenshots/admin-dashboard.png)
 
-### Homepage (Mobile)
-
-![Mobile Homepage](screenshots/mobile-homepage.png)
-
 ### Order Confirmation Email
 
 ![Order Confirmation Email](screenshots/email-template.png)
@@ -140,11 +136,14 @@ cd baydock-leather
 # Install dependencies
 npm install
 
+# Compile SCSS files
+npm run build
+
 # Copy the example env file
 cp .env.example .env.development
 
-# Edit .env.development with your local DB and email credentials
-
+# Edit .env.development with your local DB and email service credentials
+# OR
 # Create your database and user (example)
 psql -U postgres
 # In the psql prompt:
