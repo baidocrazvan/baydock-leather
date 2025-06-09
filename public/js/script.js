@@ -476,8 +476,6 @@ document.addEventListener("DOMContentLoaded", function () {
     shippingMethods = JSON.parse(dataEl.getAttribute("data-shipping-methods"));
     subtotal = parseFloat(dataEl.getAttribute("data-cart-subtotal"));
   }
-  console.log(shippingMethods);
-  console.log(subtotal);
 
   const shippingMethodRadios = document.querySelectorAll(
     'input[name="shippingMethodId"]'
