@@ -53,8 +53,7 @@ app.use(
       maxAge: 1000 * 60 * 60 * 24, // 24 hours
       httpOnly: true,
       sameSite: "strict",
-      // eslint-disable-next-line capitalized-comments
-      // secure: true,  Enable in production (requires HTTPS)
+      secure: process.env.NODE_ENV === "production",
     },
   })
 );
