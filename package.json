@@ -27,6 +27,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
+    "build": "sass scss/styles.scss public/dist/styles.css",
     "postinstall": "patch-package",
     "start:dev": "cross-env NODE_ENV=development node --watch index.js",
     "start:prod": "cross-env NODE_ENV=production node --watch index.js",
@@ -48,6 +49,7 @@
     "eslint-plugin-prettier": "^5.4.1",
     "globals": "^16.2.0",
     "prettier": "3.5.3",
+    "sass": "^1.89.1",
     "supertest": "^7.1.0",
     "vitest": "^3.1.1"
   }
