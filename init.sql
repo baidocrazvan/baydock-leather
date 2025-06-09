@@ -340,18 +340,18 @@ VALUES
 INSERT INTO shipping_addresses (user_id, first_name, last_name, address, city, county, country, postal_code, phone_number, is_shipping, is_billing, is_active)
 VALUES
   -- Demo Admin's addresses
-  (1, 'Admin', 'Demo', 'Str Principala, nr. 49', 'Oradea', 'Bihor', 'Romania', '10456', '+0771988322', true, true, true),
+  (1, 'Admin', 'Demo', 'Str Principala, nr. 49', 'Oradea', 'Bihor', 'Romania', '10456', '+4077198832', true, true, true),
   -- Demo User's addresses
-  (2, 'User', 'Demo', 'Str Nufarului, nr. 50', 'Oradea', 'Bihor', 'Romania', '10654', '+0771323922', true, true, true),
-  (2, 'User', 'Demo', 'Str. Ioan Slavici, nr. 3', 'Sanmartin', 'Bihor', 'Romania', '417495', '+0771323922', false, false, true),
+  (2, 'User', 'Demo', 'Str Nufarului, nr. 50', 'Oradea', 'Bihor', 'Romania', '10654', '+4077132922', true, false, true),
+  (2, 'User', 'Demo', 'Str. Ioan Slavici, nr. 3', 'Sanmartin', 'Bihor', 'Romania', '417495', '+4077132922', false, true, true),
   
   -- John Smith's addresses
   (3, 'Carl', 'Johnson', 'Str. Grove, nr. 7', 'Cluj-Napoca', 'Cluj', 'Romania', '20654', '+0447323922', true, false, true),
   (3, 'Carl', 'Johson', 'Str. Facliei nr. 7', 'Brasov', 'Brasov', 'Romania', '30654', '+0447323922', false, true, true),
   
   -- Emma Johnson's addresses
-  (4, 'Emma', 'Watson', 'Str. Republicii, Bl. R3', 'Iasi', 'Iasi', 'Romania', '75008', '+33123456789', true, true, true),
-  (4, 'Emma', 'Johnson', 'Str. Foisorului, nr. 44', 'Domnesti', 'Ilfov', 'Romania', '800008', '+33123456789', false, false, false);
+  (4, 'Emma', 'Watson', 'Str. Republicii, Bl. R3', 'Iasi', 'Iasi', 'Romania', '75008', '+40123456789', true, true, true),
+  (4, 'Emma', 'Johnson', 'Str. Foisorului, nr. 44', 'Domnesti', 'Ilfov', 'Romania', '800008', '+40123456789', false, false, false);
 
 -- Demo Orders
 INSERT INTO orders (user_id, subtotal, total_price, status, shipping_address_id, billing_address_id, payment_method, shipping_method_id, shipping_cost, created_at)
