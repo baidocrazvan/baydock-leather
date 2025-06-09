@@ -45,6 +45,7 @@ app.use(
     store: new PgSession({
       pool: db, // Use the imported db pool
       tableName: "session",
+      createTableIfMissing: true,
     }),
     secret: process.env.SESSION_SECRET,
     resave: false,
