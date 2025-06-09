@@ -1,13 +1,20 @@
 <%- include("../partials/header"); %>
 
+<!-- Data for checkout JS logic -->
+<div
+  id="checkout-data"
+  data-shipping-methods='<%- JSON.stringify(shippingMethods) %>'
+  data-cart-subtotal="<%= cartSubtotal %>"
+></div>
+
+
 <main class="checkout-page">
       <!-- Checkout Form Section -->
-      
           <div class="checkout-address">
           <!-- User form for logged in users -->
             <% if (addresses && addresses.length > 0) { %>
               <!-- Address Selection for registered users with existing addresses -->
-              <form method="POST" action="/address/shipping-address/default?_method=PATCH">
+              <form method="POST" action="/address/shipping-address/default?_method=PATCH" class="checkout-address-form">
                 <div class="address-selection">
                   <h3>Select Shipping Address</h3>
                   <select name="shippingAddressId" id="shippingAddress" required class="address-select">
@@ -238,12 +245,5 @@
             <% } %>
         </div>
 </main>
-
-<script>
-  // Pass data from template to script.js
-  window.shippingMethods =  <%- JSON.stringify(shippingMethods) %>;
-  window.cartSubtotal = <%- cartSubtotal %>;
-</script>
-
 
 <%- include("../partials/footer"); %>

@@ -467,15 +467,23 @@ function dismissFlash(flashElement) {
 // Shipping methods script
 
 document.addEventListener("DOMContentLoaded", function () {
+  // Get data from DOM attributes
+  const dataEl = document.getElementById("checkout-data");
+  let shippingMethods = [];
+  let subtotal = 0;
+
+  if (dataEl) {
+    shippingMethods = JSON.parse(dataEl.getAttribute("data-shipping-methods"));
+    subtotal = parseFloat(dataEl.getAttribute("data-cart-subtotal"));
+  }
+  console.log(shippingMethods);
+  console.log(subtotal);
+
   const shippingMethodRadios = document.querySelectorAll(
     'input[name="shippingMethodId"]'
   );
   const shippingCostEl = document.getElementById("shipping-cost");
   const orderTotalEl = document.getElementById("order-total");
-
-  // Get data from window object
-  const subtotal = parseFloat(window.cartSubtotal);
-  const shippingMethods = window.shippingMethods || [];
 
   // Convert shipping methods array to lookup object
   const methodsData = {};
