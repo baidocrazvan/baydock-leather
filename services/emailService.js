@@ -61,7 +61,7 @@ export async function sendResetEmail(email, resetLink, req) {
   if (process.env.NODE_ENV === "production") {
     req.flash(
       "info",
-      `<p class="demo">Demo: Confirm your account <a class="confirmation-link" href=${resetLink}>here</a></p>`
+      `<p class="demo">Demo: Reset your password here <a class="confirmation-link" href=${resetLink}>here</a></p>`
     );
     return;
   }
