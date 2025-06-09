@@ -40,7 +40,10 @@ app.use(bodyParser.urlencoded({ extended: true }));
 const PgSession = pgSession(session);
 
 // Session and store initialization
-app.set("trust proxy", 1);
+const isProduction = process.env.NODE_ENV === "production";
+const isRender = !!process.env.RENDER;
+
+app.set("trust proxy", isProduction || isRender ? 1 : 0);
 
 app.use(
   session({
@@ -55,7 +58,7 @@ app.use(
       maxAge: 1000 * 60 * 60 * 24, // 24 hours
       httpOnly: true,
       sameSite: "strict",
-      secure: process.env.NODE_ENV === "production",
+      secure: isRender,
     },
   })
 );
