@@ -324,11 +324,13 @@ document.addEventListener("DOMContentLoaded", function () {
     maxPriceInput.value = maxVal;
   }
 
-  minThumb.addEventListener("input", updateSlider);
-  maxThumb.addEventListener("input", updateSlider);
+  if (minThumb && maxThumb) {
+    minThumb.addEventListener("input", updateSlider);
+    maxThumb.addEventListener("input", updateSlider);
 
-  // Initialize
-  updateSlider();
+    // Initialize
+    updateSlider();
+  }
 });
 
 // Product page products-tab
