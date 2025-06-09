@@ -75,7 +75,7 @@
                       class="quantity-input"
                       value="1"
                       min="1"
-                      max="<%= product.stock || 10 %>" 
+                      max="<%= product.stock > 10 ? 10 : product.stock %>" 
                       >
                       <button type="button" class="quantity-btn plus">+</button>
                   </div>
