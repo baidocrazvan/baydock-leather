@@ -73,23 +73,31 @@ A stylish, full-featured web store for unique leather crafts. Users can register
 
 ---
 
-## Screenshots📷
+## Screenshots 📷 (Click to Expand)
 
-### Homepage (Desktop)
+<details>
+<summary>🏠 Homepage (Desktop)</summary>
+  
+![Homepage](screenshots/homepage.png)  
+</details>
 
-![Homepage](screenshots/homepage.png)
+<details>
+<summary>🛍️ Product Page</summary>
+  
+![Product](screenshots/products-page.png)  
+</details>
 
-## Product Page
+<details>
+<summary>⚙️ Admin Dashboard</summary>
+  
+![Admin Dashboard](screenshots/admin-dashboard.png)  
+</details>
 
-![Product](screenshots/products-page.png)
-
-### Admin Dashboard
-
-![Admin Dashboard](screenshots/admin-dashboard.png)
-
-### Order Confirmation Email
-
-![Order Confirmation Email](screenshots/email-template.png)
+<details>
+<summary>✉️ Order Confirmation Email</summary>
+  
+![Order Confirmation Email](screenshots/email-template.png)  
+</details>
 
 ---
 
