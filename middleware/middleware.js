@@ -22,6 +22,7 @@ export const redirectIfAuthenticated = (req, res, next) => {
   next();
 };
 
+// Modify this to remove restrictions from demo accounts
 export const isDemo = (req, res, next) => {
   const demoEmails = ["admin@demo.com", "user@demo.com"];
 

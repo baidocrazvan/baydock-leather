@@ -95,7 +95,7 @@ A stylish, full-featured web store for unique leather crafts. Users can register
 
 ## Getting Started 🛠️
 
-### 1. Run with Docker (Recommended)
+### 1. For Demo: Run with Docker (Recommended)
 
 This will start the app and database with demo data and images.
 
@@ -117,7 +117,7 @@ docker compose up
 
 ---
 
-### 2. Local Development Setup
+### 2. For Local Development Setup:
 
 For contributing or development with your own database.
 
@@ -129,31 +129,48 @@ For contributing or development with your own database.
 #### Steps
 
 ```sh
-# Clone the repo
+1. Clone the respository
 git clone https://github.com/yourusername/baydock-leather.git
 cd baydock-leather
 
-# Install dependencies
+2. Install Dependencies
 npm install
+npm run build # Compiles SCSS
 
-# Compile SCSS files
-npm run build
+3. Set up environment variables
 
 # Copy the example env file
 cp .env.example .env.development
 
-# Edit .env.development with your local DB and email service credentials
-# OR
+# Open .env.development and fill in:
+NODE_ENV=development # The development environment mode
+# Change the other db variables as per instructions inside .env file after finishing step 4 and 5
+# Also fill in email service (SMTP), port and other secrets as per instructions
+
+4. Database Setup
+
+Option A
+Ensure your PostgreSQL database matches the credentials in .env.development
+Skip to step 5 to run schema
+
+Option B
 # Create your database and user (example)
-psql -U postgres
-# In the psql prompt:
-# CREATE USER youruser WITH PASSWORD 'yourpassword';
-# CREATE DATABASE webstore OWNER youruser;
+psql -U postgres -c "CREATE USER youruser WITH PASSWORD 'yourpassword';"
+psql -U postgres -c "CREATE DATABASE webstore OWNER youruser;"
+
+# Verify the user can connect:
+psql -U youruser -d webstore  # Password should match .env
+
+5. Initialize the Database Schema
+Choose one of these options:
 
 # Run the schema to create tables
-psql -U youruser -d webstore -f schema.sql
+psql -U youruser -d webstore -f schema.sql # Fresh db with table structures only
+#OR
+# For ready-to-use environment, with admin/user accounts along with sample products, orders and test users
+psql -U youruser -d webstore -f init.sql
 
-# Start the app
+6. Start the app
 npm run start:dev
 ```
 
@@ -193,7 +210,7 @@ All required variables are documented in .env.example.
 ### Local Development
 
 - You must create your own database and user.
-- Run schema.sql to create tables (no demo data).
+- Run schema.sql (no demo data) or init.sql (with demo data) to create tables.
 - See Local Development Setup.
 
 ---
