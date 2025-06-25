@@ -13,12 +13,13 @@ RUN npm install
 # Copy all source files
 COPY . .
 
-# Build static assets (SCSS to CSS)
-RUN npm run build
-
 # Build arguments for environment configuration
 ARG NODE_ENV=production
 ENV NODE_ENV=${NODE_ENV}
+
+# Build static assets (SCSS to CSS)
+RUN npm run build
+
 
 # Expose the port the app runs on
 EXPOSE 3000
