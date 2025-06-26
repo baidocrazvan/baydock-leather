@@ -14,7 +14,7 @@ export const isValidName = (name) => {
 };
 
 export const isValidPhoneNumber = (phoneNumber) => {
-  const re = /^\+40\d{1,10}$/;
+  const re = /^\+40\d{9}$/;
   return re.test(phoneNumber);
 };
 
